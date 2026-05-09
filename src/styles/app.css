@@ -1,0 +1,15 @@
+.app {
+  position: relative;
+  min-height: 100dvh;
+}
+
+.main {
+  position: relative;
+  min-height: 100dvh;
+  margin-left: 88px;
+  isolation: isolate;
+}
+
+@media (max-width: 960px) {
+  .main { margin-left: 0; padding-top: 0; }
+}

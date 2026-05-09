@@ -1,0 +1,46 @@
+.starfield {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 45%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  display: block;
+  background: var(--star);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--star);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star { animation: none; opacity: var(--peak, 0.4); }
+}
+
+/* On mobile, stars span full width but are vertically masked to only
+   appear inside the top header bar and the bottom solid text area —
+   never over the photo in the middle. */
+@media (max-width: 960px) {
+  .starfield {
+    right: 0;
+    mask-image: linear-gradient(to bottom,
+      black 0,
+      black 44px,
+      transparent 46px,
+      transparent 88%,
+      black 90%,
+      black 100%);
+    -webkit-mask-image: linear-gradient(to bottom,
+      black 0,
+      black 44px,
+      transparent 46px,
+      transparent 88%,
+      black 90%,
+      black 100%);
+  }
+}

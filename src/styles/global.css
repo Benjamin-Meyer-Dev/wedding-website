@@ -1,0 +1,50 @@
+/* ---------- Design tokens ---------- */
+:root {
+  /* Palette — deep navy night, ivory text, blue ampersand accent */
+  --bg: #0a1320;
+  --bg-deep: #060d18;
+  --ink: #ecebe2;
+  --ink-soft: #b9bdc4;
+  --ink-muted: #6a737f;
+  --accent: #6ea7c9;        /* the dusty blue from the ampersand */
+  --rule: rgba(236, 235, 226, 0.35);
+  --rule-soft: rgba(236, 235, 226, 0.15);
+  --star: rgba(110, 167, 201, 0.95);
+
+  /* Type — single typeface across the whole site */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-amp: 'Playfair Display', Georgia, serif;
+  --font-ui: 'Playfair Display', Georgia, serif;
+}
+
+/* Light theme override */
+[data-theme="light"] {
+  --bg: #f1e8d4;
+  --bg-deep: #e6dcc1;
+  --ink: #1a1f2b;
+  --ink-soft: #4a5161;
+  --ink-muted: #8b8579;
+  --accent: #3a6f95;
+  --rule: rgba(26, 31, 43, 0.4);
+  --rule-soft: rgba(26, 31, 43, 0.18);
+  --star: rgba(110, 167, 201, 0.95);
+}
+
+/* ---------- Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  transition: none;
+}
+button { font-family: inherit; cursor: pointer; }
+
+/* Selection */
+::selection { background: var(--accent); color: var(--bg); }
