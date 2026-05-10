@@ -4,6 +4,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   overflow: hidden;
+  animation: page-enter 320ms ease-out both;
 }
 
 /* ---------------- Photo side ---------------- */

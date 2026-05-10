@@ -3,6 +3,7 @@ import NavBar from './components/NavBar.jsx'
 import Home from './pages/Home.jsx'
 import Login from './pages/Login.jsx'
 import Starfield from './components/Starfield.jsx'
+import LoadingScreen from './components/LoadingScreen.jsx'
 import { supabase } from './lib/supabase'
 import './styles/app.css'
 
@@ -14,6 +15,7 @@ export default function App() {
 
   const [session, setSession] = useState(null)
   const [authReady, setAuthReady] = useState(false)
+  const [introDone, setIntroDone] = useState(false)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -33,10 +35,15 @@ export default function App() {
 
   const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark')
 
+  const intro = !introDone ? (
+    <LoadingScreen onDone={() => setIntroDone(true)} />
+  ) : null
+
   if (!authReady) {
     return (
       <div className="app">
         <Starfield count={150} />
+        {intro}
       </div>
     )
   }
@@ -48,6 +55,7 @@ export default function App() {
         <NavBar minimal theme={theme} onToggleTheme={toggleTheme} />
         <div className="scrim" aria-hidden="true" />
         <Login />
+        {intro}
       </div>
     )
   }
@@ -64,6 +72,7 @@ export default function App() {
       <main className="main">
         <Home />
       </main>
+      {intro}
     </div>
   )
 }

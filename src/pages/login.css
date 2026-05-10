@@ -4,6 +4,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   overflow: hidden;
+  animation: page-enter 320ms ease-out both;
 }
 
 /* ---------------- Photo side ---------------- */
@@ -158,7 +159,11 @@
 }
 
 .field input {
-  background: #18202c;
+  position: relative;
+  z-index: 1;
+  background-color: #18202c;
+  /* inset shadow guarantees a solid fill regardless of input rendering quirks */
+  box-shadow: inset 0 0 0 9999px #18202c;
   border: 1px solid var(--rule-soft);
   border-radius: 10px;
   color: var(--ink);
@@ -171,7 +176,7 @@
   outline: none;
   width: 100%;
   text-shadow: 0 0 0 transparent;
-  transition: border-color 200ms ease, background 200ms ease, box-shadow 200ms ease, color 110ms ease, text-shadow 110ms ease;
+  transition: border-color 200ms ease, background-color 200ms ease, box-shadow 200ms ease, color 110ms ease, text-shadow 110ms ease;
 }
 
 .field input.is-toggling {
@@ -180,24 +185,28 @@
 }
 
 [data-theme="light"] .field input {
-  background: #e6decc;
+  background-color: #e6decc;
+  box-shadow: inset 0 0 0 9999px #e6decc;
 }
 
 .field input:hover {
-  background: #1d2734;
+  background-color: #1d2734;
+  box-shadow: inset 0 0 0 9999px #1d2734;
   border-color: var(--rule);
 }
 [data-theme="light"] .field input:hover {
-  background: #ddd3bd;
+  background-color: #ddd3bd;
+  box-shadow: inset 0 0 0 9999px #ddd3bd;
 }
 
 .field input:focus {
   border-color: var(--accent);
-  background: #1d2a3a;
-  box-shadow: 0 0 0 3px rgba(110, 167, 201, 0.18);
+  background-color: #1d2a3a;
+  box-shadow: inset 0 0 0 9999px #1d2a3a, 0 0 0 3px rgba(110, 167, 201, 0.18);
 }
 [data-theme="light"] .field input:focus {
-  background: #e2d9c2;
+  background-color: #e2d9c2;
+  box-shadow: inset 0 0 0 9999px #e2d9c2, 0 0 0 3px rgba(110, 167, 201, 0.18);
 }
 .field input::placeholder {
   color: var(--ink-muted);

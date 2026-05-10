@@ -22,8 +22,8 @@
   .star { animation: none; opacity: var(--peak, 0.4); }
 }
 
-/* Desktop: horizontal mask that mirrors the photo-fade gradient, so stars
-   in the fade band attenuate at the same alpha as the fade overlay. */
+/* Desktop: stars in left content + fade band; opacity in fade band matches
+   the photo-fade alpha pattern. */
 @media (min-width: 961px) {
   .starfield {
     mask-image: linear-gradient(90deg,
@@ -63,11 +63,8 @@
   }
 }
 
-/* Mobile: vertical mask matching the photo-fade alpha pattern.
-   Stars are full opacity in the header solid (0–56px) and content row,
-   gradient through the top fade band (56–106px) and bottom fade band,
-   and hidden in the image area between them. Row-2 size is approximated
-   per page via :has(). */
+/* Mobile: stars span header + fade bands + content area; opacity in fade
+   bands matches the photo-fade alpha pattern. */
 @media (max-width: 960px) {
   .app:has(.login) .starfield {
     mask-image: linear-gradient(180deg,
