@@ -3,7 +3,7 @@
   top: 0;
   left: 0;
   height: 100dvh;
-  width: 88px;
+  width: 100px;
   background: transparent;
   border-right: 0;
   display: flex;
@@ -87,7 +87,76 @@
   padding: 0 0 4px;
 }
 
-/* ----- Theme slider toggle ----- */
+/* ----- Sign out button ----- */
+.signout-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 56px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  text-align: left;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 240ms ease, color 240ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.signout-btn svg {
+  width: 100px;
+  flex-shrink: 0;
+  padding: 0 38px;
+  box-sizing: border-box;
+}
+
+.signout-btn .signout-lbl {
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transform: translateX(-8px);
+  transition: opacity 280ms ease 60ms, max-width 360ms cubic-bezier(.2,.7,.2,1), transform 280ms ease 60ms;
+}
+
+.navbar.is-open .signout-btn .signout-lbl {
+  opacity: 1;
+  max-width: 240px;
+  transform: translateX(0);
+}
+
+.signout-btn:hover {
+  color: var(--accent);
+  background: rgba(110, 167, 201, 0.08);
+}
+
+@media (max-width: 960px) {
+  .signout-btn {
+    width: auto;
+    flex: 1;
+    height: 56px;
+    justify-content: flex-start;
+    gap: 0;
+    font-size: 14px;
+  }
+  .signout-btn svg {
+    width: 64px;
+    padding: 0 21px;
+  }
+  .signout-btn .signout-lbl {
+    opacity: 1;
+    max-width: none;
+    transform: none;
+  }
+}
+
+/* ----- Theme slider toggle (in navbar footer) ----- */
 .theme-switch {
   display: flex;
   align-items: center;
@@ -106,6 +175,8 @@
   .theme-switch {
     width: auto;
     height: auto;
+    padding: 0;
+    flex-shrink: 0;
   }
 }
 
@@ -117,7 +188,6 @@
   background: rgba(236, 235, 226, 0.10);
   border: 1px solid rgba(236, 235, 226, 0.22);
   flex-shrink: 0;
-  transition: none;
 }
 
 .theme-switch:hover .theme-switch-track {
@@ -145,7 +215,7 @@
   color: var(--bg-deep);
   display: grid;
   place-items: center;
-  transition: left 380ms cubic-bezier(.4, 0, .2, 1);
+  transition: left 380ms cubic-bezier(.4, 0, .2, 1), background 240ms ease;
 }
 
 [data-theme="dark"] .theme-switch-thumb {
@@ -176,7 +246,7 @@
 }
 
 .nav-btn .ico {
-  width: 88px;
+  width: 100px;
   height: 56px;
   display: grid;
   place-items: center;
@@ -220,36 +290,42 @@
 }
 .nav-btn:active .ico svg { transform: scale(0.94); }
 
+.nav-btn[aria-label="Our Story"] .ico,
+.nav-btn[aria-label="RSVP"] .ico {
+  transform: translateY(1px);
+}
+.signout-btn svg {
+  transform: translateY(1px);
+}
+
 @media (max-width: 960px) {
   .navbar {
     width: 100%;
     height: auto;
     max-height: none;
     display: grid;
-    grid-template-rows: 44px 0fr;
-    overflow: hidden;
+    grid-template-rows: 56px minmax(0, 0fr);
+    overflow: visible;
     padding: 0;
     background: transparent;
-    transition: grid-template-rows 360ms cubic-bezier(.2,.7,.2,1), box-shadow 360ms ease;
+    transition: grid-template-rows 360ms cubic-bezier(.2,.7,.2,1);
   }
   .navbar::before {
     content: '';
     position: absolute;
     inset: 0;
-    background-color: var(--bg-deep);
+    background-color: var(--bg);
     opacity: 0;
     pointer-events: none;
     z-index: -1;
-    transition: opacity 0ms 360ms;
+    transition: opacity 360ms cubic-bezier(.2,.7,.2,1);
   }
   .navbar.is-open::before {
     opacity: 1;
-    transition: opacity 0ms 0ms;
   }
   .navbar.is-open {
     width: 100%;
-    grid-template-rows: 44px 1fr;
-    box-shadow: 0 18px 60px -16px rgba(0, 0, 0, 0.55);
+    grid-template-rows: 56px minmax(0, 1fr);
   }
 
 
@@ -262,10 +338,10 @@
 
   .navbar-top {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     width: 100%;
-    height: 44px;
-    padding: 0 18px 4px;
+    height: 56px;
+    padding: 0 18px;
     flex-shrink: 0;
   }
 
@@ -290,6 +366,7 @@
     cursor: pointer;
     position: relative;
     color: var(--ink);
+    transform: translateY(1px);
   }
   .hamburger span {
     position: absolute;
@@ -309,16 +386,23 @@
 
   .nav {
     width: 100%;
-    padding: 16px 20px 0;
+    padding: 0 20px;
     margin-top: 0;
-    gap: 4px;
+    gap: 0;
   }
 
   .footer {
     width: 100%;
-    padding: 16px 20px 28px;
+    padding: 16px 20px 14px;
     margin-top: auto;
+    flex-direction: row;
     align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+  .navbar.is-minimal .footer {
+    justify-content: center;
+    padding-top: 0;
   }
 
   .nav-btn {
@@ -335,5 +419,10 @@
   }
   .navbar.is-open .nav-btn .lbl {
     max-width: 320px;
+  }
+  .nav-btn:hover,
+  .nav-btn.is-active,
+  .signout-btn:hover {
+    color: var(--ink);
   }
 }

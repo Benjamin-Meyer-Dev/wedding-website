@@ -43,8 +43,25 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   transition: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 button { font-family: inherit; cursor: pointer; }
 
+/* Allow text selection only inside form fields so users can still edit */
+input, textarea, [contenteditable] {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
 /* Selection */
 ::selection { background: var(--accent); color: var(--bg); }
+
+/* Shared eyebrow rule decoration */
+.rule {
+  display: inline-block;
+  height: 1px;
+  width: 56px;
+  background: var(--rule);
+}
+.rule.short { width: 28px; }

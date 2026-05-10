@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(del *)",
+      "Bash(npm run *)",
+      "Bash(git stash *)",
+      "Bash(sed -n '290,420p')",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(curl *)",
+      "Bash(taskkill /F /FI \"WINDOWTITLE eq npm*\")",
+      "Bash(tasklist)",
+      "Bash(findstr node *)"
     ]
   }
 }

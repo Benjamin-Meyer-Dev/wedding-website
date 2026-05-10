@@ -1,4 +1,4 @@
-.hero {
+.login {
   position: relative;
   min-height: 100dvh;
   display: grid;
@@ -7,14 +7,14 @@
 }
 
 /* ---------------- Photo side ---------------- */
-.hero-photo {
+.login-photo {
   position: relative;
   grid-column: 2;
   grid-row: 1;
   height: 100dvh;
 }
 
-.hero-photo-img {
+.login-photo-img {
   position: absolute;
   inset: 0;
   background-color: #1a2735;
@@ -24,7 +24,7 @@
   filter: saturate(1.05);
 }
 
-.hero-photo-fade {
+.login-photo-fade {
   position: absolute;
   inset: 0;
   background:
@@ -47,7 +47,7 @@
   pointer-events: none;
 }
 
-[data-theme="light"] .hero-photo-fade {
+[data-theme="light"] .login-photo-fade {
   background:
     linear-gradient(90deg,
       var(--bg) 0%,
@@ -68,129 +68,267 @@
 }
 
 /* ---------------- Content side ---------------- */
-.hero-content {
+.login-content {
   position: relative;
   z-index: 5;
   grid-column: 1 / 2;
   grid-row: 1;
   align-self: center;
   justify-self: start;
-  padding: 64px 48px 64px 15px;
+  padding: 64px 48px 64px 115px;
   width: 100%;
-  max-width: 720px;
+  max-width: 560px;
   animation: rise 900ms cubic-bezier(.2,.7,.2,1) both;
 }
 
-@keyframes rise {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-family: var(--font-ui);
-  font-weight: 500;
-  letter-spacing: 0.32em;
-  font-size: 14px;
-  color: var(--ink);
-  margin: 0 0 28px;
-  text-transform: uppercase;
-}
-
-
-.names {
+.login-title {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(56px, 9.4vw, 132px);
+  font-size: clamp(44px, 6.4vw, 92px);
   line-height: 0.96;
   letter-spacing: -0.012em;
   margin: 0;
   color: var(--ink);
   display: flex;
   flex-direction: column;
-  gap: clamp(2px, 0.4vw, 8px);
+  gap: clamp(2px, 0.4vw, 6px);
 }
 
-.names .name {
-  font-style: normal;
+.login-title .name {
   font-feature-settings: "ss01" on, "lnum" on;
 }
 
-.names .amp {
+.login-title .amp {
   font-family: var(--font-amp);
   font-style: italic;
   font-weight: 500;
   color: var(--accent);
   font-size: 0.78em;
   line-height: 1;
-  margin-left: clamp(18px, 3vw, 42px);
-  /* a touch of warmth — the screenshot's ampersand has a glow */
+  margin-left: clamp(14px, 2.4vw, 32px);
   text-shadow: 0 0 36px rgba(110, 167, 201, 0.25);
 }
 
-.counting {
+.login-sub {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: clamp(32px, 5vw, 56px) 0 18px;
+  gap: 14px;
+  margin: clamp(20px, 3vw, 36px) 0 28px;
   font-family: var(--font-ui);
   font-weight: 500;
   letter-spacing: 0.32em;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--ink);
   text-transform: uppercase;
 }
 
-.countdown {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+[data-theme="dark"] .login-sub { color: #fff; }
+
+
+/* ---------------- Form ---------------- */
+.login-form {
   display: flex;
-  align-items: baseline;
-  gap: clamp(18px, 3vw, 36px);
+  flex-direction: column;
+  gap: 22px;
+  max-width: 420px;
 }
 
-.countdown li {
+.field {
+  position: relative;
   display: flex;
-  align-items: baseline;
-  gap: 6px;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.countdown .num {
+.field-lbl {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+[data-theme="dark"] .field-lbl { color: #fff; }
+
+.field-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field input {
+  background: #18202c;
+  border: 1px solid var(--rule-soft);
+  border-radius: 10px;
+  color: var(--ink);
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: clamp(38px, 4.4vw, 60px);
-  line-height: 1;
-  font-variant-numeric: lining-nums tabular-nums;
-  color: var(--ink);
+  font-size: 19px;
+  line-height: 1.3;
+  letter-spacing: 0.005em;
+  padding: 14px 18px;
+  outline: none;
+  width: 100%;
+  text-shadow: 0 0 0 transparent;
+  transition: border-color 200ms ease, background 200ms ease, box-shadow 200ms ease, color 110ms ease, text-shadow 110ms ease;
 }
 
-.countdown .lbl {
+.field input.is-toggling {
+  color: transparent;
+  text-shadow: 0 0 5px var(--ink);
+}
+
+[data-theme="light"] .field input {
+  background: #e6decc;
+}
+
+.field input:hover {
+  background: #1d2734;
+  border-color: var(--rule);
+}
+[data-theme="light"] .field input:hover {
+  background: #ddd3bd;
+}
+
+.field input:focus {
+  border-color: var(--accent);
+  background: #1d2a3a;
+  box-shadow: 0 0 0 3px rgba(110, 167, 201, 0.18);
+}
+[data-theme="light"] .field input:focus {
+  background: #e2d9c2;
+}
+.field input::placeholder {
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+
+.field input[type="password"] {
+  font-family: Verdana, system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.18em;
+}
+
+/* password visibility toggle */
+.field-input-wrap input { padding-right: 50px; }
+
+.field-toggle {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: color 200ms ease, background 200ms ease, opacity 220ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.field-toggle.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.field-toggle:hover {
+  color: var(--accent);
+  background: rgba(110, 167, 201, 0.10);
+}
+.field-toggle:active { transform: translateY(-50%) scale(0.94); }
+
+.field-toggle svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  transition: opacity 240ms ease, transform 320ms cubic-bezier(.4, 0, .2, 1);
+  will-change: opacity, transform;
+}
+
+.field-toggle .icon-eye {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1) rotate(0deg);
+}
+.field-toggle .icon-eye-off {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.55) rotate(-18deg);
+}
+
+.field-toggle.is-shown .icon-eye {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.55) rotate(18deg);
+}
+.field-toggle.is-shown .icon-eye-off {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1) rotate(0deg);
+}
+
+.login-error {
+  margin: 0;
   font-family: var(--font-ui);
-  font-style: italic;
-  font-weight: 500;
-  font-size: 12px;
-  letter-spacing: 0.2em;
-  color: var(--ink);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--accent);
   text-transform: uppercase;
+}
+
+.login-btn {
+  margin-top: 8px;
+  align-self: flex-start;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--bg-deep);
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  padding: 16px 38px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 240ms ease, border-color 240ms ease, transform 200ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-theme="dark"] .login-btn {
+  color: #fff;
+  background: #4a7e9f;
+  border-color: #4a7e9f;
+}
+
+.login-btn:hover {
+  background: #88baD4;
+  border-color: #88baD4;
+}
+
+[data-theme="dark"] .login-btn:hover {
+  background: #5891b5;
+  border-color: #5891b5;
+}
+.login-btn:active { transform: scale(0.98); }
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 /* ---------------- Responsive ---------------- */
 @media (max-width: 960px) {
-  .hero {
+  .login {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr auto;
   }
-  .hero::before {
+  .login::before {
     content: '';
     grid-row: 2;
     grid-column: 1;
     background: var(--bg);
     z-index: 0;
   }
-  .hero-photo {
+  .login-photo {
     grid-column: 1;
     grid-row: 1;
     height: auto;
@@ -207,7 +345,8 @@
       black 46px,
       black 100%);
   }
-  .hero-photo-fade {
+  .login-photo-img { background-size: auto 115dvh; background-position: center -240px; }
+  .login-photo-fade {
     background:
       linear-gradient(180deg,
         rgba(10,19,32,1) 0,
@@ -234,7 +373,7 @@
         rgba(10,19,32,0.97) calc(100% - 5px),
         rgba(10,19,32,1) 100%);
   }
-  [data-theme="light"] .hero-photo-fade {
+  [data-theme="light"] .login-photo-fade {
     background:
       linear-gradient(180deg,
         rgba(241,232,212,1) 0,
@@ -261,48 +400,60 @@
         rgba(241,232,212,0.97) calc(100% - 5px),
         rgba(241,232,212,1) 100%);
   }
-  .hero-photo-img {
-    background-size: auto 115dvh;
-    background-position: center -240px;
-  }
-  .hero-content {
+  .login-content {
     grid-column: 1; grid-row: 2;
     align-self: stretch; justify-self: stretch;
-    padding: 28px 24px 32px;
+    padding: 22px 20px 28px;
     max-width: 100%;
     background: transparent;
   }
-  .names {
+  .login-title {
     flex-direction: row;
     align-items: baseline;
     flex-wrap: wrap;
-    gap: clamp(8px, 2vw, 18px);
-    font-size: clamp(26px, 6.5vw, 44px);
+    gap: clamp(6px, 1.6vw, 14px);
+    font-size: clamp(22px, 5.6vw, 36px);
   }
-  .names .amp {
-    margin-left: 0;
-  }
-  .eyebrow {
-    font-size: 12px;
-    letter-spacing: 0.28em;
-    margin: 0 0 18px;
-  }
-  .counting {
-    font-size: 11px;
-    margin: 18px 0 12px;
-  }
-  .countdown {
-    gap: 18px;
-  }
-  .countdown .num {
-    font-size: clamp(28px, 6vw, 42px);
-  }
-  .countdown .lbl {
-    font-size: 10px;
-  }
-}
+  .login-title .amp { margin-left: 0; }
 
-@media (max-width: 520px) {
-  .countdown { gap: 16px; flex-wrap: wrap; }
-  .eyebrow { font-size: 10px; letter-spacing: 0.28em; }
+  .login-form {
+    gap: 14px;
+  }
+
+  .field { gap: 6px; }
+  .field-lbl {
+    font-size: 11px;
+    letter-spacing: 0.28em;
+  }
+  .field input {
+    font-size: 16px;
+    padding: 11px 14px;
+    border-radius: 8px;
+  }
+  .field-input-wrap input { padding-right: 44px; }
+
+  .field-toggle {
+    width: 34px;
+    height: 34px;
+    right: 4px;
+  }
+  .field-toggle svg { width: 18px; height: 18px; }
+
+  .login-sub {
+    margin: 14px 0 18px;
+    font-size: 10px;
+    letter-spacing: 0.26em;
+    gap: 10px;
+  }
+
+  .login-error { font-size: 10px; }
+
+  .login-btn {
+    align-self: stretch;
+    text-align: center;
+    padding: 13px 22px;
+    font-size: 12px;
+    letter-spacing: 0.30em;
+    margin-top: 4px;
+  }
 }

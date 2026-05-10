@@ -33,8 +33,9 @@ export default function Home() {
 
       <div className="hero-content">
         <p className="eyebrow">
-          <span className="rule" />
+          <span className="rule short" />
           <span>SATURDAY · MAY 29 · 2027</span>
+          <span className="rule short" />
         </p>
 
         <h1 className="names">

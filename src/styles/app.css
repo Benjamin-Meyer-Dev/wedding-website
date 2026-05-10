@@ -6,10 +6,10 @@
 .main {
   position: relative;
   min-height: 100dvh;
-  margin-left: 88px;
+  margin-left: 100px;
   isolation: isolate;
 }
 
 @media (max-width: 960px) {
-  .main { margin-left: 0; padding-top: 0; }
+  .main { margin-left: 0; padding-top: 0; isolation: auto; }
 }
