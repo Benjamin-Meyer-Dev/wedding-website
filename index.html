@@ -11,10 +11,19 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap"
       rel="stylesheet"
     >
-    <script type="module" crossorigin src="/wedding-website/assets/index-DLzv0qCE.js"></script>
-    <link rel="stylesheet" crossorigin href="/wedding-website/assets/index-BKEU5UGR.css">
+    <script type="module" crossorigin src="/wedding-website/assets/index-BhhHje-o.js"></script>
+    <link rel="stylesheet" crossorigin href="/wedding-website/assets/index-bU_sD2c0.css">
   </head>
   <body>
+    <script>
+      // Apply saved theme synchronously so there's no flash before React mounts
+      try {
+        var saved = localStorage.getItem('eb-theme');
+        document.documentElement.dataset.theme = saved === 'dark' ? 'dark' : 'light';
+      } catch (e) {
+        document.documentElement.dataset.theme = 'light';
+      }
+    </script>
     <div id="root"></div>
   </body>
 </html>
