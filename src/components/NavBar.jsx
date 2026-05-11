@@ -13,13 +13,9 @@ const Icon = ({ children, label }) => (
   </button>
 )
 
-export default function NavBar({ onSignOut, minimal, theme, onToggleTheme }) {
+export default function NavBar({ onSignOut }) {
   const [open, setOpen] = useState(false)
   const closeTimer = useRef(null)
-
-  useEffect(() => {
-    setOpen(false)
-  }, [minimal])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -42,7 +38,7 @@ export default function NavBar({ onSignOut, minimal, theme, onToggleTheme }) {
     window.matchMedia('(min-width: 961px)').matches
 
   const handleEnter = () => {
-    if (minimal || !isHoverDevice()) return
+    if (!isHoverDevice()) return
     cancelClose()
     setOpen(true)
   }
@@ -57,7 +53,7 @@ export default function NavBar({ onSignOut, minimal, theme, onToggleTheme }) {
 
   return (
     <aside
-      className={`navbar${open ? ' is-open' : ''}${minimal ? ' is-minimal' : ''}`}
+      className={`navbar${open ? ' is-open' : ''}`}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
       onFocus={handleEnter}
@@ -81,7 +77,6 @@ export default function NavBar({ onSignOut, minimal, theme, onToggleTheme }) {
       </div>
 
       <div className="menu-panel">
-        {!minimal && (
         <nav className="nav">
         <Icon label="Home">
           <path d="M3 11.5 12 4l9 7.5" />
@@ -118,10 +113,9 @@ export default function NavBar({ onSignOut, minimal, theme, onToggleTheme }) {
           <path d="m3.5 6.5 8.5 6.5L20.5 6.5" />
         </Icon>
       </nav>
-      )}
 
       <div className="footer">
-        {!minimal && onSignOut && (
+        {onSignOut && (
           <button
             type="button"
             className="signout-btn"
@@ -138,33 +132,6 @@ export default function NavBar({ onSignOut, minimal, theme, onToggleTheme }) {
           </button>
         )}
 
-        {onToggleTheme && (
-          <button
-            type="button"
-            className="theme-switch"
-            role="switch"
-            aria-checked={theme === 'dark'}
-            aria-label="Toggle theme"
-            onClick={onToggleTheme}
-          >
-            <span className="theme-switch-track">
-              <span className="theme-switch-thumb">
-                {theme === 'dark' ? (
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
-                       strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />
-                  </svg>
-                ) : (
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
-                       strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="4" />
-                    <path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8" />
-                  </svg>
-                )}
-              </span>
-            </span>
-          </button>
-        )}
       </div>
       </div>
     </aside>

@@ -6,8 +6,6 @@ const STAR_COUNT = 75
 export default function LoadingScreen({ onDone }) {
   const [phase, setPhase] = useState(0)
 
-  // Stars distributed across the viewport, each with a target offset from
-  // center so they burst outward from the monogram.
   const stars = useMemo(
     () =>
       Array.from({ length: STAR_COUNT }, () => ({
@@ -20,9 +18,9 @@ export default function LoadingScreen({ onDone }) {
   )
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 1050) // burst stars after & blooms
-    const t2 = setTimeout(() => setPhase(2), 3000) // begin fade out
-    const t3 = setTimeout(() => onDone && onDone(), 3550) // unmount
+    const t1 = setTimeout(() => setPhase(1), 1600) // stars drift
+    const t2 = setTimeout(() => setPhase(2), 4400) // begin fade out
+    const t3 = setTimeout(() => onDone && onDone(), 5100) // unmount after fade
     return () => {
       clearTimeout(t1)
       clearTimeout(t2)
@@ -32,11 +30,6 @@ export default function LoadingScreen({ onDone }) {
 
   return (
     <div className={`loading-screen phase-${phase}`} aria-hidden="true">
-      <div className="loading-rings">
-        <span className="loading-ring" />
-        <span className="loading-ring loading-ring-soft" style={{ animationDelay: '260ms' }} />
-      </div>
-
       <div className="loading-stars">
         {stars.map((s, i) => (
           <span
@@ -54,9 +47,13 @@ export default function LoadingScreen({ onDone }) {
       </div>
 
       <div className="loading-monogram">
-        <span className="lm-letter lm-e">E</span>
-        <span className="lm-amp">&amp;</span>
-        <span className="lm-letter lm-b">B</span>
+        <span className="lm-rule lm-rule-l" />
+        <div className="lm-letters">
+          <span className="lm-letter lm-e">E</span>
+          <span className="lm-amp">&amp;</span>
+          <span className="lm-letter lm-b">B</span>
+        </div>
+        <span className="lm-rule lm-rule-r" />
       </div>
     </div>
   )

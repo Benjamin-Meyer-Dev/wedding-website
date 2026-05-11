@@ -1,33 +1,20 @@
 /* ---------- Design tokens ---------- */
 :root {
-  /* Palette — deep navy night, ivory text, blue ampersand accent */
-  --bg: #0a1320;
-  --bg-deep: #060d18;
-  --ink: #ecebe2;
-  --ink-soft: #b9bdc4;
-  --ink-muted: #6a737f;
-  --accent: #6ea7c9;        /* the dusty blue from the ampersand */
-  --rule: rgba(236, 235, 226, 0.35);
-  --rule-soft: rgba(236, 235, 226, 0.15);
-  --star: rgba(110, 167, 201, 0.95);
-
-  /* Type — single typeface across the whole site */
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-amp: 'Playfair Display', Georgia, serif;
-  --font-ui: 'Playfair Display', Georgia, serif;
-}
-
-/* Light theme override */
-[data-theme="light"] {
-  --bg: #f1e8d4;
-  --bg-deep: #e6dcc1;
+  /* Palette — warm cream background, deep ink text, dusty blue accent */
+  --bg: #fbf7ec;
+  --bg-deep: #f1eadb;
   --ink: #1a1f2b;
   --ink-soft: #4a5161;
   --ink-muted: #8b8579;
   --accent: #3a6f95;
   --rule: rgba(26, 31, 43, 0.4);
   --rule-soft: rgba(26, 31, 43, 0.18);
-  --star: rgba(110, 167, 201, 0.95);
+  --star: rgba(58, 120, 175, 1);
+
+  /* Type — single typeface across the whole site */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-amp: 'Playfair Display', Georgia, serif;
+  --font-ui: 'Playfair Display', Georgia, serif;
 }
 
 /* ---------- Reset ---------- */
@@ -66,8 +53,10 @@ input, textarea, [contenteditable] {
 }
 .rule.short { width: 28px; }
 
-/* Page transition: each top-level page section fades in on mount */
-@keyframes page-enter {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+/* Page transition: slide-up entrance applied to grid children (photo +
+   content) so the parent page wrapper stays a non-stacking-context. Lets the
+   starfield paint between the page bg and the content layer. */
+@keyframes page-slide {
+  from { transform: translateY(14px); }
+  to   { transform: translateY(0); }
 }

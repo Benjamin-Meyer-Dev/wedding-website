@@ -4,7 +4,8 @@
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   overflow: hidden;
-  animation: page-enter 320ms ease-out both;
+  /* No animation on .hero itself — the entrance is applied to the children
+     below so .hero stays a non-stacking-context, matching the login page. */
 }
 
 /* ---------------- Photo side ---------------- */
@@ -13,6 +14,7 @@
   grid-column: 2;
   grid-row: 1;
   height: 100dvh;
+  animation: page-slide 540ms cubic-bezier(.22, .61, .36, 1);
 }
 
 .hero-photo-img {
@@ -32,40 +34,20 @@
     linear-gradient(90deg,
       var(--bg) 0%,
       var(--bg) 2%,
-      rgba(10, 19, 32, 0.99) 4%,
-      rgba(10, 19, 32, 0.97) 6%,
-      rgba(10, 19, 32, 0.93) 8%,
-      rgba(10, 19, 32, 0.87) 10%,
-      rgba(10, 19, 32, 0.79) 12%,
-      rgba(10, 19, 32, 0.7) 14%,
-      rgba(10, 19, 32, 0.6) 16%,
-      rgba(10, 19, 32, 0.49) 18%,
-      rgba(10, 19, 32, 0.38) 20%,
-      rgba(10, 19, 32, 0.27) 22%,
-      rgba(10, 19, 32, 0.17) 24%,
-      rgba(10, 19, 32, 0.08) 25%,
-      rgba(10, 19, 32, 0) 26%);
+      rgba(251, 247, 236, 0.99) 4%,
+      rgba(251, 247, 236, 0.97) 6%,
+      rgba(251, 247, 236, 0.93) 8%,
+      rgba(251, 247, 236, 0.87) 10%,
+      rgba(251, 247, 236, 0.79) 12%,
+      rgba(251, 247, 236, 0.7) 14%,
+      rgba(251, 247, 236, 0.6) 16%,
+      rgba(251, 247, 236, 0.49) 18%,
+      rgba(251, 247, 236, 0.38) 20%,
+      rgba(251, 247, 236, 0.27) 22%,
+      rgba(251, 247, 236, 0.17) 24%,
+      rgba(251, 247, 236, 0.08) 25%,
+      rgba(251, 247, 236, 0) 26%);
   pointer-events: none;
-}
-
-[data-theme="light"] .hero-photo-fade {
-  background:
-    linear-gradient(90deg,
-      var(--bg) 0%,
-      var(--bg) 2%,
-      rgba(241, 232, 212, 0.99) 4%,
-      rgba(241, 232, 212, 0.97) 6%,
-      rgba(241, 232, 212, 0.93) 8%,
-      rgba(241, 232, 212, 0.87) 10%,
-      rgba(241, 232, 212, 0.79) 12%,
-      rgba(241, 232, 212, 0.7) 14%,
-      rgba(241, 232, 212, 0.6) 16%,
-      rgba(241, 232, 212, 0.49) 18%,
-      rgba(241, 232, 212, 0.38) 20%,
-      rgba(241, 232, 212, 0.27) 22%,
-      rgba(241, 232, 212, 0.17) 24%,
-      rgba(241, 232, 212, 0.08) 25%,
-      rgba(241, 232, 212, 0) 26%);
 }
 
 /* ---------------- Content side ---------------- */
@@ -79,12 +61,7 @@
   padding: 64px 48px 64px 15px;
   width: 100%;
   max-width: 720px;
-  animation: rise 900ms cubic-bezier(.2,.7,.2,1) both;
-}
-
-@keyframes rise {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
+  animation: page-slide 540ms cubic-bezier(.22, .61, .36, 1);
 }
 
 .eyebrow {
@@ -211,56 +188,29 @@
   .hero-photo-fade {
     background:
       linear-gradient(180deg,
-        rgba(10,19,32,1) 0,
-        rgba(10,19,32,1) 56px,
-        rgba(10,19,32,0.97) 61px,
-        rgba(10,19,32,0.92) 66px,
-        rgba(10,19,32,0.82) 71px,
-        rgba(10,19,32,0.7) 76px,
-        rgba(10,19,32,0.55) 81px,
-        rgba(10,19,32,0.4) 86px,
-        rgba(10,19,32,0.25) 91px,
-        rgba(10,19,32,0.13) 96px,
-        rgba(10,19,32,0.04) 101px,
-        rgba(10,19,32,0) 106px,
-        rgba(10,19,32,0) calc(100% - 50px),
-        rgba(10,19,32,0.04) calc(100% - 45px),
-        rgba(10,19,32,0.13) calc(100% - 40px),
-        rgba(10,19,32,0.25) calc(100% - 35px),
-        rgba(10,19,32,0.4) calc(100% - 30px),
-        rgba(10,19,32,0.55) calc(100% - 25px),
-        rgba(10,19,32,0.7) calc(100% - 20px),
-        rgba(10,19,32,0.82) calc(100% - 15px),
-        rgba(10,19,32,0.92) calc(100% - 10px),
-        rgba(10,19,32,0.97) calc(100% - 5px),
-        rgba(10,19,32,1) 100%);
-  }
-  [data-theme="light"] .hero-photo-fade {
-    background:
-      linear-gradient(180deg,
-        rgba(241,232,212,1) 0,
-        rgba(241,232,212,1) 56px,
-        rgba(241,232,212,0.97) 61px,
-        rgba(241,232,212,0.92) 66px,
-        rgba(241,232,212,0.82) 71px,
-        rgba(241,232,212,0.7) 76px,
-        rgba(241,232,212,0.55) 81px,
-        rgba(241,232,212,0.4) 86px,
-        rgba(241,232,212,0.25) 91px,
-        rgba(241,232,212,0.13) 96px,
-        rgba(241,232,212,0.04) 101px,
-        rgba(241,232,212,0) 106px,
-        rgba(241,232,212,0) calc(100% - 50px),
-        rgba(241,232,212,0.04) calc(100% - 45px),
-        rgba(241,232,212,0.13) calc(100% - 40px),
-        rgba(241,232,212,0.25) calc(100% - 35px),
-        rgba(241,232,212,0.4) calc(100% - 30px),
-        rgba(241,232,212,0.55) calc(100% - 25px),
-        rgba(241,232,212,0.7) calc(100% - 20px),
-        rgba(241,232,212,0.82) calc(100% - 15px),
-        rgba(241,232,212,0.92) calc(100% - 10px),
-        rgba(241,232,212,0.97) calc(100% - 5px),
-        rgba(241,232,212,1) 100%);
+        rgba(251,247,236,1) 0,
+        rgba(251,247,236,1) 56px,
+        rgba(251,247,236,0.97) 61px,
+        rgba(251,247,236,0.92) 66px,
+        rgba(251,247,236,0.82) 71px,
+        rgba(251,247,236,0.7) 76px,
+        rgba(251,247,236,0.55) 81px,
+        rgba(251,247,236,0.4) 86px,
+        rgba(251,247,236,0.25) 91px,
+        rgba(251,247,236,0.13) 96px,
+        rgba(251,247,236,0.04) 101px,
+        rgba(251,247,236,0) 106px,
+        rgba(251,247,236,0) calc(100% - 50px),
+        rgba(251,247,236,0.04) calc(100% - 45px),
+        rgba(251,247,236,0.13) calc(100% - 40px),
+        rgba(251,247,236,0.25) calc(100% - 35px),
+        rgba(251,247,236,0.4) calc(100% - 30px),
+        rgba(251,247,236,0.55) calc(100% - 25px),
+        rgba(251,247,236,0.7) calc(100% - 20px),
+        rgba(251,247,236,0.82) calc(100% - 15px),
+        rgba(251,247,236,0.92) calc(100% - 10px),
+        rgba(251,247,236,0.97) calc(100% - 5px),
+        rgba(251,247,236,1) 100%);
   }
   .hero-photo-img {
     background-size: auto 115dvh;

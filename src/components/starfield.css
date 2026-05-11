@@ -14,7 +14,7 @@
   display: block;
   background: var(--star);
   border-radius: 50%;
-  box-shadow: 0 0 6px var(--star);
+  box-shadow: 0 0 5px var(--star), 0 0 10px rgba(58, 120, 175, 0.55);
   will-change: transform;
 }
 
@@ -61,63 +61,12 @@
       rgba(0,0,0,0.08) 63.46%,
       transparent 63.95%);
   }
+
 }
 
-/* Mobile: stars span header + fade bands + content area; opacity in fade
-   bands matches the photo-fade alpha pattern. */
+/* Mobile hero: stars visible through the photo's transparent top strip, hidden
+   behind the photo body, then revealed again in the content area at the bottom. */
 @media (max-width: 960px) {
-  .app:has(.login) .starfield {
-    mask-image: linear-gradient(180deg,
-      black 0,
-      black 56px,
-      rgba(0,0,0,0.97) 61px,
-      rgba(0,0,0,0.92) 66px,
-      rgba(0,0,0,0.82) 71px,
-      rgba(0,0,0,0.7) 76px,
-      rgba(0,0,0,0.55) 81px,
-      rgba(0,0,0,0.4) 86px,
-      rgba(0,0,0,0.25) 91px,
-      rgba(0,0,0,0.13) 96px,
-      rgba(0,0,0,0.04) 101px,
-      transparent 106px,
-      transparent calc(100% - 370px),
-      rgba(0,0,0,0.04) calc(100% - 365px),
-      rgba(0,0,0,0.13) calc(100% - 360px),
-      rgba(0,0,0,0.25) calc(100% - 355px),
-      rgba(0,0,0,0.4) calc(100% - 350px),
-      rgba(0,0,0,0.55) calc(100% - 345px),
-      rgba(0,0,0,0.7) calc(100% - 340px),
-      rgba(0,0,0,0.82) calc(100% - 335px),
-      rgba(0,0,0,0.92) calc(100% - 330px),
-      rgba(0,0,0,0.97) calc(100% - 325px),
-      black calc(100% - 320px),
-      black 100%);
-    -webkit-mask-image: linear-gradient(180deg,
-      black 0,
-      black 56px,
-      rgba(0,0,0,0.97) 61px,
-      rgba(0,0,0,0.92) 66px,
-      rgba(0,0,0,0.82) 71px,
-      rgba(0,0,0,0.7) 76px,
-      rgba(0,0,0,0.55) 81px,
-      rgba(0,0,0,0.4) 86px,
-      rgba(0,0,0,0.25) 91px,
-      rgba(0,0,0,0.13) 96px,
-      rgba(0,0,0,0.04) 101px,
-      transparent 106px,
-      transparent calc(100% - 370px),
-      rgba(0,0,0,0.04) calc(100% - 365px),
-      rgba(0,0,0,0.13) calc(100% - 360px),
-      rgba(0,0,0,0.25) calc(100% - 355px),
-      rgba(0,0,0,0.4) calc(100% - 350px),
-      rgba(0,0,0,0.55) calc(100% - 345px),
-      rgba(0,0,0,0.7) calc(100% - 340px),
-      rgba(0,0,0,0.82) calc(100% - 335px),
-      rgba(0,0,0,0.92) calc(100% - 330px),
-      rgba(0,0,0,0.97) calc(100% - 325px),
-      black calc(100% - 320px),
-      black 100%);
-  }
   .app:has(.hero) .starfield {
     mask-image: linear-gradient(180deg,
       black 0,
@@ -157,6 +106,39 @@
       rgba(0,0,0,0.13) 96px,
       rgba(0,0,0,0.04) 101px,
       transparent 106px,
+      transparent calc(100% - 280px),
+      rgba(0,0,0,0.04) calc(100% - 275px),
+      rgba(0,0,0,0.13) calc(100% - 270px),
+      rgba(0,0,0,0.25) calc(100% - 265px),
+      rgba(0,0,0,0.4) calc(100% - 260px),
+      rgba(0,0,0,0.55) calc(100% - 255px),
+      rgba(0,0,0,0.7) calc(100% - 250px),
+      rgba(0,0,0,0.82) calc(100% - 245px),
+      rgba(0,0,0,0.92) calc(100% - 240px),
+      rgba(0,0,0,0.97) calc(100% - 235px),
+      black calc(100% - 230px),
+      black 100%);
+  }
+
+  /* Mobile login: photo is full-bleed at top (no header strip, no top fade),
+     so the starfield only reveals stars in the bottom content area. */
+  .app:has(.login) .starfield {
+    mask-image: linear-gradient(180deg,
+      transparent 0,
+      transparent calc(100% - 280px),
+      rgba(0,0,0,0.04) calc(100% - 275px),
+      rgba(0,0,0,0.13) calc(100% - 270px),
+      rgba(0,0,0,0.25) calc(100% - 265px),
+      rgba(0,0,0,0.4) calc(100% - 260px),
+      rgba(0,0,0,0.55) calc(100% - 255px),
+      rgba(0,0,0,0.7) calc(100% - 250px),
+      rgba(0,0,0,0.82) calc(100% - 245px),
+      rgba(0,0,0,0.92) calc(100% - 240px),
+      rgba(0,0,0,0.97) calc(100% - 235px),
+      black calc(100% - 230px),
+      black 100%);
+    -webkit-mask-image: linear-gradient(180deg,
+      transparent 0,
       transparent calc(100% - 280px),
       rgba(0,0,0,0.04) calc(100% - 275px),
       rgba(0,0,0,0.13) calc(100% - 270px),
