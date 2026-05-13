@@ -1,8 +1,8 @@
 /* ---------- Design tokens ---------- */
 :root {
   /* Palette — warm cream background, deep ink text, dusty blue accent */
-  --bg: #fbf7ec;
-  --bg-deep: #f1eadb;
+  --bg: #fefcf7;
+  --bg-deep: #f4efe6;
   --ink: #1a1f2b;
   --ink-soft: #4a5161;
   --ink-muted: #8b8579;

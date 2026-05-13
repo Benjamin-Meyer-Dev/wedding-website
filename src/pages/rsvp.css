@@ -1,0 +1,358 @@
+.rsvp {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 56px 40px;
+  animation: page-slide 540ms cubic-bezier(.22, .61, .36, 1);
+}
+
+@media (min-width: 860px) {
+  .rsvp { align-items: center; }
+}
+
+.rsvp-shell {
+  width: 100%;
+  max-width: 1280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---------------- Header ---------------- */
+.rsvp-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.rsvp .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  font-size: 14px;
+  color: var(--ink);
+  margin: 0 0 20px;
+  text-transform: uppercase;
+}
+
+.rsvp-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(52px, 7.6vw, 96px);
+  line-height: 1;
+  margin: 0 0 16px;
+  color: var(--ink);
+  letter-spacing: -0.012em;
+}
+
+.rsvp-deadline {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* ---------------- Card grid ---------------- */
+.rsvp-list {
+  list-style: none;
+  margin: 0 0 44px;
+  padding: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+
+@media (min-width: 860px) {
+  .rsvp-list.count-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.rsvp-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid var(--rule-soft);
+  border-radius: 22px;
+  padding: 44px 40px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.rsvp-card:hover { border-color: var(--rule); }
+
+.rsvp-card.is-answered {
+  border-color: var(--accent);
+  box-shadow: 0 12px 36px -24px rgba(58, 111, 149, 0.55);
+}
+
+.rsvp-name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(36px, 4vw, 52px);
+  line-height: 1;
+  margin: 0;
+  color: var(--ink);
+}
+
+/* ---------------- Choice pills ---------------- */
+.rsvp-choice {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.rsvp-pill {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 14px 26px;
+  border-radius: 999px;
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease, transform 120ms ease;
+}
+
+.rsvp-pill:hover { border-color: var(--ink); }
+.rsvp-pill:active { transform: scale(0.97); }
+
+.rsvp-pill.is-yes {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+
+.rsvp-pill.is-no {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+/* ---------------- Extras (meals + dietary) ---------------- */
+.rsvp-extras {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: extras-in 320ms cubic-bezier(.22, .61, .36, 1);
+}
+
+@keyframes extras-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.rsvp-meals {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  text-align: center;
+}
+
+.rsvp-field-lbl {
+  font-family: var(--font-ui);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  display: block;
+}
+
+.rsvp-meal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  width: 100%;
+  justify-items: center;
+}
+
+.rsvp-meal-tile {
+  appearance: none;
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid var(--rule-soft);
+  border-radius: 18px;
+  padding: 14px 12px 14px;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 180px;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 120ms ease;
+}
+
+.rsvp-meal-tile:hover {
+  border-color: var(--ink);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.rsvp-meal-tile:active { transform: scale(0.97); }
+
+.rsvp-meal-tile.is-on {
+  border-color: var(--accent);
+  background: rgba(58, 111, 149, 0.1);
+  color: var(--accent);
+}
+
+/* Image slot — designed to hold a real food photo. Until one is supplied,
+   the line illustration sits centered inside the framed area. */
+.rsvp-meal-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  background-color: rgba(255, 255, 255, 0.55);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  transition: background-color 180ms ease;
+}
+
+.rsvp-meal-tile:hover .rsvp-meal-image {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.rsvp-meal-tile.is-on .rsvp-meal-image {
+  background-color: rgba(58, 111, 149, 0.08);
+}
+
+.rsvp-meal-image.has-image {
+  background-color: transparent;
+}
+
+.rsvp-meal-image svg {
+  width: 56%;
+  height: 56%;
+  color: var(--ink-soft);
+}
+
+.rsvp-meal-tile.is-on .rsvp-meal-image svg {
+  color: var(--accent);
+}
+
+.rsvp-meal-lbl {
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* ---------------- Dietary notes ---------------- */
+.rsvp-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.rsvp-field textarea {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--rule-soft);
+  border-radius: 12px;
+  padding: 14px 16px;
+  resize: vertical;
+  min-height: 72px;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+
+.rsvp-field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.75);
+}
+
+/* ---------------- Actions ---------------- */
+.rsvp-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.rsvp-save {
+  appearance: none;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  padding: 18px 48px;
+  border-radius: 999px;
+  transition: background 180ms ease, opacity 180ms ease, transform 120ms ease;
+}
+
+.rsvp-save:hover:not(:disabled) { background: var(--accent); }
+.rsvp-save:active:not(:disabled) { transform: scale(0.98); }
+.rsvp-save:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.rsvp-saved {
+  font-family: var(--font-ui);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.rsvp-error {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: #a23b3b;
+  margin: 0;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 960px) {
+  .rsvp { padding: 48px 18px; }
+  .rsvp-header { margin-bottom: 32px; }
+  .rsvp-card { padding: 32px 22px; }
+  .rsvp-meal-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+  }
+  .rsvp-pill {
+    padding: 12px 20px;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+  }
+}

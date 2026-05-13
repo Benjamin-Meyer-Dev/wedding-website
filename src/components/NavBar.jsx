@@ -1,19 +1,29 @@
 import { useEffect, useRef, useState } from 'react'
 import './navbar.css'
 
-const Icon = ({ children, label }) => (
-  <button className="nav-btn" aria-label={label}>
-    <span className="ico">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
-           strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-        {children}
-      </svg>
-    </span>
-    <span className="lbl">{label}</span>
-  </button>
-)
+const Icon = ({ children, label, page, currentPage, onSelect }) => {
+  const isActive = page && page === currentPage
+  const isNav = Boolean(page && onSelect)
+  return (
+    <button
+      type="button"
+      className={`nav-btn${isActive ? ' is-active' : ''}`}
+      aria-label={label}
+      aria-current={isActive ? 'page' : undefined}
+      onClick={isNav ? () => onSelect(page) : undefined}
+    >
+      <span className="ico">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+             strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+          {children}
+        </svg>
+      </span>
+      <span className="lbl">{label}</span>
+    </button>
+  )
+}
 
-export default function NavBar({ onSignOut }) {
+export default function NavBar({ page, onNavigate, onSignOut }) {
   const [open, setOpen] = useState(false)
   const closeTimer = useRef(null)
 
@@ -78,7 +88,7 @@ export default function NavBar({ onSignOut }) {
 
       <div className="menu-panel">
         <nav className="nav">
-        <Icon label="Home">
+        <Icon label="Home" page="home" currentPage={page} onSelect={onNavigate}>
           <path d="M3 11.5 12 4l9 7.5" />
           <path d="M5 10v10h14V10" />
         </Icon>
@@ -108,7 +118,7 @@ export default function NavBar({ onSignOut }) {
           <path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.6-2.5 1.9-2.5 3.5" />
           <circle cx="12" cy="16.5" r=".6" fill="currentColor" stroke="none" />
         </Icon>
-        <Icon label="RSVP">
+        <Icon label="RSVP" page="rsvp" currentPage={page} onSelect={onNavigate}>
           <rect x="3" y="5.5" width="18" height="13" rx="1.5" />
           <path d="m3.5 6.5 8.5 6.5L20.5 6.5" />
         </Icon>

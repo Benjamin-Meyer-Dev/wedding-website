@@ -5,6 +5,7 @@ const HouseholdContext = createContext(null)
 
 export function HouseholdProvider({ children }) {
   const [household, setHousehold] = useState(null)
+  const [members, setMembers] = useState([])
   const [member, setMember] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -20,12 +21,13 @@ export function HouseholdProvider({ children }) {
       if (!user) {
         if (cancelled) return
         setMember(null)
+        setMembers([])
         setHousehold(null)
         setLoading(false)
         return
       }
 
-      const { data, error: queryError } = await supabase
+      const { data: mine, error: meError } = await supabase
         .from('household_members')
         .select('user_id, first_name, household_id, households ( id, display_name )')
         .eq('user_id', user.id)
@@ -33,17 +35,40 @@ export function HouseholdProvider({ children }) {
 
       if (cancelled) return
 
-      if (queryError) {
-        setError(queryError)
+      if (meError) {
+        setError(meError)
         setMember(null)
+        setMembers([])
         setHousehold(null)
-      } else if (!data) {
+        setLoading(false)
+        return
+      }
+      if (!mine) {
         setError(new Error('User is signed in but has no household membership.'))
         setMember(null)
+        setMembers([])
+        setHousehold(null)
+        setLoading(false)
+        return
+      }
+
+      const { data: roster, error: rosterError } = await supabase
+        .from('household_members')
+        .select('user_id, first_name')
+        .eq('household_id', mine.household_id)
+        .order('first_name', { ascending: true })
+
+      if (cancelled) return
+
+      if (rosterError) {
+        setError(rosterError)
+        setMember(null)
+        setMembers([])
         setHousehold(null)
       } else {
-        setMember({ user_id: data.user_id, first_name: data.first_name })
-        setHousehold(data.households)
+        setMember({ user_id: mine.user_id, first_name: mine.first_name })
+        setMembers(roster ?? [])
+        setHousehold(mine.households)
       }
       setLoading(false)
     }
@@ -53,6 +78,7 @@ export function HouseholdProvider({ children }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') {
         setMember(null)
+        setMembers([])
         setHousehold(null)
         setError(null)
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
@@ -69,7 +95,7 @@ export function HouseholdProvider({ children }) {
   const householdId = household?.id ?? null
 
   return (
-    <HouseholdContext.Provider value={{ household, householdId, member, loading, error }}>
+    <HouseholdContext.Provider value={{ household, householdId, member, members, loading, error }}>
       {children}
     </HouseholdContext.Provider>
   )

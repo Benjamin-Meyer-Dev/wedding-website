@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import NavBar from './components/NavBar.jsx'
 import Home from './pages/Home.jsx'
 import Login from './pages/Login.jsx'
+import Rsvp from './pages/Rsvp.jsx'
 import Starfield from './components/Starfield.jsx'
 import LoadingScreen from './components/LoadingScreen.jsx'
 import { supabase } from './lib/supabase'
@@ -12,6 +13,7 @@ export default function App() {
   const [session, setSession] = useState(null)
   const [authReady, setAuthReady] = useState(false)
   const [introDone, setIntroDone] = useState(false)
+  const [page, setPage] = useState('home')
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -51,10 +53,15 @@ export default function App() {
     <HouseholdProvider>
       <div className="app">
         <Starfield count={150} />
-        <NavBar onSignOut={() => supabase.auth.signOut()} />
+        <NavBar
+          page={page}
+          onNavigate={setPage}
+          onSignOut={() => supabase.auth.signOut()}
+        />
         <div className="scrim" aria-hidden="true" />
         <main className="main">
-          <Home />
+          {page === 'home' && <Home />}
+          {page === 'rsvp' && <Rsvp />}
         </main>
         {intro}
       </div>
