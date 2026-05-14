@@ -10,6 +10,12 @@
   isolation: isolate;
 }
 
+/* On the RSVP page, lift the main above the starfield (z:4) so cards sit
+   over the dots — the cards' backdrop-filter then blurs the stars beneath. */
+.app:has(.rsvp) .main {
+  z-index: 5;
+}
+
 @media (max-width: 960px) {
   .main { margin-left: 0; padding-top: 0; isolation: auto; }
 }

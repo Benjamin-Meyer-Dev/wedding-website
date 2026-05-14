@@ -3,9 +3,6 @@
   top: 0;
   left: 0;
   height: 100dvh;
-  /* Always full width; clip-path hides the right portion when collapsed.
-     clip-path animates on the compositor with no layout reflow — much smoother
-     than animating `width`. */
   width: 320px;
   background: transparent;
   border-right: 0;
@@ -14,21 +11,42 @@
   padding: 24px 0 20px;
   z-index: 10;
   overflow: hidden;
-  clip-path: inset(0 220px 0 0);
-  -webkit-clip-path: inset(0 220px 0 0);
-  transition: clip-path 320ms cubic-bezier(.22, .61, .36, 1),
-              -webkit-clip-path 320ms cubic-bezier(.22, .61, .36, 1),
-              background-color 240ms ease;
-  /* Slides in with the rest of the home page on mount (signin transition).
-     transform is independent of clip-path / background-color transitions so
-     they don't conflict. */
-  animation: page-slide 540ms cubic-bezier(.22, .61, .36, 1);
+  /* The slide is driven entirely by transform — purely compositor work, no
+     paint per frame. The whole panel translates left by 220px when collapsed;
+     the monogram and icons counter-translate by +220px (via --rail-offset)
+     so they stay pinned to the visible 100px rail. */
+  --rail-offset: 220px;
+  --slide-duration: 260ms;
+  --slide-ease: cubic-bezier(.32, .72, .25, 1);
+  transform: translateX(calc(-1 * var(--rail-offset)));
+  transition: transform var(--slide-duration) var(--slide-ease);
+  will-change: transform;
+  /* Top-based entrance keeps `transform` free for the open/close slide. */
+  animation: navbar-slide-in 540ms cubic-bezier(.22, .61, .36, 1);
+}
+
+@keyframes navbar-slide-in {
+  from { top: 14px; }
+  to   { top: 0; }
+}
+
+/* Bg lives on a pseudo-element so it fades via opacity (compositor-friendly). */
+.navbar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--bg-deep);
+  opacity: 0;
+  transition: opacity var(--slide-duration) var(--slide-ease);
+  z-index: -1;
+  pointer-events: none;
 }
 
 .navbar.is-open {
-  clip-path: inset(0 0 0 0);
-  -webkit-clip-path: inset(0 0 0 0);
-  background: var(--bg-deep);
+  --rail-offset: 0px;
+}
+.navbar.is-open::after {
+  opacity: 1;
 }
 
 .navbar-top { display: contents; }
@@ -39,14 +57,15 @@
 .scrim {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0);
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
   pointer-events: none;
-  transition: background 220ms ease;
-  z-index: 5;
+  transition: opacity 220ms ease;
+  z-index: 6;
 }
 
 .navbar.is-open ~ .scrim {
-  background: rgba(0, 0, 0, 0.55);
+  opacity: 1;
 }
 
 .monogram {
@@ -58,6 +77,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Counter-translate so the monogram stays pinned to the 100px rail while
+     the parent navbar slides. */
+  transform: translateX(var(--rail-offset));
+  transition: transform var(--slide-duration) var(--slide-ease);
   /* Anchored to the left 100px rail so it stays visible when the navbar is
      collapsed (clip-path hides everything past 100px). */
   width: 100px;
@@ -188,6 +211,9 @@
   place-items: center;
   flex-shrink: 0;
   perspective: 600px;
+  /* Counter-translate to stay anchored on the rail while the navbar slides. */
+  transform: translateX(var(--rail-offset));
+  transition: transform var(--slide-duration) var(--slide-ease);
 }
 
 .nav-btn .ico svg {
@@ -223,10 +249,11 @@
 
 .nav-btn[aria-label="Our Story"] .ico,
 .nav-btn[aria-label="RSVP"] .ico {
-  transform: translateY(1px);
+  transform: translateX(var(--rail-offset)) translateY(1px);
 }
 .signout-btn svg {
-  transform: translateY(1px);
+  transform: translateX(var(--rail-offset)) translateY(1px);
+  transition: transform var(--slide-duration) var(--slide-ease);
 }
 
 @media (max-width: 960px) {
@@ -239,11 +266,15 @@
     overflow: visible;
     padding: 0;
     background: transparent;
-    /* Mobile is full-width and uses grid-row animation, not clip-path */
-    clip-path: none;
-    -webkit-clip-path: none;
+    /* Mobile is full-width and uses grid-row animation, not the desktop slide.
+       Neutralizing --rail-offset keeps the monogram/icons unaffected. */
+    --rail-offset: 0px;
+    transform: none;
     transition: grid-template-rows 360ms cubic-bezier(.2,.7,.2,1);
+    will-change: auto;
   }
+  /* Mobile uses ::before for its own bg fade — hide the desktop ::after. */
+  .navbar::after { display: none; }
   .navbar::before {
     content: '';
     position: absolute;

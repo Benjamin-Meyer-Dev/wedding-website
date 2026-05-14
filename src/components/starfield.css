@@ -25,6 +25,12 @@
 /* Desktop: stars in left content + fade band; opacity in fade band matches
    the photo-fade alpha pattern. */
 @media (min-width: 961px) {
+  /* Pages without a right-side photo (e.g. RSVP) get full-bleed stars. */
+  .app:has(.rsvp) .starfield {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
   .starfield {
     mask-image: linear-gradient(90deg,
       black 0%,

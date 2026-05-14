@@ -1,62 +1,71 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useHousehold } from '../lib/HouseholdContext.jsx'
+import chickenImg from '../assets/Chicken.jpg'
+import beefImg from '../assets/Beef.jpg'
+import fishImg from '../assets/Fish.jpg'
+import vegetarianImg from '../assets/Vegetarian.jpg'
+import veganImg from '../assets/Vegan.jpg'
 import './rsvp.css'
 
 const RSVP_DEADLINE = 'PLEASE RESPOND BY APRIL 1, 2027'
 
-const IconChicken = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-       strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M8.5 4.5C5.7 4.5 3.6 6.8 3.6 9.6c0 1.4.6 2.6 1.7 3.4.5.4.8.8.8 1.4 0 .7-.4 1.1-1 1.5-.9.6-1.6 1.2-1.6 2.4 0 .9.7 1.5 1.7 1.5 1.4 0 2.8-.8 3.4-2 .3-.7.8-1.1 1.7-1.1 2.9 0 5.2-2.3 5.2-5.2 0-3.7-2.9-7-7-7Z" />
-    <path d="m13 14 5 5M15 14l3-1" />
+const DiamondMark = () => (
+  <svg className="rsvp-deadline-mark" viewBox="0 0 12 12" width="9" height="9"
+       fill="currentColor" aria-hidden="true">
+    <path d="M6 0.5 L7.4 4.6 11.5 6 L7.4 7.4 6 11.5 4.6 7.4 0.5 6 4.6 4.6 Z" />
   </svg>
 )
 
-const IconBeef = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-       strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M5.5 8.5c.6-2.5 3-4 6-4s5.5 1.5 6.5 4 .8 5-.5 7-3.5 3-6.5 3-5.5-1-6.5-3-.5-5 .5-7Z" />
-    <circle cx="10.5" cy="10.5" r="1.4" />
-    <path d="M10.5 11.9V15M13 14l1.5 1" />
+const IconCheck = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor"
+       strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+       aria-hidden="true">
+    <path d="m3 8.5 3 3 7-7" />
   </svg>
 )
 
-const IconFish = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-       strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 12c2-3.5 5.5-5.5 9-5.5 3 0 5.5 1.6 7 4-1.5 2.4-4 4-7 4-3.5 0-7-1.7-9-2.5Z" />
-    <path d="M4 12c-.8-.5-1.5-1.5-1.5-2.5M4 12c-.8.5-1.5 1.5-1.5 2.5" />
-    <circle cx="16" cy="10.5" r=".7" fill="currentColor" />
-    <path d="M11.5 9c.6 1.4.6 4.6 0 6" />
+const IconX = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor"
+       strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+       aria-hidden="true">
+    <path d="M4 4l8 8M12 4l-8 8" />
   </svg>
 )
 
-const IconLeaf = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-       strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M5 19c0-7.7 6.3-14 14-14 0 7.7-6.3 14-14 14Z" />
-    <path d="M5 19c4-4.5 8.5-9 14-14" />
-  </svg>
-)
-
-const IconSprout = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-       strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 20v-7" />
-    <path d="M12 13C9 13 6 11 6 7c4 0 6 2 6 6Z" />
-    <path d="M12 13c3 0 6-2 6-6-4 0-6 2-6 6Z" />
-  </svg>
-)
-
-// Drop real photos into /public/meals/ (e.g. chicken.jpg) and add the
-// path to `image:` below. Until then, the line illustration shows.
+// Drop real photos into /public/meals/ (e.g. chicken.jpg) and set the path
+// in `image:` below. Until then, each tile shows a tinted placeholder.
 const MEAL_OPTIONS = [
-  { value: 'chicken',    label: 'Chicken',    Icon: IconChicken, image: null },
-  { value: 'beef',       label: 'Beef',       Icon: IconBeef,    image: null },
-  { value: 'fish',       label: 'Fish',       Icon: IconFish,    image: null },
-  { value: 'vegetarian', label: 'Vegetarian', Icon: IconLeaf,    image: null },
-  { value: 'vegan',      label: 'Vegan',      Icon: IconSprout,  image: null },
+  {
+    value: 'chicken',
+    label: 'Chicken',
+    desc: 'Pan-roasted breast with thyme jus, charred lemon, and seasonal vegetables.',
+    image: chickenImg,
+  },
+  {
+    value: 'beef',
+    label: 'Beef',
+    desc: 'Slow-braised short rib with red-wine reduction and creamy parmesan polenta.',
+    image: beefImg,
+  },
+  {
+    value: 'fish',
+    label: 'Fish',
+    desc: 'Cedar-planked salmon with citrus, dill butter, and grilled spring greens.',
+    image: fishImg,
+  },
+  {
+    value: 'vegetarian',
+    label: 'Vegetarian',
+    desc: 'Wild mushroom and root-vegetable wellington with herbed beurre blanc.',
+    image: vegetarianImg,
+  },
+  {
+    value: 'vegan',
+    label: 'Vegan',
+    desc: 'Cauliflower steak with chimichurri, beluga lentils, and charred broccolini.',
+    image: veganImg,
+  },
 ]
 
 function emptyDraft() {
@@ -64,7 +73,16 @@ function emptyDraft() {
 }
 
 export default function Rsvp() {
-  const { householdId, members, loading: householdLoading, error: householdError } = useHousehold()
+  const { householdId, members, member, loading: householdLoading, error: householdError } = useHousehold()
+
+  // Show the signed-in user first, then everyone else (the roster from
+  // HouseholdContext is already alphabetical, so filtering preserves that).
+  const orderedMembers = useMemo(() => {
+    if (!member) return members
+    const me = members.find((m) => m.user_id === member.user_id)
+    if (!me) return members
+    return [me, ...members.filter((m) => m.user_id !== member.user_id)]
+  }, [members, member])
   const [drafts, setDrafts] = useState({})
   const [initial, setInitial] = useState({})
   const [rsvpsLoading, setRsvpsLoading] = useState(false)
@@ -129,35 +147,40 @@ export default function Rsvp() {
     })
   }
 
-  const handleSave = async () => {
-    if (!householdId || saving) return
-    setSaving(true)
-    setSaveError(null)
+  // Auto-save: debounce changes by 600ms, then persist silently.
+  useEffect(() => {
+    if (!isDirty || !householdId) return
+    const timer = setTimeout(async () => {
+      setSaving(true)
+      setSaveError(null)
 
-    const rows = members.map((m) => {
-      const d = drafts[m.user_id] ?? emptyDraft()
-      const attending = d.attending ?? null
-      return {
-        user_id: m.user_id,
-        household_id: householdId,
-        attending,
-        meal_choice: attending === 'yes' ? (d.meal_choice ?? null) : null,
-        dietary_notes: attending === 'yes' && d.dietary_notes?.trim() ? d.dietary_notes.trim() : null,
+      const rows = members.map((m) => {
+        const d = drafts[m.user_id] ?? emptyDraft()
+        const attending = d.attending ?? null
+        return {
+          user_id: m.user_id,
+          household_id: householdId,
+          attending,
+          meal_choice: attending === 'yes' ? (d.meal_choice ?? null) : null,
+          dietary_notes: attending === 'yes' && d.dietary_notes?.trim() ? d.dietary_notes.trim() : null,
+        }
+      })
+
+      const { error } = await supabase
+        .from('rsvps')
+        .upsert(rows, { onConflict: 'user_id' })
+
+      setSaving(false)
+      if (error) {
+        setSaveError(error)
+        return
       }
-    })
+      setInitial(drafts)
+      setSavedAt(Date.now())
+    }, 600)
 
-    const { error } = await supabase
-      .from('rsvps')
-      .upsert(rows, { onConflict: 'user_id' })
-
-    setSaving(false)
-    if (error) {
-      setSaveError(error)
-      return
-    }
-    setInitial(drafts)
-    setSavedAt(Date.now())
-  }
+    return () => clearTimeout(timer)
+  }, [drafts, isDirty, householdId, members])
 
   if (householdError) {
     return (
@@ -193,15 +216,24 @@ export default function Rsvp() {
             <span className="rule short" />
           </p>
           <h1 className="rsvp-title">Will you join us?</h1>
-          <p className="rsvp-deadline">{RSVP_DEADLINE}</p>
+          <p className="rsvp-deadline">
+            <DiamondMark />
+            <span>{RSVP_DEADLINE}</span>
+            <DiamondMark />
+          </p>
         </header>
 
-        <ul className={`rsvp-list count-${members.length}`}>
-          {members.map((m) => {
+        <ul className={`rsvp-list count-${orderedMembers.length}`}>
+          {orderedMembers.map((m, idx) => {
             const draft = drafts[m.user_id] ?? emptyDraft()
             const attending = draft.attending
             return (
-              <li key={m.user_id} className={`rsvp-card${attending ? ' is-answered' : ''}`}>
+              <li
+                key={m.user_id}
+                className={`rsvp-card${attending ? ' is-answered' : ''}`}
+                style={{ '--card-index': idx }}
+              >
+                <span className="rsvp-card-frame" aria-hidden="true" />
                 <h2 className="rsvp-name">{m.first_name}</h2>
 
                 <div className="rsvp-choice" role="radiogroup" aria-label={`${m.first_name}'s response`}>
@@ -212,6 +244,7 @@ export default function Rsvp() {
                     className={`rsvp-pill${attending === 'yes' ? ' is-on is-yes' : ''}`}
                     onClick={() => setField(m.user_id, 'attending', attending === 'yes' ? null : 'yes')}
                   >
+                    <span className="rsvp-pill-icon"><IconCheck /></span>
                     Joyfully Accepts
                   </button>
                   <button
@@ -221,16 +254,25 @@ export default function Rsvp() {
                     className={`rsvp-pill${attending === 'no' ? ' is-on is-no' : ''}`}
                     onClick={() => setField(m.user_id, 'attending', attending === 'no' ? null : 'no')}
                   >
+                    <span className="rsvp-pill-icon"><IconX /></span>
                     Regretfully Declines
                   </button>
                 </div>
 
-                {attending === 'yes' && (
-                  <div className="rsvp-extras">
+                <div
+                  className={`rsvp-extras${attending === 'yes' ? ' is-open' : ''}`}
+                  aria-hidden={attending !== 'yes'}
+                  inert={attending !== 'yes' ? '' : undefined}
+                >
+                  <div className="rsvp-extras-inner">
                     <fieldset className="rsvp-meals">
-                      <legend className="rsvp-field-lbl">Choose a meal</legend>
+                      <legend className="rsvp-field-lbl rsvp-menu-label">
+                        <span className="rule short" />
+                        <span>Choose a meal</span>
+                        <span className="rule short" />
+                      </legend>
                       <div className="rsvp-meal-grid" role="radiogroup" aria-label={`${m.first_name}'s meal choice`}>
-                        {MEAL_OPTIONS.map(({ value, label, Icon, image }) => {
+                        {MEAL_OPTIONS.map(({ value, label, desc, image }) => {
                           const selected = draft.meal_choice === value
                           return (
                             <button
@@ -238,16 +280,19 @@ export default function Rsvp() {
                               type="button"
                               role="radio"
                               aria-checked={selected}
-                              className={`rsvp-meal-tile${selected ? ' is-on' : ''}`}
+                              className={`rsvp-meal-tile${selected ? ' is-on' : ''}${image ? ' has-image' : ''}`}
                               onClick={() => setField(m.user_id, 'meal_choice', selected ? null : value)}
                             >
                               <span
-                                className={`rsvp-meal-image${image ? ' has-image' : ''}`}
+                                className="rsvp-meal-image"
                                 style={image ? { backgroundImage: `url(${image})` } : undefined}
-                              >
-                                {!image && <Icon />}
+                                aria-hidden="true"
+                              />
+                              <span className="rsvp-meal-veil" aria-hidden="true" />
+                              <span className="rsvp-meal-text">
+                                <span className="rsvp-meal-lbl">{label}</span>
+                                <span className="rsvp-meal-desc">{desc}</span>
                               </span>
-                              <span className="rsvp-meal-lbl">{label}</span>
                             </button>
                           )
                         })}
@@ -265,23 +310,16 @@ export default function Rsvp() {
                       />
                     </label>
                   </div>
-                )}
+                </div>
               </li>
             )
           })}
         </ul>
 
-        <div className="rsvp-actions">
-          {saveError && <p className="rsvp-error" role="alert">Couldn't save — please try again.</p>}
-          {savedAt && !isDirty && <p className="rsvp-saved">Saved.</p>}
-          <button
-            type="button"
-            className="rsvp-save"
-            onClick={handleSave}
-            disabled={!isDirty || saving}
-          >
-            {saving ? 'Saving…' : 'Save Response'}
-          </button>
+        <div className="rsvp-status" aria-live="polite">
+          {saveError && <p className="rsvp-error" role="alert">Couldn't save — we'll try again.</p>}
+          {!saveError && saving && <p className="rsvp-saved">Saving…</p>}
+          {!saveError && !saving && savedAt && !isDirty && <p className="rsvp-saved">All set — your reply is saved.</p>}
         </div>
       </div>
     </section>
