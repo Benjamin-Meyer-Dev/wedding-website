@@ -15,7 +15,6 @@
   background: var(--star);
   border-radius: 50%;
   box-shadow: 0 0 5px var(--star), 0 0 10px rgba(58, 120, 175, 0.55);
-  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {

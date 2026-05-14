@@ -316,11 +316,11 @@ export default function Rsvp() {
           })}
         </ul>
 
-        <div className="rsvp-status" aria-live="polite">
-          {saveError && <p className="rsvp-error" role="alert">Couldn't save — we'll try again.</p>}
-          {!saveError && saving && <p className="rsvp-saved">Saving…</p>}
-          {!saveError && !saving && savedAt && !isDirty && <p className="rsvp-saved">All set — your reply is saved.</p>}
-        </div>
+        {saveError && (
+          <div className="rsvp-status" aria-live="polite">
+            <p className="rsvp-error" role="alert">Couldn't save — we'll try again.</p>
+          </div>
+        )}
       </div>
     </section>
   )

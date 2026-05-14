@@ -17,7 +17,7 @@
   grid-column: 2;
   grid-row: 1;
   height: 100dvh;
-  animation: page-slide 540ms cubic-bezier(.22, .61, .36, 1);
+  animation: page-slide 320ms cubic-bezier(.4, 0, .2, 1);
 }
 
 .login-photo-img {
@@ -64,7 +64,7 @@
   padding: 64px 48px 64px 115px;
   width: 100%;
   max-width: 560px;
-  animation: page-slide 540ms cubic-bezier(.22, .61, .36, 1);
+  animation: page-slide 320ms cubic-bezier(.4, 0, .2, 1);
 }
 
 .login-title {
@@ -226,7 +226,7 @@
   transform-style: preserve-3d;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  transition: transform 460ms cubic-bezier(.6, .05, .3, 1);
+  transition: transform 260ms cubic-bezier(.4, 0, .2, 1);
   will-change: transform;
 }
 
@@ -267,7 +267,7 @@
   padding: 16px 38px;
   border-radius: 10px;
   cursor: pointer;
-  transition: background 240ms ease, border-color 240ms ease, transform 200ms ease;
+  transition: background 180ms ease, border-color 180ms ease, transform 140ms ease;
   -webkit-tap-highlight-color: transparent;
 }
 

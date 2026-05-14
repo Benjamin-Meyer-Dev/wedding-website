@@ -16,13 +16,13 @@
      the monogram and icons counter-translate by +220px (via --rail-offset)
      so they stay pinned to the visible 100px rail. */
   --rail-offset: 220px;
-  --slide-duration: 260ms;
-  --slide-ease: cubic-bezier(.32, .72, .25, 1);
+  --slide-duration: 200ms;
+  --slide-ease: cubic-bezier(.4, 0, .2, 1);
   transform: translateX(calc(-1 * var(--rail-offset)));
   transition: transform var(--slide-duration) var(--slide-ease);
   will-change: transform;
   /* Top-based entrance keeps `transform` free for the open/close slide. */
-  animation: navbar-slide-in 540ms cubic-bezier(.22, .61, .36, 1);
+  animation: navbar-slide-in 320ms cubic-bezier(.4, 0, .2, 1);
 }
 
 @keyframes navbar-slide-in {
@@ -136,7 +136,7 @@
   letter-spacing: 0.24em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 240ms ease, color 240ms ease;
+  transition: background-color 160ms ease, color 160ms ease;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -150,7 +150,7 @@
 .signout-btn .signout-lbl {
   opacity: 0;
   white-space: nowrap;
-  transition: opacity 200ms ease 40ms;
+  transition: opacity 160ms ease 20ms;
 }
 
 .navbar.is-open .signout-btn .signout-lbl {
@@ -199,7 +199,7 @@
   letter-spacing: 0.24em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 240ms ease;
+  transition: background-color 160ms ease;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -222,7 +222,7 @@
 }
 
 .nav-btn:hover .ico svg {
-  animation: spin-y 600ms cubic-bezier(.4, 0, .2, 1);
+  animation: spin-y 360ms cubic-bezier(.4, 0, .2, 1);
 }
 
 @keyframes spin-y {
@@ -233,7 +233,7 @@
 .nav-btn .lbl {
   opacity: 0;
   white-space: nowrap;
-  transition: opacity 200ms ease 40ms;
+  transition: opacity 160ms ease 20ms;
 }
 
 .navbar.is-open .nav-btn .lbl {
@@ -270,7 +270,7 @@
        Neutralizing --rail-offset keeps the monogram/icons unaffected. */
     --rail-offset: 0px;
     transform: none;
-    transition: grid-template-rows 360ms cubic-bezier(.2,.7,.2,1);
+    transition: grid-template-rows 240ms cubic-bezier(.4, 0, .2, 1);
     will-change: auto;
   }
   /* Mobile uses ::before for its own bg fade — hide the desktop ::after. */
@@ -283,7 +283,7 @@
     opacity: 0;
     pointer-events: none;
     z-index: -1;
-    transition: opacity 360ms cubic-bezier(.2,.7,.2,1);
+    transition: opacity 240ms cubic-bezier(.4, 0, .2, 1);
   }
   .navbar.is-open::before {
     opacity: 1;
@@ -340,7 +340,7 @@
     height: 1.5px;
     background: currentColor;
     border-radius: 2px;
-    transition: transform 280ms cubic-bezier(.4,0,.2,1), opacity 200ms ease, top 280ms cubic-bezier(.4,0,.2,1);
+    transition: transform 200ms cubic-bezier(.4,0,.2,1), opacity 160ms ease, top 200ms cubic-bezier(.4,0,.2,1);
   }
   .hamburger span:nth-child(1) { top: 6px; }
   .hamburger span:nth-child(2) { top: 11px; }

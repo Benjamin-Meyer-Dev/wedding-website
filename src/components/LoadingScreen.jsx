@@ -12,15 +12,15 @@ export default function LoadingScreen({ onDone }) {
         tx: (Math.random() - 0.5) * 105, // -52.5 to 52.5 vw
         ty: (Math.random() - 0.5) * 105, // -52.5 to 52.5 vh
         size: 1 + Math.random() * 2.5,
-        delay: Math.random() * 650,
+        delay: Math.random() * 350,
       })),
     []
   )
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 1600) // stars drift
-    const t2 = setTimeout(() => setPhase(2), 4400) // begin fade out
-    const t3 = setTimeout(() => onDone && onDone(), 5100) // unmount after fade
+    const t1 = setTimeout(() => setPhase(1), 900)  // stars drift
+    const t2 = setTimeout(() => setPhase(2), 2400) // begin fade out
+    const t3 = setTimeout(() => onDone && onDone(), 2850) // unmount after fade
     return () => {
       clearTimeout(t1)
       clearTimeout(t2)

@@ -14,7 +14,7 @@
   grid-column: 2;
   grid-row: 1;
   height: 100dvh;
-  animation: page-slide 540ms cubic-bezier(.22, .61, .36, 1);
+  animation: page-slide 320ms cubic-bezier(.4, 0, .2, 1);
 }
 
 .hero-photo-img {
@@ -61,7 +61,7 @@
   padding: 64px 48px 64px 15px;
   width: 100%;
   max-width: 720px;
-  animation: page-slide 540ms cubic-bezier(.22, .61, .36, 1);
+  animation: page-slide 320ms cubic-bezier(.4, 0, .2, 1);
 }
 
 .eyebrow {
