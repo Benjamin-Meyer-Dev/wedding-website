@@ -188,18 +188,7 @@
   .hero-photo-fade {
     background:
       linear-gradient(180deg,
-        rgba(254,252,247,1) 0,
-        rgba(254,252,247,1) 56px,
-        rgba(254,252,247,0.97) 61px,
-        rgba(254,252,247,0.92) 66px,
-        rgba(254,252,247,0.82) 71px,
-        rgba(254,252,247,0.7) 76px,
-        rgba(254,252,247,0.55) 81px,
-        rgba(254,252,247,0.4) 86px,
-        rgba(254,252,247,0.25) 91px,
-        rgba(254,252,247,0.13) 96px,
-        rgba(254,252,247,0.04) 101px,
-        rgba(254,252,247,0) 106px,
+        rgba(254,252,247,0) 0,
         rgba(254,252,247,0) calc(100% - 50px),
         rgba(254,252,247,0.04) calc(100% - 45px),
         rgba(254,252,247,0.13) calc(100% - 40px),
@@ -213,13 +202,13 @@
         rgba(254,252,247,1) 100%);
   }
   .hero-photo-img {
-    background-size: auto 115dvh;
-    background-position: center -240px;
+    background-size: auto 145%;
+    background-position: center 50%;
   }
   .hero-content {
     grid-column: 1; grid-row: 2;
     align-self: stretch; justify-self: stretch;
-    padding: 28px 24px 32px;
+    padding: 12px 24px 14px;
     max-width: 100%;
     background: transparent;
   }

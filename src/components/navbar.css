@@ -30,23 +30,20 @@
   to   { top: 0; }
 }
 
-/* Bg lives on a pseudo-element so it fades via opacity (compositor-friendly). */
+/* Solid bg lives on a pseudo-element inside the navbar's stacking context, so
+   it stays above page content (main scrolls beneath, doesn't bleed through).
+   Painted in the light-blue nav tone to set the sidebar off from the page. */
 .navbar::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--bg-deep);
-  opacity: 0;
-  transition: opacity var(--slide-duration) var(--slide-ease);
+  background: var(--nav-bg);
   z-index: -1;
   pointer-events: none;
 }
 
 .navbar.is-open {
   --rail-offset: 0px;
-}
-.navbar.is-open::after {
-  opacity: 1;
 }
 
 .navbar-top { display: contents; }
@@ -273,20 +270,15 @@
     transition: grid-template-rows 240ms cubic-bezier(.4, 0, .2, 1);
     will-change: auto;
   }
-  /* Mobile uses ::before for its own bg fade — hide the desktop ::after. */
+  /* Mobile uses ::before for an opaque header strip — hide desktop ::after. */
   .navbar::after { display: none; }
   .navbar::before {
     content: '';
     position: absolute;
     inset: 0;
-    background-color: var(--bg);
-    opacity: 0;
+    background-color: var(--nav-bg);
     pointer-events: none;
     z-index: -1;
-    transition: opacity 240ms cubic-bezier(.4, 0, .2, 1);
-  }
-  .navbar.is-open::before {
-    opacity: 1;
   }
   .navbar.is-open {
     width: 100%;

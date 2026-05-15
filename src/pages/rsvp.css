@@ -245,7 +245,7 @@
 }
 
 .rsvp-extras.is-open {
-  max-height: 1400px;
+  max-height: 2400px;
   margin-top: 0;
   opacity: 1;
   transition: max-height 320ms cubic-bezier(.4, 0, .2, 1),
@@ -607,7 +607,7 @@
 
 /* ---------------- Responsive ---------------- */
 @media (max-width: 960px) {
-  .rsvp { padding: 48px 18px; }
+  .rsvp { padding: 80px 18px 24px; }
   .rsvp-header { margin-bottom: 32px; }
   .rsvp-card { padding: 32px 22px; }
   .rsvp-meal-grid {

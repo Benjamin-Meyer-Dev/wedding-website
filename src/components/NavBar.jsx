@@ -60,6 +60,11 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
     cancelClose()
     setOpen(o => !o)
   }
+  const handleNavigate = (target) => {
+    cancelClose()
+    setOpen(false)
+    onNavigate?.(target)
+  }
 
   return (
     <aside
@@ -88,7 +93,7 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
 
       <div className="menu-panel">
         <nav className="nav">
-        <Icon label="Home" page="home" currentPage={page} onSelect={onNavigate}>
+        <Icon label="Home" page="home" currentPage={page} onSelect={handleNavigate}>
           <path d="M3 11.5 12 4l9 7.5" />
           <path d="M5 10v10h14V10" />
         </Icon>
@@ -118,7 +123,7 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
           <path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.6-2.5 1.9-2.5 3.5" />
           <circle cx="12" cy="16.5" r=".6" fill="currentColor" stroke="none" />
         </Icon>
-        <Icon label="RSVP" page="rsvp" currentPage={page} onSelect={onNavigate}>
+        <Icon label="RSVP" page="rsvp" currentPage={page} onSelect={handleNavigate}>
           <rect x="3" y="5.5" width="18" height="13" rx="1.5" />
           <path d="m3.5 6.5 8.5 6.5L20.5 6.5" />
         </Icon>
