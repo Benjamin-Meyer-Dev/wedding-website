@@ -1,72 +1,89 @@
 /* ---------- Design tokens ---------- */
 :root {
-  /* Palette — warm cream background, deep ink text, dusty blue accent */
-  --bg: #fefcf7;
-  --bg-deep: #f4efe6;
-  --ink: #1a1f2b;
-  --ink-soft: #4a5161;
-  --ink-muted: #8b8579;
-  --accent: #3a6f95;
-  --nav-bg: #d8e4ec;
-  --rule: rgba(26, 31, 43, 0.4);
-  --rule-soft: rgba(26, 31, 43, 0.18);
-  --star: rgba(58, 120, 175, 1);
+  /* Canvas — powder blue takes the lead; cream is a sparing accent only */
+  --powder: #d8e4ec;
+  --powder-soft: #e3edf4;
+  --powder-mist: #eef4f9;
+  --powder-deep: #c3d6e2;
+  --bg: var(--powder);
+  --bg-cream: #fefcf7;
 
-  /* Type — single typeface across the whole site */
+  /* Blue accent scale */
+  --accent: #3a6f95;
+  --accent-soft: #6ea7c9;
+  --accent-bright: #a8cce0;
+  --accent-deep: #2d5a7a;
+  --ink-blue: #15324a;
+
+  /* Text on powder blue / light glass */
+  --text: #1a1f2b;
+  --text-soft: #4a5161;
+  --text-muted: #6c7c89;
+
+  /* Light frosted glass — slightly tinted to feel native on the powder blue
+     surface rather than a stark white pop. */
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-hover: rgba(255, 255, 255, 0.72);
+  --glass-bg-deep: rgba(255, 255, 255, 0.82);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-border-strong: rgba(58, 111, 149, 0.4);
+  --glass-shadow: 0 26px 60px -22px rgba(21, 50, 74, 0.32);
+  /* Lower blur radius — backdrop-filter is the most expensive thing the
+     page does on each frame, especially when there are moving orbs
+     behind. Smaller blur = cheaper sample = smoother animations. */
+  --glass-blur: 12px;
+
+  /* Hairline rules */
+  --rule: rgba(58, 111, 149, 0.4);
+  --rule-soft: rgba(58, 111, 149, 0.18);
+
+  /* Type */
   --font-display: 'Playfair Display', Georgia, serif;
   --font-amp: 'Playfair Display', Georgia, serif;
-  --font-ui: 'Playfair Display', Georgia, serif;
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 /* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 html, body, #root { height: 100%; }
+html {
+  /* Reserve scrollbar space always so the viewport width doesn't change
+     when navigating from a non-scrolling page to a scrolling one — keeps
+     the centered floating navbar from jumping sideways. */
+  scrollbar-gutter: stable;
+}
 body {
   margin: 0;
   background: var(--bg);
-  color: var(--ink);
+  color: var(--text);
   font-family: var(--font-ui);
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  transition: none;
   user-select: none;
   -webkit-user-select: none;
 }
+
 button { font-family: inherit; cursor: pointer; }
 
-/* Allow text selection only inside form fields so users can still edit */
 input, textarea, [contenteditable] {
   user-select: text;
   -webkit-user-select: text;
 }
 
-/* Selection */
-::selection { background: var(--accent); color: var(--bg); }
+::selection { background: var(--accent); color: var(--powder-mist); }
 
-/* ---------- Scrollbars ----------
-   Tinted to match the cream / ink / dusty-blue palette. Two declarations:
-   `scrollbar-color`/`-width` for Firefox + recent Chrome, and the WebKit
-   pseudo-elements for Chrome/Safari/Edge. Set on :root so the values are
-   inherited to nested scroll containers (textareas, etc.). */
+/* ---------- Scrollbars ---------- */
 :root {
   scrollbar-width: thin;
-  scrollbar-color: rgba(26, 31, 43, 0.32) transparent;
+  scrollbar-color: rgba(58, 111, 149, 0.4) transparent;
 }
-
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(26, 31, 43, 0.28);
+  background: rgba(58, 111, 149, 0.35);
   border-radius: 999px;
-  /* Transparent border + padding-box clipping gives the thumb visual padding
-     so it reads as a slim pill rather than filling the full track width. */
   border: 2px solid transparent;
   background-clip: padding-box;
 }
@@ -74,15 +91,9 @@ input, textarea, [contenteditable] {
   background: var(--accent);
   background-clip: padding-box;
 }
-::-webkit-scrollbar-thumb:active {
-  background: #2d5a7a;
-  background-clip: padding-box;
-}
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
+::-webkit-scrollbar-corner { background: transparent; }
 
-/* Shared eyebrow rule decoration */
+/* Shared hairline rule decoration */
 .rule {
   display: inline-block;
   height: 1px;
@@ -91,10 +102,25 @@ input, textarea, [contenteditable] {
 }
 .rule.short { width: 28px; }
 
-/* Page transition: slide-up entrance applied to grid children (photo +
-   content) so the parent page wrapper stays a non-stacking-context. Lets the
-   starfield paint between the page bg and the content layer. */
-@keyframes page-slide {
-  from { transform: translateY(14px); }
-  to   { transform: translateY(0); }
+/* Glass panel utility */
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Page transition: gentle fade + lift. Used by photo elements. */
+@keyframes page-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Lighter entrance for glass cards — opacity only, no transform. Moving
+   an element with backdrop-filter recomputes the blur every frame, which
+   is the main source of entrance jank. Pure opacity is compositor-only. */
+@keyframes page-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }

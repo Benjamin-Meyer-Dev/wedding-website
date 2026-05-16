@@ -8,27 +8,16 @@ import vegetarianImg from '../assets/Vegetarian.jpg'
 import veganImg from '../assets/Vegan.jpg'
 import './rsvp.css'
 
-const RSVP_DEADLINE = 'PLEASE RESPOND BY APRIL 1, 2027'
-
-const DiamondMark = () => (
-  <svg className="rsvp-deadline-mark" viewBox="0 0 12 12" width="9" height="9"
-       fill="currentColor" aria-hidden="true">
-    <path d="M6 0.5 L7.4 4.6 11.5 6 L7.4 7.4 6 11.5 4.6 7.4 0.5 6 4.6 4.6 Z" />
-  </svg>
-)
-
 const IconCheck = () => (
   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor"
-       strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
-       aria-hidden="true">
+       strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
     <path d="m3 8.5 3 3 7-7" />
   </svg>
 )
 
 const IconX = () => (
   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor"
-       strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
-       aria-hidden="true">
+       strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
     <path d="M4 4l8 8M12 4l-8 8" />
   </svg>
 )
@@ -210,17 +199,13 @@ export default function Rsvp() {
     <section className="rsvp">
       <div className="rsvp-shell">
         <header className="rsvp-header">
-          <p className="eyebrow">
-            <span className="rule short" />
+          <p className="rsvp-eyebrow">
+            <span className="rsvp-eyebrow-rule" />
             <span>RSVP</span>
-            <span className="rule short" />
+            <span className="rsvp-eyebrow-rule" />
           </p>
           <h1 className="rsvp-title">Will you join us?</h1>
-          <p className="rsvp-deadline">
-            <DiamondMark />
-            <span>{RSVP_DEADLINE}</span>
-            <DiamondMark />
-          </p>
+          <p className="rsvp-deadline">Kindly respond by April 1, 2027.</p>
         </header>
 
         <ul className={`rsvp-list count-${orderedMembers.length}`}>
@@ -233,7 +218,6 @@ export default function Rsvp() {
                 className={`rsvp-card${attending ? ' is-answered' : ''}`}
                 style={{ '--card-index': idx }}
               >
-                <span className="rsvp-card-frame" aria-hidden="true" />
                 <h2 className="rsvp-name">{m.first_name}</h2>
 
                 <div className="rsvp-choice" role="radiogroup" aria-label={`${m.first_name}'s response`}>
@@ -261,15 +245,12 @@ export default function Rsvp() {
 
                 <div
                   className={`rsvp-extras${attending === 'yes' ? ' is-open' : ''}`}
-                  aria-hidden={attending !== 'yes'}
                   inert={attending !== 'yes' ? '' : undefined}
                 >
                   <div className="rsvp-extras-inner">
                     <fieldset className="rsvp-meals">
                       <legend className="rsvp-field-lbl rsvp-menu-label">
-                        <span className="rule short" />
-                        <span>Choose a meal</span>
-                        <span className="rule short" />
+                        Choose a meal
                       </legend>
                       <div className="rsvp-meal-grid" role="radiogroup" aria-label={`${m.first_name}'s meal choice`}>
                         {MEAL_OPTIONS.map(({ value, label, desc, image }) => {
@@ -286,9 +267,8 @@ export default function Rsvp() {
                               <span
                                 className="rsvp-meal-image"
                                 style={image ? { backgroundImage: `url(${image})` } : undefined}
-                                aria-hidden="true"
                               />
-                              <span className="rsvp-meal-veil" aria-hidden="true" />
+                              <span className="rsvp-meal-veil" />
                               <span className="rsvp-meal-text">
                                 <span className="rsvp-meal-lbl">{label}</span>
                                 <span className="rsvp-meal-desc">{desc}</span>

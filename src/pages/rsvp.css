@@ -2,25 +2,19 @@
   position: relative;
   min-height: 100dvh;
   display: flex;
-  align-items: flex-start;
   justify-content: center;
-  padding: 56px 40px;
-  animation: page-slide 320ms cubic-bezier(.4, 0, .2, 1);
-}
-
-@media (min-width: 860px) {
-  .rsvp { align-items: center; }
+  padding: clamp(24px, 4vw, 48px) clamp(20px, 4vw, 56px) clamp(48px, 6vw, 80px);
+  animation: page-rise 460ms cubic-bezier(.4, 0, .2, 1);
 }
 
 .rsvp-shell {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  /* Effectively unlimited on standard desktops (a 1440px laptop minus the
-     100px navbar minus the page padding lands around 1260px, so any cap
-     above ~1700 just acts as a sanity stop for ultra-wide displays). */
-  max-width: 1800px;
+  max-width: 1280px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
 }
 
 /* ---------------- Header ---------------- */
@@ -29,110 +23,92 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: 24px;
+  margin: 0 auto clamp(32px, 5vw, 56px);
+  max-width: 720px;
 }
 
-.rsvp .eyebrow {
+.rsvp-eyebrow {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
+  width: 100%;
+  justify-content: center;
+  margin: 0 0 22px;
   font-family: var(--font-ui);
   font-weight: 500;
-  letter-spacing: 0.32em;
-  font-size: 14px;
-  color: var(--ink);
-  margin: 0 0 20px;
+  letter-spacing: 0.36em;
+  font-size: 11px;
+  color: var(--accent);
   text-transform: uppercase;
+}
+.rsvp-eyebrow-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+  max-width: 140px;
 }
 
 .rsvp-title {
   font-family: var(--font-display);
-  font-style: italic;
+  font-style: normal;
   font-weight: 400;
-  font-size: clamp(52px, 7.6vw, 96px);
-  line-height: 1;
-  margin: 0 0 36px;
-  color: var(--ink);
-  letter-spacing: -0.012em;
+  font-size: clamp(40px, 6vw, 76px);
+  line-height: 1.04;
+  margin: 0 0 16px;
+  color: var(--ink-blue);
+  letter-spacing: -0.014em;
 }
 
 .rsvp-deadline {
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
   font-family: var(--font-ui);
-  font-weight: 500;
-  letter-spacing: 0.24em;
-  font-size: clamp(15px, 1.4vw, 19px);
-  color: var(--ink-soft);
+  font-weight: 400;
+  font-size: clamp(14px, 1.05vw, 16px);
+  color: var(--text-soft);
   margin: 0;
-  text-transform: uppercase;
-}
-
-.rsvp-deadline-mark {
-  color: var(--accent);
-  flex-shrink: 0;
-  /* SVG nudge: cap-height of the surrounding uppercase text is ~70% of em,
-     so its visual center sits ~0.15em above the em-center. Pull the diamond
-     up to land on the same visual center. */
-  transform: translateY(-0.15em);
+  line-height: 1.55;
 }
 
 /* ---------------- Card grid ---------------- */
 .rsvp-list {
   list-style: none;
-  margin: 0 0 44px;
+  margin: 0 0 32px;
   padding: 0;
   width: 100%;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 28px;
-  /* Each card sizes to its own content — without this, a 2-column row
-     stretches the un-answered card to match a taller answered sibling. */
+  gap: 22px;
   align-items: start;
 }
 
 @media (min-width: 860px) {
-  .rsvp-list.count-2 {
-    grid-template-columns: 1fr 1fr;
-  }
+  .rsvp-list.count-2 { grid-template-columns: 1fr 1fr; }
 }
 
 .rsvp-card {
   position: relative;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.82);
   border: 1px solid var(--rule-soft);
+  /* Bumped surface opacity slightly and dropped blur radius — cheaper to
+     paint while still reading as a frosted card. */
+  backdrop-filter: blur(8px) saturate(1.15);
+  -webkit-backdrop-filter: blur(8px) saturate(1.15);
   border-radius: 22px;
-  padding: 48px 40px 40px;
+  padding: clamp(28px, 3vw, 44px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 28px;
-  box-shadow: 0 14px 38px -28px rgba(26, 31, 43, 0.25);
-  transition: border-color 180ms ease, box-shadow 180ms ease;
-  animation: rsvp-card-in 320ms cubic-bezier(.4, 0, .2, 1) both;
-  animation-delay: calc(var(--card-index, 0) * 60ms + 40ms);
+  text-align: center;
+  gap: clamp(20px, 2.4vw, 28px);
+  box-shadow: 0 18px 44px -26px rgba(21, 50, 74, 0.32);
+  transition: border-color 220ms ease, background 220ms ease, box-shadow 220ms ease;
+  animation: rsvp-card-in 420ms cubic-bezier(.4, 0, .2, 1) both;
+  animation-delay: calc(var(--card-index, 0) * 70ms + 60ms);
 }
-
-/* Inner double-frame — the classic letterpress invitation look. */
-.rsvp-card-frame {
-  position: absolute;
-  inset: 12px;
-  border: 1px solid var(--rule-soft);
-  border-radius: 14px;
-  pointer-events: none;
-  transition: border-color 220ms ease;
-}
-
-.rsvp-card:hover { border-color: var(--rule); }
-.rsvp-card:hover .rsvp-card-frame { border-color: var(--rule); }
 
 .rsvp-card.is-answered {
-  border-color: var(--accent);
-  box-shadow: 0 18px 42px -26px rgba(58, 111, 149, 0.5);
-}
-.rsvp-card.is-answered .rsvp-card-frame {
-  border-color: rgba(58, 111, 149, 0.5);
+  background: rgba(238, 244, 249, 0.92);
+  border-color: rgba(58, 111, 149, 0.4);
+  box-shadow: 0 18px 44px -22px rgba(58, 111, 149, 0.35);
 }
 
 @keyframes rsvp-card-in {
@@ -142,37 +118,39 @@
 
 .rsvp-name {
   font-family: var(--font-display);
-  font-style: italic;
+  font-style: normal;
   font-weight: 400;
-  font-size: clamp(36px, 4vw, 52px);
-  line-height: 1;
+  font-size: clamp(34px, 4vw, 54px);
+  line-height: 1.05;
   margin: 0;
-  color: var(--ink);
+  color: var(--ink-blue);
+  letter-spacing: -0.012em;
 }
 
-/* ---------------- Choice pills ---------------- */
+/* ---------------- Choice ---------------- */
 .rsvp-choice {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   flex-wrap: wrap;
   justify-content: center;
+  width: 100%;
 }
 
 .rsvp-pill {
   appearance: none;
   background: transparent;
   border: 1px solid var(--rule);
-  color: var(--ink);
+  color: var(--text);
   font-family: var(--font-ui);
   font-weight: 500;
-  font-size: 14px;
-  letter-spacing: 0.22em;
+  font-size: 12px;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  padding: 14px 26px 14px 22px;
+  padding: 14px 24px 14px 20px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   transition: background 180ms ease, color 180ms ease, border-color 180ms ease, transform 120ms ease;
 }
 
@@ -180,15 +158,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 999px;
   border: 1px solid currentColor;
   color: inherit;
   flex-shrink: 0;
   transition: background 160ms ease, transform 180ms cubic-bezier(.4, 0, .2, 1);
 }
-
 .rsvp-pill-icon svg {
   width: 12px;
   height: 12px;
@@ -196,67 +173,51 @@
   transform: scale(0.4);
   transition: opacity 160ms ease, transform 180ms cubic-bezier(.4, 0, .2, 1);
 }
+.rsvp-pill.is-on .rsvp-pill-icon svg { opacity: 1; transform: scale(1); }
 
-.rsvp-pill.is-on .rsvp-pill-icon svg {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.rsvp-pill:hover { border-color: var(--ink); }
-.rsvp-pill:active { transform: scale(0.97); }
+.rsvp-pill:hover { border-color: var(--accent); color: var(--accent); }
+.rsvp-pill:active { transform: scale(0.985); }
 
 .rsvp-pill.is-yes {
   background: var(--accent);
-  color: var(--bg);
+  color: var(--powder-mist);
   border-color: var(--accent);
 }
-.rsvp-pill.is-yes .rsvp-pill-icon {
-  background: var(--bg);
-  color: var(--accent);
-  border-color: var(--bg);
-}
+.rsvp-pill.is-yes .rsvp-pill-icon { background: var(--powder-mist); color: var(--accent); border-color: var(--powder-mist); }
 
 .rsvp-pill.is-no {
-  background: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
+  background: var(--ink-blue);
+  color: var(--powder-mist);
+  border-color: var(--ink-blue);
 }
-.rsvp-pill.is-no .rsvp-pill-icon {
-  background: var(--bg);
-  color: var(--ink);
-  border-color: var(--bg);
-}
+.rsvp-pill.is-no .rsvp-pill-icon { background: var(--powder-mist); color: var(--ink-blue); border-color: var(--powder-mist); }
 
 /* ---------------- Extras (meals + dietary) ---------------- */
-/* Height reveal via max-height + opacity. The compositor handles the opacity
-   change directly and only the height needs layout work on transition — much
-   cheaper than animating grid-template-rows (which forces full grid layout
-   per frame). A negative margin-top cancels the parent card's flex gap when
-   collapsed so the card has no dead space below the pills. */
 .rsvp-extras {
   width: 100%;
   max-height: 0;
   margin-top: -28px;
   opacity: 0;
   overflow: hidden;
-  transition: max-height 260ms cubic-bezier(.4, 0, .2, 1),
-              margin-top 260ms cubic-bezier(.4, 0, .2, 1),
+  transition: max-height 280ms cubic-bezier(.4, 0, .2, 1),
+              margin-top 280ms cubic-bezier(.4, 0, .2, 1),
               opacity 180ms ease;
 }
-
 .rsvp-extras.is-open {
   max-height: 2400px;
   margin-top: 0;
   opacity: 1;
-  transition: max-height 320ms cubic-bezier(.4, 0, .2, 1),
-              margin-top 280ms cubic-bezier(.4, 0, .2, 1),
-              opacity 200ms ease 80ms;
+  transition: max-height 360ms cubic-bezier(.4, 0, .2, 1),
+              margin-top 320ms cubic-bezier(.4, 0, .2, 1),
+              opacity 220ms ease 80ms;
 }
 
 .rsvp-extras-inner {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
+  padding-top: 28px;
+  border-top: 1px solid var(--rule-soft);
 }
 
 .rsvp-meals {
@@ -268,67 +229,38 @@
   gap: 14px;
   align-items: center;
   text-align: center;
-  /* Establish a query container so the tile layout can react to *this* grid's
-     own width, not the viewport. Lets the 2-member card (narrow grid) flip
-     to 3+2 while the 1-member card (wide grid) stays 5-in-a-row. */
   container-type: inline-size;
 }
 
 .rsvp-field-lbl {
   font-family: var(--font-ui);
-  font-style: italic;
+  font-style: normal;
   font-weight: 500;
-  font-size: 12px;
-  letter-spacing: 0.2em;
+  font-size: 10px;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: var(--ink-soft);
+  color: var(--accent);
   display: block;
+  padding: 0;
 }
 
 .rsvp-menu-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  font-style: normal;
-  font-size: 13px;
-  letter-spacing: 0.32em;
-  color: var(--ink);
-  margin-bottom: 22px;
-}
-.rsvp-menu-label .rule {
-  background: var(--rule);
+  display: block;
+  margin-bottom: 10px;
 }
 
-/* Flex layout so wrapped rows get centered independently. On PC the five
-   tiles fit in a single horizontal row (no vertical scroll). On narrower
-   widths the row wraps and remaining tiles stay centered. */
 .rsvp-meal-grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
 }
 
-/* Each tile is a stack of three layers:
-   1. image (or a tinted placeholder when no photo is set)
-   2. gradient veil that keeps the bottom text legible
-   3. text block (label always visible, description revealed on hover) */
-/* Two easing curves drive the hover. Standard "ease" is balanced, but here
-   we want enter ≠ exit:
-   - Enter (going INTO hover): a gentler ease-out so nothing slams open.
-   - Exit (returning to rest): a quicker, more responsive easing so the
-     card doesn't appear to "hang" before collapsing.
-   CSS picks the transition rule from the *destination* state, so we set
-   the exit timing on the base rule and the enter timing on :hover. */
 .rsvp-meal-tile {
   appearance: none;
   position: relative;
-  /* Default = 5 per row (wide containers, e.g. single-member layout).
-     The @container rule below switches to 3 per row when the grid is too
-     narrow to fit 5 — that's what prevents the awkward 4+1 wrap. */
-  flex: 0 0 calc(20% - 10px);
+  flex: 0 0 calc(20% - 8px);
   min-width: 140px;
   max-width: 230px;
   aspect-ratio: 1 / 1;
@@ -336,59 +268,48 @@
   margin: 0;
   background: transparent;
   border: 1px solid var(--rule-soft);
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
-  /* Suppress the browser's default blue focus ring that appears after a
-     mouse click (button stays focused after click but isn't :focus-visible).
-     Keyboard users still get a visible focus indicator via the explicit
-     :focus-visible rule below. */
   outline: none;
   -webkit-tap-highlight-color: transparent;
-  color: var(--bg);
+  color: var(--powder-mist);
   font-family: var(--font-ui);
   cursor: pointer;
-  box-shadow: 0 10px 28px -22px rgba(26, 31, 43, 0.45);
-  transition: border-color 240ms cubic-bezier(.4, 0, .2, 1),
-              box-shadow 240ms cubic-bezier(.4, 0, .2, 1),
-              transform 160ms ease;
+  box-shadow: 0 10px 28px -22px rgba(21, 50, 74, 0.4);
+  transition: opacity 220ms ease, filter 220ms ease,
+              border-color 220ms ease, box-shadow 220ms ease,
+              transform 140ms ease;
+  /* Keep the tile on its own compositor layer so the photo zoom and
+     greyscale transitions don't repaint surrounding tiles. */
+  will-change: transform;
 }
-
 .rsvp-meal-tile:active { transform: scale(0.985); }
 
-/* --- Image layer --- */
 .rsvp-meal-image {
   position: absolute;
   inset: 0;
-  background-color: rgba(58, 111, 149, 0.12);
+  background-color: rgba(21, 50, 74, 0.12);
   background-image: linear-gradient(155deg,
     rgba(244, 239, 230, 0.85) 0%,
-    rgba(214, 220, 226, 0.65) 45%,
-    rgba(58, 111, 149, 0.28) 100%);
+    rgba(216, 228, 236, 0.65) 45%,
+    rgba(58, 111, 149, 0.32) 100%);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   transform-origin: center;
-  /* Base = exit: snappier reset (240ms standard easing). */
   transition: transform 240ms cubic-bezier(.4, 0, .2, 1),
               filter 240ms cubic-bezier(.4, 0, .2, 1);
 }
-/* When a real photo is set via inline style="background-image: url(...)",
-   it overrides the placeholder gradient (inline > class specificity). */
 
-/* --- Veil layer ---
-   Three stacked gradient layers (base / hover / selected) cross-fade via
-   opacity. Cheaper than animating the gradient `background` itself because
-   opacity is compositor-only — no per-frame repaint of the gradient. */
 .rsvp-meal-veil {
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg,
-    rgba(26, 31, 43, 0) 0%,
-    rgba(26, 31, 43, 0.14) 50%,
-    rgba(26, 31, 43, 0.72) 100%);
+    rgba(21, 50, 74, 0) 35%,
+    rgba(21, 50, 74, 0.4) 70%,
+    rgba(21, 50, 74, 0.78) 100%);
   pointer-events: none;
 }
-
 .rsvp-meal-veil::before,
 .rsvp-meal-veil::after {
   content: '';
@@ -397,63 +318,51 @@
   opacity: 0;
   transition: opacity 220ms cubic-bezier(.4, 0, .2, 1);
 }
-
 .rsvp-meal-veil::before {
   background: linear-gradient(180deg,
-    rgba(26, 31, 43, 0.1) 0%,
-    rgba(26, 31, 43, 0.42) 50%,
-    rgba(26, 31, 43, 0.86) 100%);
+    rgba(21, 50, 74, 0.10) 0%,
+    rgba(21, 50, 74, 0.5) 60%,
+    rgba(21, 50, 74, 0.88) 100%);
 }
-
 .rsvp-meal-veil::after {
   background: linear-gradient(180deg,
-    rgba(58, 111, 149, 0.1) 0%,
-    rgba(58, 111, 149, 0.4) 50%,
-    rgba(58, 111, 149, 0.82) 100%);
+    rgba(58, 111, 149, 0.0) 0%,
+    rgba(58, 111, 149, 0.55) 55%,
+    rgba(21, 50, 74, 0.88) 100%);
 }
 
-/* --- Text layer ---
-   Label is laid out at the bottom; description sits above it and reveals via
-   max-height + opacity. Cheaper than animating grid-template-rows, which
-   forces a full grid layout pass every frame. */
 .rsvp-meal-text {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 14px 16px 16px;
+  padding: 14px 14px 16px;
   display: flex;
   flex-direction: column;
   text-align: left;
   z-index: 1;
 }
-
 .rsvp-meal-lbl {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 500;
   font-size: 22px;
-  line-height: 1;
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--bg);
+  line-height: 1.1;
+  color: var(--powder-mist);
   order: 2;
   transition: transform 220ms cubic-bezier(.4, 0, .2, 1);
 }
-
 .rsvp-meal-desc {
   font-family: var(--font-ui);
+  font-weight: 400;
   font-size: 12px;
-  line-height: 1.42;
-  letter-spacing: 0.01em;
-  color: rgba(254, 252, 247, 0.92);
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.92);
   order: 1;
   overflow: hidden;
   max-height: 0;
   opacity: 0;
   padding-top: 0;
-  /* Cap to 5 lines so a long description can't push the label off the top
-     of a small (150px) tile — anything past line 5 truncates with ellipsis. */
   display: -webkit-box;
   -webkit-line-clamp: 5;
   line-clamp: 5;
@@ -463,48 +372,29 @@
               opacity 160ms ease;
 }
 
-/* --- Hover / focus state: image focuses in, description reveals.
-   Enter transitions are slightly longer and use a gentler ease-out curve
-   so nothing slams open — softer onset, smooth landing.
-   Mouse hover gets only the shadow (no accent border); keyboard focus
-   still gets the border so the focus ring is visible for a11y. --- */
 .rsvp-meal-tile:hover {
-  box-shadow: 0 22px 44px -22px rgba(26, 31, 43, 0.4);
-  transition: box-shadow 220ms cubic-bezier(.4, 0, .2, 1),
-              transform 140ms ease;
+  border-color: var(--rule);
+  box-shadow: 0 22px 40px -18px rgba(21, 50, 74, 0.4);
 }
-
 .rsvp-meal-tile:focus-visible {
   border-color: var(--accent);
-  box-shadow: 0 22px 44px -22px rgba(26, 31, 43, 0.4);
-  outline: none;
-  transition: border-color 220ms cubic-bezier(.4, 0, .2, 1),
-              box-shadow 220ms cubic-bezier(.4, 0, .2, 1),
-              transform 140ms ease;
+  outline: 2px solid rgba(58, 111, 149, 0.4);
+  outline-offset: 2px;
 }
 
 .rsvp-meal-tile:hover .rsvp-meal-image,
 .rsvp-meal-tile:focus-visible .rsvp-meal-image {
-  transform: scale(1.07);
-  filter: saturate(1.06) brightness(1.02);
-  transition: transform 260ms cubic-bezier(.4, 0, .2, 1),
-              filter 220ms cubic-bezier(.4, 0, .2, 1);
+  transform: scale(1.06);
+  filter: saturate(1.05) brightness(1.04);
 }
-
 .rsvp-meal-tile:hover .rsvp-meal-veil::before,
-.rsvp-meal-tile:focus-visible .rsvp-meal-veil::before {
-  opacity: 1;
-}
-
+.rsvp-meal-tile:focus-visible .rsvp-meal-veil::before { opacity: 1; }
 .rsvp-meal-tile:hover .rsvp-meal-lbl,
-.rsvp-meal-tile:focus-visible .rsvp-meal-lbl {
-  transform: translateY(-2px);
-}
-
+.rsvp-meal-tile:focus-visible .rsvp-meal-lbl { transform: translateY(-2px); }
 .rsvp-meal-tile:hover .rsvp-meal-desc,
 .rsvp-meal-tile:focus-visible .rsvp-meal-desc,
 .rsvp-meal-tile.is-on .rsvp-meal-desc {
-  max-height: 90px;
+  max-height: 92px;
   padding-top: 6px;
   opacity: 1;
   transition: max-height 240ms cubic-bezier(.4, 0, .2, 1),
@@ -512,26 +402,80 @@
               opacity 200ms ease 60ms;
 }
 
-/* --- Selected state (shares the unified gradient stops) --- */
-.rsvp-meal-tile.is-on {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent),
-              0 22px 44px -22px rgba(58, 111, 149, 0.5);
+/* Selected state: just a checkmark badge — no border or ring. The blue
+   gradient overlay is dropped so the actual meal photo stays clearly
+   visible. */
+.rsvp-meal-tile.is-on .rsvp-meal-veil::after { opacity: 0; }
+.rsvp-meal-tile.is-on .rsvp-meal-veil::before { opacity: 0; }
+
+/* Checkmark badge — small accent circle with white tick anchored top-right */
+.rsvp-meal-tile.is-on::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5l3 3 6-6'/%3E%3C/svg%3E");
+  background-size: 16px 16px;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 4px 10px -2px rgba(58, 111, 149, 0.55);
+  z-index: 4;
+  animation: meal-badge-in 220ms cubic-bezier(.4, 0, .2, 1);
 }
-.rsvp-meal-tile.is-on .rsvp-meal-veil::after {
-  opacity: 1;
+
+@keyframes meal-badge-in {
+  from { opacity: 0; transform: scale(0.4); }
+  to   { opacity: 1; transform: scale(1); }
 }
-.rsvp-meal-tile.is-on .rsvp-meal-veil::before {
+
+/* When one tile in a grid is selected, fade and desaturate the others —
+   and lock out the hover effects so only the chosen meal animates. */
+.rsvp-meal-grid:has(.rsvp-meal-tile.is-on) .rsvp-meal-tile:not(.is-on) {
+  opacity: 0.4;
+  filter: grayscale(0.55);
+  transition: opacity 240ms cubic-bezier(.4, 0, .2, 1),
+              filter 240ms cubic-bezier(.4, 0, .2, 1),
+              border-color 240ms cubic-bezier(.4, 0, .2, 1),
+              box-shadow 240ms cubic-bezier(.4, 0, .2, 1),
+              transform 160ms ease;
+}
+
+/* Suppress hover/focus effects on greyed (unselected) tiles when a
+   selection exists — only the selected tile responds to hover. */
+.rsvp-meal-grid:has(.rsvp-meal-tile.is-on) .rsvp-meal-tile:not(.is-on):hover,
+.rsvp-meal-grid:has(.rsvp-meal-tile.is-on) .rsvp-meal-tile:not(.is-on):focus-visible {
+  border-color: var(--rule-soft);
+  box-shadow: 0 10px 28px -22px rgba(21, 50, 74, 0.4);
+  outline: none;
+}
+.rsvp-meal-grid:has(.rsvp-meal-tile.is-on) .rsvp-meal-tile:not(.is-on):hover .rsvp-meal-image,
+.rsvp-meal-grid:has(.rsvp-meal-tile.is-on) .rsvp-meal-tile:not(.is-on):focus-visible .rsvp-meal-image {
+  transform: none;
+  filter: none;
+}
+.rsvp-meal-grid:has(.rsvp-meal-tile.is-on) .rsvp-meal-tile:not(.is-on):hover .rsvp-meal-veil::before,
+.rsvp-meal-grid:has(.rsvp-meal-tile.is-on) .rsvp-meal-tile:not(.is-on):focus-visible .rsvp-meal-veil::before {
+  opacity: 0;
+}
+.rsvp-meal-grid:has(.rsvp-meal-tile.is-on) .rsvp-meal-tile:not(.is-on):hover .rsvp-meal-lbl,
+.rsvp-meal-grid:has(.rsvp-meal-tile.is-on) .rsvp-meal-tile:not(.is-on):focus-visible .rsvp-meal-lbl {
+  transform: none;
+}
+.rsvp-meal-grid:has(.rsvp-meal-tile.is-on) .rsvp-meal-tile:not(.is-on):hover .rsvp-meal-desc,
+.rsvp-meal-grid:has(.rsvp-meal-tile.is-on) .rsvp-meal-tile:not(.is-on):focus-visible .rsvp-meal-desc {
+  max-height: 0;
+  padding-top: 0;
   opacity: 0;
 }
 
-/* When the grid itself is too narrow to fit 5 tiles, switch to a 3+2
-   pyramid. This skips the 4+1 wrap that would otherwise occur in the
-   middle range (4 tiles fit but 5 don't). */
 @container (max-width: 1100px) {
   .rsvp-meal-tile {
-    flex: 0 0 calc(33.333% - 8px);
-    max-width: 250px;
+    flex: 0 0 calc(33.333% - 7px);
+    max-width: 260px;
   }
 }
 
@@ -543,35 +487,26 @@
   gap: 8px;
   text-align: left;
 }
-
 .rsvp-field textarea {
   font-family: var(--font-ui);
-  font-size: 16px;
-  line-height: 1.45;
-  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
   background: rgba(255, 255, 255, 0.78);
-  border: 1px solid var(--rule);
+  border: 1px solid var(--rule-soft);
   border-radius: 12px;
-  padding: 14px 16px;
+  padding: 12px 14px;
   resize: vertical;
-  min-height: 84px;
-  transition: border-color 180ms ease, background 180ms ease;
+  min-height: 76px;
+  transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
 }
-
-.rsvp-field textarea::placeholder {
-  color: var(--ink);
-  opacity: 0.7;
-  font-style: normal;
-}
-
+.rsvp-field textarea::placeholder { color: var(--text-muted); font-style: normal; }
+.rsvp-field textarea:hover { background: rgba(255, 255, 255, 0.9); border-color: var(--rule); }
 .rsvp-field textarea:focus {
   outline: none;
   border-color: var(--accent);
-  background: rgba(255, 255, 255, 0.92);
-}
-
-.rsvp-field textarea:focus::placeholder {
-  opacity: 0.55;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 3px rgba(58, 111, 149, 0.18);
 }
 
 /* ---------------- Status ---------------- */
@@ -582,24 +517,21 @@
   min-height: 22px;
   width: 100%;
 }
-
 .rsvp-saved {
   font-family: var(--font-ui);
-  font-style: italic;
-  font-size: 13px;
-  letter-spacing: 0.04em;
-  color: var(--ink-soft);
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--text-soft);
   margin: 0;
   animation: rsvp-status-in 220ms ease;
 }
-
 .rsvp-error {
   font-family: var(--font-ui);
-  font-size: 13px;
-  color: #a23b3b;
+  font-size: 12px;
+  color: #b94545;
   margin: 0;
 }
-
 @keyframes rsvp-status-in {
   from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -607,37 +539,54 @@
 
 /* ---------------- Responsive ---------------- */
 @media (max-width: 960px) {
-  .rsvp { padding: 80px 18px 24px; }
-  .rsvp-header { margin-bottom: 32px; }
-  .rsvp-card { padding: 32px 22px; }
-  .rsvp-meal-grid {
-    gap: 12px;
-  }
-  /* Two tiles per row on phones; the lone 5th wraps and centers on its
-     own line, which beats a tight 3-per-row on narrow screens. */
-  .rsvp-meal-tile {
-    flex: 0 0 calc(50% - 6px);
-    min-width: 140px;
-    max-width: none;
-  }
-  .rsvp-meal-lbl { font-size: 20px; }
-  .rsvp-meal-desc { font-size: 11.5px; }
-  .rsvp-pill {
-    padding: 12px 20px;
-    font-size: 12px;
-    letter-spacing: 0.18em;
-  }
+  .rsvp { padding: 20px 16px 40px; }
+  .rsvp-header { margin-bottom: 24px; }
+  .rsvp-eyebrow { gap: 10px; font-size: 10px; letter-spacing: 0.28em; }
+  .rsvp-eyebrow-rule { max-width: 60px; }
+  .rsvp-title { font-size: clamp(28px, 7.5vw, 44px); margin-bottom: 12px; }
+  .rsvp-deadline { font-size: 13px; }
+  .rsvp-list { gap: 18px; }
+  .rsvp-card { padding: 28px 22px; gap: 22px; }
+  .rsvp-name { font-size: clamp(26px, 7vw, 36px); }
+  .rsvp-pill { padding: 13px 20px; font-size: 11px; letter-spacing: 0.20em; flex: 1 1 calc(50% - 6px); justify-content: center; }
+  .rsvp-meal-grid { gap: 8px; }
+  .rsvp-meal-tile { flex: 0 0 calc(50% - 4px); min-width: 0; max-width: none; }
+  .rsvp-meal-lbl { font-size: 19px; }
 }
 
-/* On touch / no-hover devices, hover never fires — always show the description
-   and the deeper veil so guests can read it without needing to tap. */
+@media (max-width: 520px) {
+  .rsvp { padding: 16px 12px 32px; }
+  .rsvp-header { margin-bottom: 20px; }
+  .rsvp-eyebrow { gap: 8px; font-size: 9.5px; letter-spacing: 0.24em; }
+  .rsvp-eyebrow-rule { max-width: 40px; }
+  .rsvp-title { font-size: clamp(28px, 9vw, 38px); margin-bottom: 10px; }
+  .rsvp-deadline { font-size: 12.5px; line-height: 1.5; }
+  .rsvp-card { padding: 24px 18px; gap: 18px; border-radius: 18px; }
+  .rsvp-name { font-size: clamp(28px, 9vw, 34px); }
+  .rsvp-choice { flex-direction: column; gap: 8px; }
+  .rsvp-pill { flex: 1 1 100%; width: 100%; padding: 13px 18px; }
+  .rsvp-extras-inner { gap: 22px; padding-top: 22px; }
+  .rsvp-meals { gap: 12px; }
+  .rsvp-menu-label { margin-bottom: 6px; }
+  .rsvp-meal-grid { gap: 6px; }
+  .rsvp-meal-tile { flex: 0 0 calc(50% - 3px); border-radius: 14px; }
+  .rsvp-meal-lbl { font-size: 17px; }
+  .rsvp-meal-desc { font-size: 11px; }
+  .rsvp-meal-text { padding: 12px 12px 14px; }
+  .rsvp-field textarea { font-size: 15px; padding: 11px 12px; min-height: 64px; }
+}
+
+@media (max-width: 360px) {
+  .rsvp-meal-lbl { font-size: 15px; }
+  .rsvp-meal-desc { font-size: 10.5px; }
+}
+
+/* On touch devices, hide the description text entirely — only the label
+   shows. Also keep the base veil only (no hover gradient). */
 @media (hover: none) {
-  .rsvp-meal-tile .rsvp-meal-desc {
-    max-height: 90px;
-    padding-top: 6px;
-    opacity: 0.95;
-  }
-  .rsvp-meal-tile .rsvp-meal-veil::before {
-    opacity: 1;
-  }
+  .rsvp-meal-desc { display: none; }
+  .rsvp-meal-tile .rsvp-meal-veil::before { opacity: 0; }
+  .rsvp-meal-tile.is-on .rsvp-meal-lbl,
+  .rsvp-meal-tile:hover .rsvp-meal-lbl,
+  .rsvp-meal-tile:focus-visible .rsvp-meal-lbl { transform: none; }
 }

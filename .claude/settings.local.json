@@ -10,7 +10,8 @@
       "Bash(curl *)",
       "Bash(taskkill /F /FI \"WINDOWTITLE eq npm*\")",
       "Bash(tasklist)",
-      "Bash(findstr node *)"
+      "Bash(findstr node *)",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\('C:\\\\Users\\\\Ben\\\\Documents\\\\Coding\\\\wedding-website\\\\src\\\\assets\\\\HomePage.jpg'\\); \"$\\($img.Width\\)x$\\($img.Height\\)\"; $img.Dispose\\(\\))"
     ]
   }
 }

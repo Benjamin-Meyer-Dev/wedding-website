@@ -40,23 +40,28 @@ export default function Login() {
 
   return (
     <section className="login">
-      <div className="login-photo" aria-hidden="true">
-        <div className="login-photo-img" style={{ backgroundImage: `url(${heroPhoto})` }} />
-        <div className="login-photo-fade" />
-      </div>
+      <figure className="login-figure">
+        <img
+          src={heroPhoto}
+          alt="Elizabeth and Benjamin"
+          className="login-img"
+          width="1068"
+          height="1600"
+        />
+      </figure>
 
-      <div className="login-content">
-        <h1 className="login-title">
-          <span className="name">Elizabeth</span>
-          <span className="amp">&amp;</span>
-          <span className="name">Benjamin</span>
-        </h1>
+      <article className="login-card glass">
+        <header className="login-card-head">
+          <p className="login-tag">Save the Date</p>
+          <h1 className="login-mono">
+            <span>E</span>
+            <span className="amp">&amp;</span>
+            <span>B</span>
+          </h1>
+          <p className="login-date">29 May 2027</p>
+        </header>
 
-        <p className="login-sub">
-          <span className="rule short" />
-          <span>WELCOME · PLEASE SIGN IN</span>
-          <span className="rule short" />
-        </p>
+        <div className="login-rule" />
 
         <form className="login-form" onSubmit={handleSubmit} noValidate>
           <label className="field">
@@ -110,10 +115,10 @@ export default function Login() {
           {error && <p className="login-error" role="alert">{error}</p>}
 
           <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? 'Signing In…' : 'Sign In'}
+            {loading ? 'Signing In…' : 'Enter'}
           </button>
         </form>
-      </div>
+      </article>
     </section>
   )
 }

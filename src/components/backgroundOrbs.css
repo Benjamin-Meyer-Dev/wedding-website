@@ -1,0 +1,41 @@
+.bg-orbs {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* Promote the whole field to its own compositor layer so the drift
+     animation never repaints the page below. */
+  transform: translateZ(0);
+}
+
+.bg-orb {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  /* No filter:blur — the radial gradient inside the orb already produces
+     a soft falloff. filter:blur on a moving element forces a per-frame
+     repaint of the blurred region AND a recompute of every glass card's
+     backdrop-filter that has the orb behind it. Dropping it is the
+     single biggest smoothness win. */
+  transform: translate3d(-50%, -50%, 0);
+  animation: orb-drift var(--duration) ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes orb-drift {
+  from { transform: translate3d(-50%, -50%, 0); }
+  to   { transform: translate3d(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px)), 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-orb { animation: none; }
+}
+
+@media (max-width: 720px) {
+  .bg-orb { transform: translate3d(-50%, -50%, 0) scale(0.62); }
+  @keyframes orb-drift {
+    from { transform: translate3d(-50%, -50%, 0) scale(0.62); }
+    to   { transform: translate3d(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px)), 0) scale(0.62); }
+  }
+}

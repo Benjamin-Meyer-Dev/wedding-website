@@ -3,8 +3,8 @@ import NavBar from './components/NavBar.jsx'
 import Home from './pages/Home.jsx'
 import Login from './pages/Login.jsx'
 import Rsvp from './pages/Rsvp.jsx'
-import Starfield from './components/Starfield.jsx'
 import LoadingScreen from './components/LoadingScreen.jsx'
+import BackgroundOrbs from './components/BackgroundOrbs.jsx'
 import { supabase } from './lib/supabase'
 import { HouseholdProvider } from './lib/HouseholdContext.jsx'
 import './styles/app.css'
@@ -33,7 +33,7 @@ export default function App() {
   if (!authReady) {
     return (
       <div className="app">
-        <Starfield count={150} />
+        <BackgroundOrbs />
         {intro}
       </div>
     )
@@ -42,7 +42,7 @@ export default function App() {
   if (!session) {
     return (
       <div className="app">
-        <Starfield count={150} />
+        <BackgroundOrbs />
         <Login />
         {intro}
       </div>
@@ -51,14 +51,13 @@ export default function App() {
 
   return (
     <HouseholdProvider>
-      <div className="app">
-        <Starfield count={150} />
+      <div className={`app app--page-${page}`}>
+        <BackgroundOrbs />
         <NavBar
           page={page}
           onNavigate={setPage}
           onSignOut={() => supabase.auth.signOut()}
         />
-        <div className="scrim" aria-hidden="true" />
         <main className="main">
           {page === 'home' && <Home />}
           {page === 'rsvp' && <Rsvp />}
