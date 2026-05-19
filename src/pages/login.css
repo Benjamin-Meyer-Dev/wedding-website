@@ -1,23 +1,23 @@
 .login {
   position: relative;
   z-index: 1;
-  min-height: 100dvh;
+  min-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(32px, 5vw, 64px);
-  /* vh-based padding so it scales with viewport height */
-  padding: clamp(24px, 3vh, 48px) clamp(20px, 5vw, 64px);
+  gap: clamp(32px, 5%, 64px);
+  /* %-based padding so it scales with viewport height */
+  padding: clamp(24px, 3%, 48px) clamp(20px, 5%, 64px);
 }
 
 /* ---------- Portrait photo (the hero) ----------
    No navbar to clear, so there's more vertical room than Home. Math: at
-   768px viewport height, 88vh = 676px, plus 24+24 padding = 724 ≤ 768.
-   At 1080p, 88vh = 950px, plus 32+32 padding = 1014 ≤ 1080. */
+   768px viewport height, 88% = 676px, plus 24+24 padding = 724 ≤ 768.
+   At 1080p, 88% = 950px, plus 32+32 padding = 1014 ≤ 1080. */
 .login-figure {
   position: relative;
   flex: 0 0 auto;
-  height: clamp(460px, 88vh, 960px);
+  height: clamp(460px, 88%, 960px);
   animation: page-rise 700ms cubic-bezier(.4, 0, .2, 1);
 }
 .login-figure::before {
@@ -61,11 +61,11 @@
   flex: 0 1 440px;
   width: 100%;
   max-width: 440px;
-  padding: clamp(28px, 3.4vw, 44px);
+  padding: clamp(28px, 3.4%, 44px);
   border-radius: 24px;
   display: flex;
   flex-direction: column;
-  gap: clamp(18px, 2.2vw, 24px);
+  gap: clamp(18px, 2.2%, 24px);
   color: var(--text);
   animation: page-fade 500ms ease 120ms both;
 }
@@ -95,7 +95,7 @@
   gap: 6px;
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(40px, 5.4vw, 72px);
+  font-size: clamp(40px, 5.4%, 72px);
   line-height: 1;
   color: var(--ink-blue);
   letter-spacing: 0.01em;
@@ -127,7 +127,7 @@
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: clamp(14px, 2vw, 18px);
+  gap: clamp(14px, 2%, 18px);
 }
 
 .field {
@@ -273,8 +273,8 @@
     align-items: center;
     justify-content: flex-end;
     position: relative;
-    min-height: 100dvh;
-    padding: 0 clamp(14px, 4vw, 24px) clamp(20px, 4vh, 36px);
+    min-height: 100%;
+    padding: 0 clamp(14px, 4%, 24px) clamp(20px, 4%, 36px);
     overflow: hidden;
   }
 
@@ -323,16 +323,16 @@
     max-width: 400px;
     margin: 0;
     z-index: 2;
-    padding: clamp(14px, 2.4vh, 20px) clamp(18px, 4.5vw, 24px);
+    padding: clamp(14px, 2.4%, 20px) clamp(18px, 4.5%, 24px);
     border-radius: 20px;
-    gap: clamp(8px, 1.4vh, 12px);
+    gap: clamp(8px, 1.4%, 12px);
   }
   .login-card-head { gap: 4px; }
   .login-tag { font-size: 9px; letter-spacing: 0.34em; }
-  .login-mono { font-size: clamp(28px, 7vw, 38px); }
+  .login-mono { font-size: clamp(28px, 7%, 38px); }
   .login-date { font-size: 10px; letter-spacing: 0.26em; }
   .login-rule { display: none; }
-  .login-form { gap: clamp(6px, 0.9vh, 8px); }
+  .login-form { gap: clamp(6px, 0.9%, 8px); }
   .field { gap: 2px; }
   .field-lbl { font-size: 8.5px; letter-spacing: 0.26em; }
   .field input { font-size: 16px; padding: 7px 12px; border-radius: 10px; }
@@ -347,7 +347,7 @@
     gap: 10px;
   }
   .login-tag { font-size: 8.5px; }
-  .login-mono { font-size: clamp(24px, 7vw, 32px); }
+  .login-mono { font-size: clamp(24px, 7%, 32px); }
   .login-date { font-size: 9.5px; letter-spacing: 0.22em; }
   .login-form { gap: 6px; }
   .field { gap: 1px; }

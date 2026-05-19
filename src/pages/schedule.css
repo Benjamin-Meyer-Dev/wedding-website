@@ -1,0 +1,400 @@
+.sched {
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(24px, 4%, 48px) clamp(20px, 4%, 56px) clamp(16px, 2%, 32px);
+  animation: page-rise 460ms cubic-bezier(.4, 0, .2, 1);
+}
+
+/* ---------------- Page header ---------------- */
+.sched-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto clamp(28px, 4%, 44px);
+  max-width: 720px;
+}
+.sched-page-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  justify-content: center;
+  margin: 0 0 18px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  letter-spacing: 0.36em;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.sched-page-eyebrow-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+  max-width: 80px;
+}
+.sched-page-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(40px, 5%, 72px);
+  line-height: 1;
+  margin: 0 0 12px;
+  color: var(--ink-blue);
+  letter-spacing: -0.012em;
+}
+.sched-page-sub {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: clamp(13px, 1%, 15px);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+/* ---------------- Split layout ---------------- */
+.sched-split {
+  position: relative;
+  width: 100%;
+  max-width: 1180px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 32px 80px -32px rgba(21, 50, 74, 0.45);
+  isolation: isolate;
+}
+
+/* Diagonal accent seam where the two halves meet */
+.sched-split::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(58, 111, 149, 0.35) 20%,
+    rgba(58, 111, 149, 0.35) 80%,
+    transparent 100%);
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.sched-half {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-height: 420px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: filter 380ms cubic-bezier(.22, 1, .36, 1);
+}
+.sched-half:focus-visible { outline: none; }
+.sched-half:focus-visible .sched-half-inner { outline: 2px solid var(--accent); outline-offset: -10px; border-radius: 18px; }
+
+.sched-half-inner {
+  position: relative;
+  z-index: 1;
+  padding: clamp(36px, 5%, 64px) clamp(28px, 4%, 56px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+}
+
+/* When one half is hovered, the other fades back to draw focus */
+.sched-split:has(.sched-half:hover) .sched-half:not(:hover),
+.sched-split:has(.sched-half:focus-visible) .sched-half:not(:focus-visible) {
+  filter: brightness(0.92) saturate(0.85);
+}
+
+/* ---------------- Light side (ceremony) ---------------- */
+.sched-half--light {
+  background: linear-gradient(160deg, #ffffff 0%, var(--powder-mist) 60%, var(--powder-soft) 100%);
+  color: var(--ink-blue);
+}
+.sched-half--light .sched-eyebrow,
+.sched-half--light .sched-timeline-time { color: var(--accent); }
+.sched-half--light .sched-venue-addr,
+.sched-half--light .sched-timeline-label { color: var(--text-soft); }
+.sched-half--light .sched-eyebrow-rule { background: rgba(58, 111, 149, 0.45); }
+.sched-half--light .sched-timeline-dot {
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(58, 111, 149, 0.18);
+}
+.sched-half--light .sched-timeline-item::before {
+  background: rgba(58, 111, 149, 0.25);
+}
+
+/* ---------------- Dark side (reception) ---------------- */
+.sched-half--dark {
+  background: linear-gradient(200deg, var(--ink-blue) 0%, var(--accent-deep) 70%, var(--accent) 100%);
+  color: var(--powder-mist);
+}
+.sched-half--dark .sched-eyebrow,
+.sched-half--dark .sched-timeline-time { color: var(--accent-bright); }
+.sched-half--dark .sched-venue-addr,
+.sched-half--dark .sched-timeline-label { color: rgba(238, 244, 249, 0.78); }
+.sched-half--dark .sched-eyebrow-rule { background: rgba(216, 228, 236, 0.4); }
+.sched-half--dark .sched-title { color: var(--powder-mist); }
+.sched-half--dark .sched-time { color: var(--powder-mist); }
+.sched-half--dark .sched-venue-name { color: var(--powder-mist); }
+.sched-half--dark .sched-timeline-dot {
+  background: var(--accent-bright);
+  box-shadow: 0 0 0 4px rgba(168, 204, 224, 0.22);
+}
+.sched-half--dark .sched-timeline-item::before {
+  background: rgba(168, 204, 224, 0.3);
+}
+
+/* Subtle decorative motif behind each side */
+.sched-half--light::before,
+.sched-half--dark::before {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+.sched-half--light::before {
+  top: -60px;
+  right: -60px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168, 204, 224, 0.45), transparent 70%);
+}
+.sched-half--dark::before {
+  bottom: -80px;
+  left: -80px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168, 204, 224, 0.22), transparent 70%);
+}
+
+/* ---------------- Side header ---------------- */
+.sched-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.sched-eyebrow-rule {
+  flex: 1;
+  height: 1px;
+  max-width: 60px;
+}
+
+.sched-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(36px, 4.5%, 58px);
+  line-height: 1;
+  letter-spacing: -0.012em;
+}
+
+.sched-time {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(28px, 3.5%, 40px);
+  line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* Overview: small venue name + hint, only visible when NOT hovered */
+.sched-venue-overview {
+  margin: 4px 0 0;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+  transition: opacity 280ms ease, transform 320ms cubic-bezier(.22, 1, .36, 1);
+}
+.sched-hint {
+  margin: 2px 0 0;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  transition: opacity 220ms ease;
+}
+.sched-half:hover .sched-venue-overview,
+.sched-half:focus-visible .sched-venue-overview {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+.sched-half:hover .sched-hint,
+.sched-half:focus-visible .sched-hint {
+  opacity: 0;
+}
+
+/* Detail block — expands from 0 height on hover/focus */
+.sched-detail {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 520ms cubic-bezier(.22, 1, .36, 1),
+              opacity 320ms ease;
+}
+.sched-detail-track {
+  min-height: 0;
+  overflow: hidden;
+}
+.sched-detail-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-top: 14px;
+}
+.sched-half:hover .sched-detail,
+.sched-half:focus-visible .sched-detail {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition: grid-template-rows 580ms cubic-bezier(.22, 1, .36, 1),
+              opacity 360ms ease 80ms;
+}
+
+.sched-venue {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sched-venue-name {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+.sched-venue-addr {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+}
+
+/* ---------------- Timeline ---------------- */
+.sched-timeline {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.sched-timeline-item {
+  position: relative;
+  padding-left: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+/* vertical thread connecting dots */
+.sched-timeline-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  bottom: -22px;
+  left: 5.5px;
+  width: 1px;
+}
+.sched-timeline-dot {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  z-index: 1;
+}
+.sched-timeline-time {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.sched-timeline-label {
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* On touch devices, always show full detail (no hover) */
+@media (hover: none) {
+  .sched-detail {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+  .sched-venue-overview, .sched-hint { display: none; }
+  .sched-split:has(.sched-half:hover) .sched-half:not(:hover) { filter: none; }
+  .sched-half { cursor: default; }
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 860px) {
+  .sched-split {
+    grid-template-columns: 1fr;
+    border-radius: 24px;
+  }
+  .sched-split::after {
+    top: auto;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 1px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(58, 111, 149, 0.35) 20%,
+      rgba(58, 111, 149, 0.35) 80%,
+      transparent 100%);
+  }
+  .sched-half { min-height: 0; }
+  .sched-half-inner { padding: clamp(32px, 7%, 48px) clamp(22px, 5%, 36px); }
+}
+
+@media (max-width: 520px) {
+  .sched { padding: 16px 12px 32px; }
+  .sched-header { margin-bottom: 22px; }
+  .sched-page-eyebrow { gap: 10px; font-size: 10px; letter-spacing: 0.3em; }
+  .sched-page-eyebrow-rule { max-width: 50px; }
+  .sched-page-title { font-size: clamp(32px, 9%, 44px); }
+  .sched-page-sub { font-size: 12.5px; letter-spacing: 0.2em; }
+  .sched-half-inner { padding: 28px 22px; gap: 14px; }
+  .sched-title { font-size: clamp(32px, 9%, 40px); }
+  .sched-time { font-size: clamp(24px, 7%, 30px); }
+  .sched-timeline { gap: 14px; margin-top: 12px; }
+  .sched-timeline-item { grid-template-columns: 64px 12px 1fr; gap: 12px; }
+  .sched-timeline-item:not(:last-child)::before {
+    left: calc(64px + 12px + 6px - 1px);
+  }
+  .sched-timeline-time { font-size: 11px; letter-spacing: 0.14em; }
+  .sched-timeline-label { font-size: 13.5px; }
+}

@@ -1,25 +1,29 @@
+.app--page-home,
+.app--page-home .main { height: 100%; }
+
 .hero {
   position: relative;
-  min-height: 100dvh;
+  height: 100%;
+  min-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(32px, 5vw, 72px);
-  /* Padding scales with viewport HEIGHT (vh) rather than width so the
+  gap: clamp(24px, 3%, 44px);
+  /* Padding scales with viewport HEIGHT (%) rather than width so the
      photo never overflows on a short laptop screen with a wide monitor.
      Top min 84px clears the floating navbar (which ends at ~70px). */
-  padding: clamp(84px, 9vh, 100px) clamp(20px, 5vw, 64px) clamp(28px, 4vh, 44px);
+  padding: clamp(84px, 9%, 100px) clamp(20px, 5%, 64px) clamp(28px, 4%, 44px);
 }
 
 /* ---------- Portrait photo (the hero) ----------
    Sized by viewport HEIGHT so the photo is as tall as possible without
    forcing scroll. Width is derived from the image's natural aspect ratio.
-   Math: at 768px viewport height, 82vh = 630px + 84+30 = 744 ≤ 768. At
-   1080p, 82vh = 886px + 97+43 = 1026 ≤ 1080. */
+   Math: at 768px viewport height, 82% = 630px + 84+30 = 744 ≤ 768. At
+   1080p, 82% = 886px + 97+43 = 1026 ≤ 1080. */
 .hero-figure {
   position: relative;
   flex: 0 0 auto;
-  height: clamp(440px, 82vh, 900px);
+  height: 80%;
   animation: page-rise 700ms cubic-bezier(.4, 0, .2, 1);
 }
 
@@ -67,12 +71,12 @@
   flex: 0 1 520px;
   width: 100%;
   max-width: 520px;
-  padding: clamp(28px, 3.4vw, 44px);
+  padding: clamp(28px, 3.4%, 44px);
   border-radius: 24px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: clamp(14px, 2vw, 22px);
+  gap: clamp(14px, 2%, 22px);
   color: var(--text);
   animation: page-fade 500ms ease 120ms both;
 }
@@ -91,14 +95,14 @@
   margin: 0;
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(40px, 5vw, 80px);
+  font-size: clamp(40px, 5%, 80px);
   line-height: 0.96;
   letter-spacing: -0.014em;
   color: var(--ink-blue);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: clamp(2px, 0.6vw, 6px);
+  gap: clamp(2px, 0.6%, 6px);
 }
 .hero-names .name { font-feature-settings: "ss01" on, "lnum" on; }
 .hero-names .amp {
@@ -108,7 +112,7 @@
   color: var(--accent);
   font-size: 0.7em;
   line-height: 1;
-  margin-left: clamp(14px, 2vw, 32px);
+  margin-left: clamp(14px, 2%, 32px);
 }
 
 .hero-rule {
@@ -122,7 +126,7 @@
   margin: 0;
   font-family: var(--font-ui);
   font-weight: 400;
-  font-size: clamp(13px, 1vw, 15px);
+  font-size: clamp(13px, 1%, 15px);
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--text-soft);
@@ -130,12 +134,12 @@
 
 /* ---------- Countdown row ---------- */
 .hero-countdown {
-  margin-top: clamp(4px, 1vw, 10px);
+  margin-top: clamp(4px, 1%, 10px);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: clamp(8px, 1.4vw, 16px);
+  gap: clamp(8px, 1.4%, 16px);
   width: 100%;
-  padding-top: clamp(14px, 2vw, 22px);
+  padding-top: clamp(14px, 2%, 22px);
   border-top: 1px solid var(--rule-soft);
 }
 
@@ -151,7 +155,7 @@
 .hcd-num {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: clamp(24px, 2.8vw, 36px);
+  font-size: clamp(24px, 2.8%, 36px);
   line-height: 1;
   color: var(--ink-blue);
   font-variant-numeric: lining-nums tabular-nums;
@@ -172,6 +176,20 @@
    scaled from its bottom edge so its content shifts up — subject moves
    from ~50% of viewport to ~43%, giving the "image moved up a bit" feel
    the user asked for, without any layout restructuring. */
+/* Desktop tall-and-narrow: when the viewport gets taller than wide-ish,
+   80% of the viewport HEIGHT makes the image overflow horizontally and
+   crowd the content card. Step the figure height down as aspect ratio
+   gets more portrait. */
+@media (min-width: 861px) and (max-aspect-ratio: 5/4) {
+  .hero-figure { height: 65%; }
+}
+@media (min-width: 861px) and (max-aspect-ratio: 1/1) {
+  .hero-figure { height: 55%; }
+}
+@media (min-width: 861px) and (max-aspect-ratio: 4/5) {
+  .hero-figure { height: 45%; }
+}
+
 @media (max-width: 860px) {
   .hero {
     display: flex;
@@ -179,8 +197,8 @@
     align-items: center;
     justify-content: flex-end;
     position: relative;
-    min-height: 100dvh;
-    padding: 0 clamp(14px, 4vw, 24px) clamp(18px, 4vh, 32px);
+    min-height: 100%;
+    padding: 0 clamp(14px, 4%, 24px) clamp(18px, 4%, 32px);
     overflow: hidden;
   }
 
@@ -231,16 +249,16 @@
     max-width: 420px;
     margin: 0;
     z-index: 2;
-    padding: clamp(14px, 3vh, 22px) clamp(18px, 5vw, 24px);
+    padding: clamp(14px, 3%, 22px) clamp(18px, 5%, 24px);
     border-radius: 20px;
     align-items: center;
     text-align: center;
-    gap: clamp(8px, 1.4vh, 12px);
+    gap: clamp(8px, 1.4%, 12px);
   }
   .hero-tag { font-size: 9.5px; letter-spacing: 0.36em; }
   .hero-names {
     align-items: center;
-    font-size: clamp(28px, 7.5vw, 38px);
+    font-size: clamp(28px, 7.5%, 38px);
     line-height: 0.94;
     gap: 0;
   }
@@ -253,7 +271,7 @@
     gap: 6px;
   }
   .hcd-item { align-items: center; padding: 0; gap: 2px; }
-  .hcd-num { font-size: clamp(20px, 5vw, 26px); }
+  .hcd-num { font-size: clamp(20px, 5%, 26px); }
   .hcd-lbl { font-size: 8.5px; letter-spacing: 0.22em;
   }
 }
@@ -266,7 +284,7 @@
     gap: 8px;
   }
   .hero-tag { font-size: 9px; }
-  .hero-names { font-size: clamp(24px, 7vw, 32px); }
+  .hero-names { font-size: clamp(24px, 7%, 32px); }
   .hero-rule { width: 24px; }
   .hero-date { font-size: 9.5px; letter-spacing: 0.18em; }
   .hero-countdown {
@@ -274,7 +292,7 @@
     padding-top: 8px;
     gap: 4px;
   }
-  .hcd-num { font-size: clamp(17px, 4.4vw, 22px); }
+  .hcd-num { font-size: clamp(17px, 4.4%, 22px); }
   .hcd-lbl { font-size: 8px; letter-spacing: 0.18em; }
 }
 

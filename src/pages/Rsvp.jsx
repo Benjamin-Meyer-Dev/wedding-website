@@ -17,8 +17,8 @@ const IconCheck = () => (
 
 const IconX = () => (
   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor"
-       strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 4l8 8M12 4l-8 8" />
+       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4.5 4.5l7 7M11.5 4.5l-7 7" />
   </svg>
 )
 

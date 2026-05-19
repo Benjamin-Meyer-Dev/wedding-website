@@ -3,6 +3,7 @@ import NavBar from './components/NavBar.jsx'
 import Home from './pages/Home.jsx'
 import Login from './pages/Login.jsx'
 import Rsvp from './pages/Rsvp.jsx'
+import Schedule from './pages/Schedule.jsx'
 import LoadingScreen from './components/LoadingScreen.jsx'
 import BackgroundOrbs from './components/BackgroundOrbs.jsx'
 import { supabase } from './lib/supabase'
@@ -60,6 +61,7 @@ export default function App() {
         />
         <main className="main">
           {page === 'home' && <Home />}
+          {page === 'schedule' && <Schedule />}
           {page === 'rsvp' && <Rsvp />}
         </main>
         {intro}

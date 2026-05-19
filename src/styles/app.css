@@ -1,6 +1,6 @@
 .app {
   position: relative;
-  min-height: 100dvh;
+  min-height: 100%;
   background:
     radial-gradient(circle at 20% 8%, var(--powder-mist) 0%, transparent 55%),
     radial-gradient(circle at 88% 92%, var(--powder-deep) 0%, transparent 60%),
@@ -10,15 +10,17 @@
 .main {
   position: relative;
   z-index: 1;
-  min-height: 100dvh;
+  min-height: 100%;
 }
 
 /* Pages that aren't the photo-led hero need top padding so content clears
    the floating glass nav. The hero pages handle their own spacing. */
-.app--page-rsvp .main {
+.app--page-rsvp .main,
+.app--page-schedule .main {
   padding-top: 110px;
 }
 
 @media (max-width: 720px) {
-  .app--page-rsvp .main { padding-top: 72px; }
+  .app--page-rsvp .main,
+  .app--page-schedule .main { padding-top: 72px; }
 }
