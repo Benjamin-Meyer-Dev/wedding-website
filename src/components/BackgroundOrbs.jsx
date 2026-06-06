@@ -29,8 +29,8 @@ export default function BackgroundOrbs() {
             key={i}
             className="bg-orb"
             style={{
-              left: `${o.x}vw`,
-              top: `${o.y}vh`,
+              left: `${o.x}%`,
+              top: `${o.y}%`,
               width: `${o.size}px`,
               height: `${o.size}px`,
               background: `radial-gradient(circle at 35% 30%, ${stop0} 0%, ${stop1} 70%)`,

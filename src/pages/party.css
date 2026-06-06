@@ -1,0 +1,237 @@
+/* Compound `.scene.party` to outrank base `.scene` regardless of CSS import order. */
+.scene.party {
+  display: block;       /* normal block scroll — no flex overflow quirks */
+  overflow-y: auto;
+  scrollbar-gutter: stable both-edges; /* keep header centred whether or not it scrolls */
+  padding: var(--content-top) 32px 48px;
+}
+.party::-webkit-scrollbar { width: 6px; }
+
+.party-inner {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+.party-head { text-align: center; }
+/* The .party-sides gap separates header and content, so drop the extra
+   .page-head bottom margin (compound selector to outrank app.css's .page-head). */
+.page-head.party-head { margin-bottom: 0; }
+
+/* ---------------- His & Hers split ---------------- */
+.party-sides {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* per-side tone: her leans soft/light, his leans deep ink */
+.party-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+/* Her — warm dusty rose on cream; His — cool deep blue. Every accent below
+   (role text, badge, lead ring/glow, photo gradients, card tint) reads from
+   these per-side variables, so the two sides feel distinctly different. */
+.party-side--her {
+  --accent: #a85d72;
+  --accent-soft: #e2bcc5;
+  --accent-deep: #884a5d;
+  --party-deep: #5e3342;
+  --party-card: #faf4f2;
+  --party-card-border: rgba(168, 93, 114, 0.26);
+  --party-glow-rgb: 168, 93, 114;
+}
+.party-side--his {
+  --accent: #2d5a7a;
+  --accent-soft: #6ea7c9;
+  --accent-deep: #234a66;
+  --party-deep: #15324a;
+  --party-card: #f1f6fb;
+  --party-card-border: rgba(45, 90, 122, 0.22);
+  --party-glow-rgb: 45, 90, 122;
+}
+
+.party-side-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 23px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+/* central hairline with an italic ampersand, echoing the E & B monogram */
+.party-divider {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.party-divider::before,
+.party-divider::after {
+  content: '';
+  flex: 1;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, var(--rule-soft));
+}
+.party-divider::after { background: linear-gradient(180deg, var(--rule-soft), transparent); }
+.party-amp {
+  font-family: var(--font-amp);
+  font-style: italic;
+  font-size: 34px;
+  line-height: 1;
+  color: var(--accent);
+}
+
+/* ---------------- People (one uniform card for everyone) ---------------- */
+.party-people {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.party-person {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  padding: 16px 18px;
+  background: var(--party-card, var(--glass-bg));
+  border: 1px solid var(--party-card-border, var(--glass-border));
+  border-radius: 18px;
+  box-shadow: var(--glass-shadow);
+  text-align: left;
+  transition: transform 240ms cubic-bezier(.22, 1, .36, 1), box-shadow 240ms ease;
+}
+.party-person:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 24px 44px -22px rgba(21, 50, 74, 0.42);
+}
+
+/* lead = Maid of Honor / Best Man: same size, EXTRA ACCENTS only */
+.party-person--lead {
+  border: 1.5px solid var(--accent);
+  box-shadow:
+    0 24px 50px -26px rgba(var(--party-glow-rgb), 0.5),
+    0 0 0 4px rgba(var(--party-glow-rgb), 0.14);
+}
+.party-person--lead:hover {
+  box-shadow:
+    0 32px 58px -26px rgba(var(--party-glow-rgb), 0.55),
+    0 0 0 4px rgba(var(--party-glow-rgb), 0.2);
+}
+
+/* ---------------- Photo (uniform circle) ---------------- */
+.party-photo {
+  position: relative;
+  margin: 0;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.92);
+  background-color: var(--accent);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 12px 24px -14px rgba(21, 50, 74, 0.5);
+}
+.party-photo svg { width: 30px; height: 30px; opacity: 0.85; }
+.party-photo.tone-0 { background-image: linear-gradient(150deg, var(--accent-soft), var(--accent)); }
+.party-photo.tone-1 { background-image: linear-gradient(150deg, var(--accent), var(--accent-deep)); }
+.party-photo.tone-2 { background-image: linear-gradient(150deg, var(--accent-deep), var(--party-deep)); }
+/* lead photo gets an accent ring — another small accent, no size change */
+.party-person--lead .party-photo {
+  box-shadow: 0 0 0 2px var(--accent), 0 12px 24px -14px rgba(var(--party-glow-rgb), 0.5);
+}
+
+/* crown / flower badge tucked on the lead's photo */
+.party-badge {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  border: 2px solid var(--glass-bg);
+  box-shadow: 0 6px 14px -6px rgba(var(--party-glow-rgb), 0.7);
+  z-index: 3;
+}
+.party-badge svg { width: 15px; height: 15px; }
+
+/* ---------------- Card text ---------------- */
+.party-person-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.party-role {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.party-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.05;
+  color: var(--ink-blue);
+  letter-spacing: -0.01em;
+}
+.party-blurb {
+  margin: 2px 0 0;
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-soft);
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 860px) {
+  .party-sides { grid-template-columns: 1fr; gap: 24px; }
+  .party-side { gap: 16px; }
+  .party-people { max-width: 560px; }
+  .party-divider {
+    flex-direction: row;
+    align-self: auto;
+    width: 100%;
+    gap: 16px;
+  }
+  .party-divider::before,
+  .party-divider::after {
+    width: auto;
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, transparent, var(--rule-soft));
+  }
+  .party-divider::after { background: linear-gradient(90deg, var(--rule-soft), transparent); }
+}
+
+@media (max-width: 520px) {
+  .scene.party { padding-left: 20px; padding-right: 20px; }
+  .party-person { padding: 14px 14px; gap: 13px; grid-template-columns: 64px 1fr; }
+  .party-photo { width: 64px; height: 64px; }
+}

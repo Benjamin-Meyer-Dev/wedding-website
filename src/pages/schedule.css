@@ -1,400 +1,562 @@
+/* Registered so it animates as a real number — lets us transition the comet's
+   position at a fixed duration regardless of how many circles it spans. */
+@property --tl-progress {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
 .sched {
+  /* Ceremony elements take their blue from --accent; lighten it a touch on this
+     page so the afternoon (ceremony) side reads softer than the reception's
+     deeper ink. Reception uses --accent-deep/--ink-blue, so it's unaffected. */
+  --accent: #4a80a5;
   position: relative;
   min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: clamp(24px, 4%, 48px) clamp(20px, 4%, 56px) clamp(16px, 2%, 32px);
+  justify-content: flex-start;
+  height: 100%;
+  padding: var(--content-top) 32px 20px;
   animation: page-rise 460ms cubic-bezier(.4, 0, .2, 1);
 }
+/* Phones show the vertical timeline, which can exceed a short viewport — let it
+   scroll instead of clipping. Compound selector beats base `.scene`'s overflow:
+   hidden; on desktop the content fits, so no scrollbar appears. */
+.scene.sched { overflow-y: auto; }
+.sched::-webkit-scrollbar { width: 6px; }
 
-/* ---------------- Page header ---------------- */
-.sched-header {
+/* Hovering anywhere in this wrapper pauses the auto-rotation. */
+.sched-hero {
+  position: relative;
+  z-index: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  margin: 0 auto clamp(28px, 4%, 44px);
-  max-width: 720px;
+  width: 100%;
+  max-width: 1040px;
 }
-.sched-page-eyebrow {
+
+/* Cinematic aura behind the stage — colour follows the active phase. */
+.sched-aura {
+  position: absolute;
+  top: -6%;
+  left: 50%;
+  width: min(124%, 1180px);
+  height: 496px;
+  transform: translateX(-50%);
+  z-index: -1;
+  filter: blur(46px);
+  pointer-events: none;
+  opacity: 0.6;
+  transition: background 800ms ease;
+  animation: sched-aura 7s ease-in-out infinite;
+}
+.sched-aura--ceremony  { background: radial-gradient(50% 50% at 50% 38%, rgba(110, 167, 201, 0.62), transparent 70%); }
+.sched-aura--reception { background: radial-gradient(50% 50% at 50% 38%, rgba(45, 90, 122, 0.6), transparent 70%); }
+.sched-aura--idle      { background: radial-gradient(50% 50% at 50% 38%, rgba(168, 204, 224, 0.5), transparent 70%); }
+@keyframes sched-aura {
+  0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.5; }
+  50%      { transform: translateX(-50%) scale(1.08); opacity: 0.72; }
+}
+
+/* Page header — shared treatment, kept compact so the timeline still fits. */
+.sched .sched-head { margin-bottom: 18px; }
+
+/* legend — a quiet caption beneath the timeline */
+.sched-legend {
   display: flex;
   align-items: center;
-  gap: 16px;
-  width: 100%;
-  justify-content: center;
-  margin: 0 0 18px;
+  gap: 14px;
+  margin-top: 18px;
   font-family: var(--font-ui);
   font-weight: 500;
-  letter-spacing: 0.36em;
   font-size: 11px;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-.sched-page-eyebrow-rule {
-  flex: 1;
-  height: 1px;
-  background: var(--rule);
-  max-width: 80px;
-}
-.sched-page-title {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(40px, 5%, 72px);
-  line-height: 1;
-  margin: 0 0 12px;
-  color: var(--ink-blue);
-  letter-spacing: -0.012em;
-}
-.sched-page-sub {
-  margin: 0;
-  font-family: var(--font-ui);
-  font-weight: 400;
-  font-size: clamp(13px, 1%, 15px);
-  letter-spacing: 0.24em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--text-soft);
 }
+.sched-legend-item { display: inline-flex; align-items: center; gap: 8px; }
+.sched-legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+.sched-legend-dot--ceremony { background: var(--accent); }
+.sched-legend-dot--reception { background: var(--ink-blue); }
+.sched-legend-sep { color: var(--rule); }
 
-/* ---------------- Split layout ---------------- */
-.sched-split {
-  position: relative;
-  width: 100%;
-  max-width: 1180px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  border-radius: 28px;
-  overflow: hidden;
-  box-shadow: 0 32px 80px -32px rgba(21, 50, 74, 0.45);
-  isolation: isolate;
+/* ================================================================
+   Center stage — DESKTOP ONLY (shown via the horizontal media query).
+   ================================================================ */
+.sched-stage { display: none; }
+
+/* shell holds photo + text and carries the symmetric blur dissolve;
+   the blue flash sits outside it so it isn't blurred/faded by the shell */
+.stage-shell {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  /* slick crossfade: fade + gentle zoom out over the first half of the pulse's
+     travel, swap while hidden, then fade + settle in over the second half
+     (each 225ms, ease-in-out for a smooth in-and-out) */
+  transition: opacity 225ms ease-in-out, transform 225ms ease-in-out;
+  transform: scale(1) translateZ(0);
+  will-change: opacity, transform;
+}
+.sched-stage.is-covering .stage-shell {
+  opacity: 0;
+  transform: scale(1.03) translateZ(0);
 }
 
-/* Diagonal accent seam where the two halves meet */
-.sched-split::after {
+.stage-photo {
+  flex: 0 0 46%;
+  position: relative;
+  overflow: hidden;
+  background: var(--powder-deep);
+}
+/* themed placeholder shown until a real /timeline/*.jpg is dropped in */
+.stage-photo-ph {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.95);
+}
+.stage-photo-ph::before {
+  /* soft decorative ring behind the icon */
   content: '';
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 1px;
-  background: linear-gradient(180deg,
-    transparent 0%,
-    rgba(58, 111, 149, 0.35) 20%,
-    rgba(58, 111, 149, 0.35) 80%,
-    transparent 100%);
-  transform: translateX(-50%);
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  box-shadow: 0 0 0 16px rgba(255, 255, 255, 0.06);
+}
+.stage-photo-ph svg {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  opacity: 0.95;
+  animation: ph-float 7s ease-in-out infinite;
+}
+.stage-photo--ceremony .stage-photo-ph {
+  background:
+    radial-gradient(120% 100% at 28% 22%, rgba(255, 255, 255, 0.28), transparent 60%),
+    linear-gradient(150deg, var(--accent-soft), var(--accent));
+}
+.stage-photo--reception .stage-photo-ph {
+  background:
+    radial-gradient(120% 100% at 28% 22%, rgba(255, 255, 255, 0.18), transparent 60%),
+    linear-gradient(150deg, var(--accent-deep), var(--ink-blue));
+}
+.stage-photo--idle .stage-photo-ph {
+  background:
+    radial-gradient(120% 100% at 28% 22%, rgba(255, 255, 255, 0.22), transparent 60%),
+    linear-gradient(150deg, var(--accent-soft), var(--accent-deep));
+}
+/* the actual photo — wipes + zooms in once loaded, hiding the placeholder */
+.stage-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 28%;
+  opacity: 0;
+}
+.stage-img.is-loaded {
+  opacity: 1;
+  /* slow continuous Ken Burns drift while shown */
+  animation: stage-pan 11s ease-out both;
+}
+/* soft seam into the text panel, above the image */
+.stage-photo-fade {
+  position: absolute;
+  inset: 0;
   pointer-events: none;
-  z-index: 2;
+  background: linear-gradient(100deg, transparent 56%, var(--glass-bg-deep) 100%);
 }
 
-.sched-half {
-  position: relative;
-  display: flex;
-  align-items: stretch;
-  min-height: 420px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: filter 380ms cubic-bezier(.22, 1, .36, 1);
-}
-.sched-half:focus-visible { outline: none; }
-.sched-half:focus-visible .sched-half-inner { outline: 2px solid var(--accent); outline-offset: -10px; border-radius: 18px; }
-
-.sched-half-inner {
-  position: relative;
-  z-index: 1;
-  padding: clamp(36px, 5%, 64px) clamp(28px, 4%, 56px);
+.stage-text {
+  flex: 1;
+  min-width: 0;
+  padding: 48px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 14px;
-  width: 100%;
 }
 
-/* When one half is hovered, the other fades back to draw focus */
-.sched-split:has(.sched-half:hover) .sched-half:not(:hover),
-.sched-split:has(.sched-half:focus-visible) .sched-half:not(:focus-visible) {
-  filter: brightness(0.92) saturate(0.85);
-}
-
-/* ---------------- Light side (ceremony) ---------------- */
-.sched-half--light {
-  background: linear-gradient(160deg, #ffffff 0%, var(--powder-mist) 60%, var(--powder-soft) 100%);
-  color: var(--ink-blue);
-}
-.sched-half--light .sched-eyebrow,
-.sched-half--light .sched-timeline-time { color: var(--accent); }
-.sched-half--light .sched-venue-addr,
-.sched-half--light .sched-timeline-label { color: var(--text-soft); }
-.sched-half--light .sched-eyebrow-rule { background: rgba(58, 111, 149, 0.45); }
-.sched-half--light .sched-timeline-dot {
-  background: var(--accent);
-  box-shadow: 0 0 0 4px rgba(58, 111, 149, 0.18);
-}
-.sched-half--light .sched-timeline-item::before {
-  background: rgba(58, 111, 149, 0.25);
-}
-
-/* ---------------- Dark side (reception) ---------------- */
-.sched-half--dark {
-  background: linear-gradient(200deg, var(--ink-blue) 0%, var(--accent-deep) 70%, var(--accent) 100%);
-  color: var(--powder-mist);
-}
-.sched-half--dark .sched-eyebrow,
-.sched-half--dark .sched-timeline-time { color: var(--accent-bright); }
-.sched-half--dark .sched-venue-addr,
-.sched-half--dark .sched-timeline-label { color: rgba(238, 244, 249, 0.78); }
-.sched-half--dark .sched-eyebrow-rule { background: rgba(216, 228, 236, 0.4); }
-.sched-half--dark .sched-title { color: var(--powder-mist); }
-.sched-half--dark .sched-time { color: var(--powder-mist); }
-.sched-half--dark .sched-venue-name { color: var(--powder-mist); }
-.sched-half--dark .sched-timeline-dot {
-  background: var(--accent-bright);
-  box-shadow: 0 0 0 4px rgba(168, 204, 224, 0.22);
-}
-.sched-half--dark .sched-timeline-item::before {
-  background: rgba(168, 204, 224, 0.3);
-}
-
-/* Subtle decorative motif behind each side */
-.sched-half--light::before,
-.sched-half--dark::before {
-  content: '';
-  position: absolute;
-  pointer-events: none;
-  z-index: 0;
-}
-.sched-half--light::before {
-  top: -60px;
-  right: -60px;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(168, 204, 224, 0.45), transparent 70%);
-}
-.sched-half--dark::before {
-  bottom: -80px;
-  left: -80px;
-  width: 260px;
-  height: 260px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(168, 204, 224, 0.22), transparent 70%);
-}
-
-/* ---------------- Side header ---------------- */
-.sched-eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0;
+.stage-phase {
+  display: block;
   font-family: var(--font-ui);
-  font-weight: 500;
-  letter-spacing: 0.34em;
-  font-size: 11px;
-  text-transform: uppercase;
-}
-.sched-eyebrow-rule {
-  flex: 1;
-  height: 1px;
-  max-width: 60px;
-}
-
-.sched-title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
-  font-size: clamp(36px, 4.5%, 58px);
-  line-height: 1;
-  letter-spacing: -0.012em;
-}
-
-.sched-time {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(28px, 3.5%, 40px);
-  line-height: 1;
-  font-variant-numeric: lining-nums tabular-nums;
-  letter-spacing: 0.02em;
-}
-
-/* Overview: small venue name + hint, only visible when NOT hovered */
-.sched-venue-overview {
-  margin: 4px 0 0;
-  font-family: var(--font-ui);
-  font-weight: 500;
-  font-size: 14px;
-  letter-spacing: 0.06em;
-  opacity: 0.85;
-  transition: opacity 280ms ease, transform 320ms cubic-bezier(.22, 1, .36, 1);
-}
-.sched-hint {
-  margin: 2px 0 0;
-  font-family: var(--font-ui);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 10px;
-  letter-spacing: 0.32em;
+  letter-spacing: 0.34em;
   text-transform: uppercase;
-  opacity: 0.55;
-  transition: opacity 220ms ease;
+  color: var(--accent);
 }
-.sched-half:hover .sched-venue-overview,
-.sched-half:focus-visible .sched-venue-overview {
-  opacity: 0;
-  transform: translateY(-4px);
+.stage-title {
+  margin: 12px 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 50px;
+  line-height: 1.02;
+  color: var(--ink-blue);
+  letter-spacing: -0.014em;
 }
-.sched-half:hover .sched-hint,
-.sched-half:focus-visible .sched-hint {
-  opacity: 0;
+.stage-title--idle { font-style: italic; }
+.stage-time {
+  display: block;
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--accent-deep);
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: 0.01em;
 }
-
-/* Detail block — expands from 0 height on hover/focus */
-.sched-detail {
-  display: grid;
-  grid-template-rows: 0fr;
-  opacity: 0;
-  transition: grid-template-rows 520ms cubic-bezier(.22, 1, .36, 1),
-              opacity 320ms ease;
-}
-.sched-detail-track {
-  min-height: 0;
-  overflow: hidden;
-}
-.sched-detail-inner {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding-top: 14px;
-}
-.sched-half:hover .sched-detail,
-.sched-half:focus-visible .sched-detail {
-  grid-template-rows: 1fr;
-  opacity: 1;
-  transition: grid-template-rows 580ms cubic-bezier(.22, 1, .36, 1),
-              opacity 360ms ease 80ms;
-}
-
-.sched-venue {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.sched-venue-name {
-  margin: 0;
+.stage-venue {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 16px 0 0;
   font-family: var(--font-ui);
-  font-weight: 500;
-  font-size: 15px;
-  letter-spacing: 0.04em;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  color: var(--accent-deep);
 }
-.sched-venue-addr {
-  margin: 0;
+.stage-venue svg { width: 15px; height: 15px; flex: none; opacity: 0.8; }
+.stage-desc {
+  margin: 9px 0 0;
   font-family: var(--font-ui);
   font-weight: 400;
-  font-size: 13px;
-  letter-spacing: 0.06em;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-soft);
+  max-width: 36ch;
+}
+.stage-next {
+  margin: 16px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule-soft);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.sched-stage--reception .stage-phase { color: var(--accent-deep); }
+
+/* ================================================================
+   Timeline — base layout is VERTICAL (mobile-first, details visible).
+   ================================================================ */
+.timeline {
+  --marker: 38px;
+  --tl-progress: 0;
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  /* fixed 450ms for the comet to reach its target — any distance, same time */
+  transition: --tl-progress 450ms linear;
 }
 
-/* ---------------- Timeline ---------------- */
-.sched-timeline {
-  list-style: none;
-  margin: 4px 0 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+/* The spine. Light (afternoon) -> deep ink (night). */
+.timeline-line {
+  position: absolute;
+  left: 18px;
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(180deg,
+    var(--accent-soft) 0%,
+    var(--accent) 45%,
+    var(--ink-blue) 100%);
+  transform-origin: top center;
+  animation: tl-draw-v 900ms cubic-bezier(.22, 1, .36, 1) 120ms both;
 }
-.sched-timeline-item {
+/* traveling comet/progress — horizontal layout only */
+.timeline-progress { display: none; }
+
+.tl-node {
   position: relative;
-  padding-left: 28px;
+  padding: 0 0 30px 56px;
+  cursor: pointer;
+  outline: none;
+  animation: tl-pop 620ms cubic-bezier(.22, 1, .36, 1) backwards;
+  animation-delay: calc(var(--i) * 80ms + 220ms);
+}
+.tl-node:last-child { padding-bottom: 0; }
+.tl-node:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 6px;
+  border-radius: 14px;
+}
+
+/* circular icon medallion sitting on the spine — always solid */
+.tl-marker {
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: var(--marker);
+  height: var(--marker);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--powder-mist);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  box-shadow: 0 6px 16px -8px rgba(21, 50, 74, 0.5);
+  z-index: 1;
+  transition: transform .5s cubic-bezier(.22, 1, .36, 1),
+              box-shadow .5s ease,
+              background .5s ease,
+              border-color .5s ease,
+              color .5s ease;
+}
+.tl-marker svg { width: 18px; height: 18px; }
+.tl-node--reception .tl-marker {
+  background: var(--powder-mist);
+  border-color: var(--accent-deep);
+  color: var(--accent-deep);
+}
+/* active medallion fills solid + grows (no pulse) */
+.tl-node.is-active .tl-marker {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  transform: scale(1.16);
+  box-shadow: 0 14px 26px -8px rgba(21, 50, 74, 0.65);
+}
+.tl-node--reception.is-active .tl-marker {
+  background: var(--ink-blue);
+  border-color: var(--ink-blue);
+  color: var(--accent-bright);
+}
+
+.tl-base {
   display: flex;
   flex-direction: column;
   gap: 3px;
+  transition: opacity .4s ease;
 }
-/* vertical thread connecting dots */
-.sched-timeline-item:not(:last-child)::before {
-  content: '';
-  position: absolute;
-  top: 16px;
-  bottom: -22px;
-  left: 5.5px;
-  width: 1px;
-}
-.sched-timeline-dot {
-  position: absolute;
-  top: 5px;
-  left: 0;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  z-index: 1;
-}
-.sched-timeline-time {
+.tl-time {
   font-family: var(--font-ui);
   font-weight: 500;
-  font-size: 10.5px;
+  font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
+  color: var(--accent);
   font-variant-numeric: lining-nums tabular-nums;
 }
-.sched-timeline-label {
+.tl-node--reception .tl-time { color: var(--accent-deep); }
+.tl-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 23px;
+  line-height: 1.1;
+  color: var(--ink-blue);
+  letter-spacing: -0.01em;
+}
+
+/* Inline detail card — visible in the vertical layout, hidden on desktop. */
+.tl-card {
+  margin-top: 10px;
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+.tl-card-phase {
+  display: block;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 9.5px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.tl-node--reception .tl-card-phase { color: var(--accent-deep); }
+.tl-card-time {
+  margin: 4px 0 0;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.tl-node--reception .tl-card-time { color: var(--accent-deep); }
+.tl-card-venue {
+  margin: 5px 0 0;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  color: var(--ink-blue);
+}
+.tl-card-desc {
+  margin: 6px 0 0;
   font-family: var(--font-ui);
   font-weight: 400;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-soft);
 }
 
-/* On touch devices, always show full detail (no hover) */
-@media (hover: none) {
-  .sched-detail {
-    grid-template-rows: 1fr;
-    opacity: 1;
+/* ================================================================
+   HORIZONTAL journey + STAGE — only when there's room AND a pointer.
+   ================================================================ */
+@media (min-width: 821px) and (hover: hover) {
+  .sched-stage {
+    position: relative;
+    display: flex;
+    width: 100%;
+    max-width: 1020px;
+    /* fixed (content-independent) height so the hero doesn't resize between
+       cards — text just centres within it. Sized to leave room for the
+       timeline + legend below it on a standard desktop screen. */
+    height: 360px;
+    margin: 0 auto 24px;
+    border: 0; /* drop the glass hairline so the photo bleeds to the edge */
+    border-radius: 28px;
+    overflow: hidden;
+    animation: stage-in 620ms cubic-bezier(.22, 1, .36, 1) 60ms both;
   }
-  .sched-venue-overview, .sched-hint { display: none; }
-  .sched-split:has(.sched-half:hover) .sched-half:not(:hover) { filter: none; }
-  .sched-half { cursor: default; }
-}
 
-/* ---------------- Responsive ---------------- */
-@media (max-width: 860px) {
-  .sched-split {
-    grid-template-columns: 1fr;
-    border-radius: 24px;
+  .timeline {
+    --tl-pad-top: 20px;
+    max-width: 1020px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: var(--tl-pad-top) 0 12px;
   }
-  .sched-split::after {
-    top: auto;
+
+  .timeline-line {
+    left: calc(50% / var(--tl-count));
+    right: calc(50% / var(--tl-count));
+    top: calc(var(--tl-pad-top) + var(--marker) / 2 - 1px);
     bottom: auto;
-    left: 0;
-    right: 0;
     width: auto;
-    height: 1px;
+    height: 2px;
+    transform-origin: left center;
+    animation: tl-draw-h 1000ms cubic-bezier(.22, 1, .36, 1) 120ms both;
+    background: linear-gradient(90deg,
+      var(--accent-soft) 0%,
+      var(--accent) 45%,
+      var(--ink-blue) 100%);
+  }
+
+  /* the comet — a glowing fill that travels along the line to the
+     active node, with a bright leading head */
+  .timeline-progress {
+    display: block;
+    position: absolute;
+    left: calc(50% / var(--tl-count));
+    top: calc(var(--tl-pad-top) + var(--marker) / 2 - 1.5px);
+    height: 4px;
+    width: calc(var(--tl-progress) * (100% - 100% / var(--tl-count)));
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent-soft), var(--accent-bright));
+    box-shadow: 0 0 18px rgba(110, 167, 201, 0.85);
+    /* width follows the animated --tl-progress (transitioned on .timeline) */
+  }
+  .timeline-progress::after {
+    content: '';
+    position: absolute;
+    right: -7px;
     top: 50%;
     transform: translateY(-50%);
-    background: linear-gradient(90deg,
-      transparent 0%,
-      rgba(58, 111, 149, 0.35) 20%,
-      rgba(58, 111, 149, 0.35) 80%,
-      transparent 100%);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff 0%, var(--accent-bright) 55%, var(--accent) 100%);
+    box-shadow: 0 0 22px 6px rgba(110, 167, 201, 0.9);
+    animation: comet-pulse 1.5s ease-in-out infinite;
   }
-  .sched-half { min-height: 0; }
-  .sched-half-inner { padding: clamp(32px, 7%, 48px) clamp(22px, 5%, 36px); }
+
+  .tl-node {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .tl-node:focus-visible { outline-offset: 4px; }
+
+  .tl-marker {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 14px;
+    flex: none;
+  }
+
+  .tl-base { align-items: center; gap: 4px; }
+  .tl-title { padding: 0 6px; }
+
+  /* details live in the stage on desktop, so hide the inline card */
+  .tl-card { display: none; }
+
+  /* keep the circles solid; only fade the LABELS of inactive nodes */
+  .timeline.has-active .tl-node:not(.is-active) .tl-base { opacity: 0.45; }
+
+  /* let the comet arrive first, THEN populate the circle quickly (a snap,
+     not a slow fade). The delay only applies in the "to active" direction;
+     un-highlighting stays immediate. */
+  .tl-node.is-active .tl-marker {
+    transition: background .16s ease, border-color .16s ease, color .16s ease,
+                transform .24s cubic-bezier(.34, 1.4, .5, 1), box-shadow .28s ease;
+    transition-delay: 0.37s; /* fire just as the comet head reaches behind the circle */
+  }
 }
 
+/* ---------------- Header tweaks for small phones ---------------- */
 @media (max-width: 520px) {
-  .sched { padding: 16px 12px 32px; }
-  .sched-header { margin-bottom: 22px; }
-  .sched-page-eyebrow { gap: 10px; font-size: 10px; letter-spacing: 0.3em; }
-  .sched-page-eyebrow-rule { max-width: 50px; }
-  .sched-page-title { font-size: clamp(32px, 9%, 44px); }
-  .sched-page-sub { font-size: 12.5px; letter-spacing: 0.2em; }
-  .sched-half-inner { padding: 28px 22px; gap: 14px; }
-  .sched-title { font-size: clamp(32px, 9%, 40px); }
-  .sched-time { font-size: clamp(24px, 7%, 30px); }
-  .sched-timeline { gap: 14px; margin-top: 12px; }
-  .sched-timeline-item { grid-template-columns: 64px 12px 1fr; gap: 12px; }
-  .sched-timeline-item:not(:last-child)::before {
-    left: calc(64px + 12px + 6px - 1px);
-  }
-  .sched-timeline-time { font-size: 11px; letter-spacing: 0.14em; }
-  .sched-timeline-label { font-size: 13.5px; }
+  .sched { padding: 8px 16px 32px; }
+  .sched-legend { gap: 12px; font-size: 10px; }
+}
+
+/* ---------------- Animations ---------------- */
+@keyframes tl-pop {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes stage-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* slow continuous Ken Burns drift while a photo is shown */
+@keyframes stage-pan {
+  from { transform: scale(1.12) translate(1.5%, -1%); }
+  to   { transform: scale(1.04) translate(-1.5%, 1%); }
+}
+/* gentle vertical float of the placeholder icon (a drift, not a pulse) */
+@keyframes ph-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-7px); }
+}
+@keyframes tl-draw-v { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes tl-draw-h { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes comet-pulse {
+  0%, 100% { box-shadow: 0 0 18px 4px rgba(110, 167, 201, 0.8); }
+  50%      { box-shadow: 0 0 30px 9px rgba(110, 167, 201, 1); }
+}
+
+/* ---------------- Reduced motion ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  .sched,
+  .tl-node,
+  .timeline-line,
+  .sched-stage,
+  .stage-photo-ph svg { animation: none; }
+  .stage-img.is-loaded { animation: none; opacity: 1; }
+  .stage-shell { opacity: 1 !important; transform: none !important; transition: none; }
+  .timeline { transition: none; }
+  .tl-card, .tl-marker, .tl-node, .tl-base { transition: none; }
+  .sched-aura,
+  .timeline-progress::after { animation: none; }
 }

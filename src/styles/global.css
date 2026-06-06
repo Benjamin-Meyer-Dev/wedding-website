@@ -22,9 +22,11 @@
 
   /* Light frosted glass — slightly tinted to feel native on the powder blue
      surface rather than a stark white pop. */
-  --glass-bg: rgba(255, 255, 255, 0.55);
-  --glass-bg-hover: rgba(255, 255, 255, 0.72);
-  --glass-bg-deep: rgba(255, 255, 255, 0.82);
+  /* Cards are solid/opaque (no see-through). Kept as tokens so every panel,
+     nav, and card shares the same surface colour. */
+  --glass-bg: #ffffff;
+  --glass-bg-hover: #eef4f9;
+  --glass-bg-deep: #ffffff;
   --glass-border: rgba(255, 255, 255, 0.7);
   --glass-border-strong: rgba(58, 111, 149, 0.4);
   --glass-shadow: 0 26px 60px -22px rgba(21, 50, 74, 0.32);
@@ -41,17 +43,26 @@
   --font-display: 'Playfair Display', Georgia, serif;
   --font-amp: 'Playfair Display', Georgia, serif;
   --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Fixed-navbar geometry → page content offset. --topbar-h is measured live by
+     NavBar (its rendered height, re-measured on resize and when the web font
+     loads); --nav-top mirrors the navbar's fixed top inset per breakpoint. Pages
+     begin their content exactly 30px below the navbar's bottom edge. */
+  --nav-top: 18px;
+  --content-top: calc(var(--nav-top) + var(--topbar-h, 58px) + 30px);
 }
+
+/* Mobile navbar sits higher (see .topbar @media); keep --nav-top in sync. */
+@media (max-width: 860px) { :root { --nav-top: 8px; } }
 
 /* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 html, body, #root { height: 100%; }
-html {
-  /* Reserve scrollbar space always so the viewport width doesn't change
-     when navigating from a non-scrolling page to a scrolling one — keeps
-     the centered floating navbar from jumping sideways. */
-  scrollbar-gutter: stable;
-}
+/* No scrollbar-gutter on <html>: the root never scrolls (.app is height:100%
+   overflow:hidden), so reserving a root gutter just paints an empty strip to
+   the right of each scene's own scrollbar. Scroll pages reserve their own
+   space with `scrollbar-gutter: stable both-edges`, and the fixed navbar can't
+   jump because the viewport never gains a scrollbar. */
 body {
   margin: 0;
   background: var(--bg);
@@ -101,6 +112,10 @@ input, textarea, [contenteditable] {
   background: var(--rule);
 }
 .rule.short { width: 28px; }
+
+/* Lucide icons — slightly lighter stroke than the default (2) to match the
+   site's delicate line work. Size/colour still come from each icon's context. */
+.lucide { stroke-width: 1.7; }
 
 /* Glass panel utility */
 .glass {

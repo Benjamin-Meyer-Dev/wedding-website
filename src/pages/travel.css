@@ -1,0 +1,226 @@
+.travel {
+  /* phase tones, in sync with the schedule page */
+  --ceremony: #4a80a5;
+  --reception: var(--accent-deep);
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: var(--content-top) 32px 32px;
+}
+/* Stacked venue cards can exceed a short viewport on phones/landscape — let the
+   page scroll instead of clipping. Compound selector beats base `.scene`'s
+   overflow: hidden; on desktop everything fits, so no scrollbar appears. */
+.scene.travel { overflow-y: auto; }
+.travel::-webkit-scrollbar { width: 6px; }
+
+.travel-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 24px;
+  width: 100%;
+  max-width: 1120px;
+  min-height: 100%; /* was height:100% — let content grow so the page can scroll */
+}
+
+/* ---------------- Header ---------------- */
+.travel-head { text-align: center; }
+
+/* ---------------- Venue cards ---------------- */
+.travel-venues {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 28px;
+  width: 100%;
+}
+
+/* one cohesive glass card: map on top, details on the same panel below */
+.tv-venue {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 22px;
+  overflow: hidden;
+  transition: transform 380ms cubic-bezier(.22, 1, .36, 1), box-shadow 380ms ease;
+}
+.tv-venue:hover { transform: translateY(-8px); }
+.tv-venue--ceremony:hover  { box-shadow: 0 44px 84px -34px rgba(74, 128, 165, 0.55); }
+.tv-venue--reception:hover { box-shadow: 0 44px 84px -34px rgba(45, 90, 122, 0.55); }
+
+/* ---- map (top of card) ---- */
+.tv-map {
+  position: relative;
+  width: 100%;
+  height: 224px;
+  overflow: hidden;
+  background: var(--powder-deep);
+  border-bottom: 1px solid var(--glass-border);
+}
+/* instant placeholder shown until the deferred iframe loads in */
+.tv-map-ph {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  background:
+    linear-gradient(var(--rule-soft) 1px, transparent 1px) 0 0 / 100% 30px,
+    linear-gradient(90deg, var(--rule-soft) 1px, transparent 1px) 0 0 / 30px 100%,
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.55), transparent 68%),
+    var(--powder-deep);
+}
+.tv-map-ph svg { width: 40px; height: 40px; opacity: 0.8; animation: tv-pin 2.4s ease-in-out infinite; }
+@keyframes tv-pin { 0%, 100% { transform: translateY(0); opacity: 0.65; } 50% { transform: translateY(-5px); opacity: 1; } }
+
+.tv-map iframe {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  opacity: 0;
+  filter: saturate(0.92);
+  transition: opacity 600ms ease, filter 380ms ease;
+}
+.tv-map iframe.is-loaded { opacity: 1; }
+.tv-venue:hover .tv-map iframe.is-loaded { filter: saturate(1); }
+
+/* periodic light sheen across the map */
+.tv-map-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.26) 50%, transparent 60%);
+  background-size: 250% 100%;
+  background-position: 160% 0;
+  mix-blend-mode: screen;
+  animation: tv-sheen 6.5s ease-in-out infinite;
+}
+.tv-venue--reception .tv-map-sheen { animation-delay: 3.25s; }
+@keyframes tv-sheen {
+  0%, 72%   { background-position: 160% 0; }
+  93%, 100% { background-position: -60% 0; }
+}
+
+/* ---- details (bottom of card) ---- */
+.tv-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  padding: 24px 26px 26px;
+}
+.tv-phase {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+.tv-venue--ceremony .tv-phase { color: var(--ceremony); }
+.tv-venue--reception .tv-phase { color: var(--reception); }
+.tv-name {
+  margin: 4px 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.05;
+  color: var(--ink-blue);
+  letter-spacing: -0.012em;
+}
+.tv-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 10px 0 0;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 13.5px;
+  letter-spacing: 0.04em;
+  color: var(--accent-deep);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.tv-addr {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 7px 0 0;
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-soft);
+}
+.tv-time svg, .tv-addr svg { width: 15px; height: 15px; flex: none; opacity: 0.85; }
+.tv-addr svg { margin-top: 1px; color: var(--accent); }
+
+/* ---------------- Journey connector ---------------- */
+.travel-route {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.travel-route-line {
+  flex: 1;
+  width: 2px;
+  min-height: 22px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(to bottom, var(--accent) 0 5px, transparent 5px 12px);
+  animation: route-flow 1.1s linear infinite;
+}
+@keyframes route-flow { to { background-position: 0 12px; } }
+.travel-route-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: var(--glass-bg-deep);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 12px 26px -16px rgba(21, 50, 74, 0.55);
+  color: var(--accent);
+  animation: badge-pulse 2.6s ease-out infinite;
+}
+@keyframes badge-pulse {
+  0%        { box-shadow: 0 12px 26px -16px rgba(21, 50, 74, 0.55), 0 0 0 0 rgba(110, 167, 201, 0.5); }
+  70%, 100% { box-shadow: 0 12px 26px -16px rgba(21, 50, 74, 0.55), 0 0 0 16px rgba(110, 167, 201, 0); }
+}
+.travel-route-badge svg { width: 22px; height: 22px; }
+.travel-route-time {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  white-space: nowrap;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 860px) {
+  .travel { padding: var(--content-top) 32px 24px; }
+  .travel-venues { flex-direction: column; align-items: stretch; gap: 16px; }
+  .tv-map { height: 144px; }
+  .tv-name { font-size: 28px; }
+  .travel-route { flex-direction: row; align-self: center; gap: 12px; }
+  .travel-route-line {
+    width: auto;
+    height: 2px;
+    min-height: 0;
+    min-width: 20px;
+    background: repeating-linear-gradient(to right, var(--accent) 0 5px, transparent 5px 12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tv-venue, .tv-map iframe { transition: none; }
+  .tv-map-sheen, .tv-map-ph svg, .travel-route-line, .travel-route-badge { animation: none; }
+}

@@ -1,71 +1,22 @@
-.rsvp {
-  position: relative;
-  min-height: 100%;
-  display: flex;
-  justify-content: center;
-  padding: clamp(24px, 4%, 48px) clamp(20px, 4%, 56px) clamp(16px, 2%, 32px);
-  animation: page-rise 460ms cubic-bezier(.4, 0, .2, 1);
+/* Compound `.scene.rsvp` to outrank base `.scene` regardless of CSS import order. */
+.scene.rsvp {
+  display: block;       /* normal block scroll — no flex overflow quirks */
+  overflow-y: auto;            /* graceful scroll only if a guest's card is very tall */
+  scrollbar-gutter: stable both-edges; /* keep header centred whether or not it scrolls */
+  padding: var(--content-top) 32px 20px;
 }
+.rsvp::-webkit-scrollbar { width: 6px; }
 
-.rsvp-shell {
+.rsvp-inner {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 1280px;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-/* ---------------- Header ---------------- */
-.rsvp-header {
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  margin: 0 auto clamp(32px, 5%, 56px);
-  max-width: 720px;
-}
-
-.rsvp-eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-  justify-content: center;
-  margin: 0 0 22px;
-  font-family: var(--font-ui);
-  font-weight: 500;
-  letter-spacing: 0.36em;
-  font-size: 11px;
-  color: var(--accent);
-  text-transform: uppercase;
-}
-.rsvp-eyebrow-rule {
-  flex: 1;
-  height: 1px;
-  background: var(--rule);
-  max-width: 140px;
-}
-
-.rsvp-title {
-  font-family: var(--font-display);
-  font-style: normal;
-  font-weight: 400;
-  font-size: clamp(40px, 6%, 76px);
-  line-height: 1.04;
-  margin: 0 0 16px;
-  color: var(--ink-blue);
-  letter-spacing: -0.014em;
-}
-
-.rsvp-deadline {
-  font-family: var(--font-ui);
-  font-weight: 400;
-  font-size: clamp(14px, 1.05%, 16px);
-  color: var(--text-soft);
-  margin: 0;
-  line-height: 1.55;
+  gap: 11px;
 }
 
 /* ---------------- Card grid ---------------- */
@@ -86,7 +37,7 @@
 
 .rsvp-card {
   position: relative;
-  background: rgba(255, 255, 255, 0.92);
+  background: #ffffff;
   border: 1px solid var(--rule-soft);
   border-radius: 22px;
   padding: clamp(28px, 3%, 44px);
@@ -102,7 +53,7 @@
 }
 
 .rsvp-card.is-answered {
-  background: rgba(238, 244, 249, 0.92);
+  background: var(--powder-mist);
   border-color: rgba(58, 111, 149, 0.4);
   box-shadow: 0 18px 44px -22px rgba(58, 111, 149, 0.35);
 }
@@ -298,7 +249,7 @@
   max-width: 240px;
   padding: 0;
   margin: 0;
-  background: rgba(255, 255, 255, 0.65);
+  background: #ffffff;
   border: 1px solid var(--rule-soft);
   border-radius: 16px;
   overflow: hidden;
@@ -391,7 +342,7 @@
 
 .rsvp-meal-tile:hover {
   border-color: var(--rule);
-  background: rgba(255, 255, 255, 0.85);
+  background: #ffffff;
   box-shadow: 0 22px 40px -18px rgba(21, 50, 74, 0.4);
   transform: translateY(-3px);
 }
@@ -419,7 +370,7 @@
     0 0 0 2px rgba(58, 111, 149, 0.25);
 }
 .rsvp-meal-tile.is-on {
-  background: rgba(255, 255, 255, 0.95);
+  background: #ffffff;
 }
 .rsvp-meal-tile.is-on .rsvp-meal-image {
   filter: saturate(1.12) brightness(1.05);
@@ -455,8 +406,8 @@
 /* When one tile in a grid is selected, fade and desaturate the others —
    and lock out the hover effects so only the chosen meal animates. */
 .rsvp-meal-grid:has(.rsvp-meal-tile.is-on) .rsvp-meal-tile:not(.is-on) {
-  opacity: 0.45;
-  transition: opacity 240ms cubic-bezier(.4, 0, .2, 1),
+  filter: grayscale(0.55) brightness(0.98);
+  transition: filter 240ms cubic-bezier(.4, 0, .2, 1),
               border-color 240ms cubic-bezier(.4, 0, .2, 1),
               box-shadow 240ms cubic-bezier(.4, 0, .2, 1),
               transform 200ms cubic-bezier(.22, 1, .36, 1);
@@ -512,7 +463,7 @@
   min-height: 76px;
   transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
 }
-.rsvp-field textarea::placeholder { color: var(--text-muted); font-style: normal; }
+.rsvp-field textarea::placeholder { color: var(--text-muted); font-style: italic; }
 .rsvp-field textarea:hover { background: rgba(255, 255, 255, 0.9); border-color: var(--rule); }
 .rsvp-field textarea:focus {
   outline: none;
@@ -551,12 +502,8 @@
 
 /* ---------------- Responsive ---------------- */
 @media (max-width: 960px) {
-  .rsvp { padding: 20px 16px 40px; }
-  .rsvp-header { margin-bottom: 24px; }
-  .rsvp-eyebrow { gap: 10px; font-size: 10px; letter-spacing: 0.28em; }
-  .rsvp-eyebrow-rule { max-width: 60px; }
-  .rsvp-title { font-size: clamp(28px, 7.5%, 44px); margin-bottom: 12px; }
-  .rsvp-deadline { font-size: 13px; }
+  .rsvp { padding: var(--content-top) 16px 24px; }
+  .rsvp-nav { display: none; } /* navigate via the dots on small screens */
   .rsvp-list { gap: 18px; }
   .rsvp-card { padding: 28px 22px; gap: 22px; }
   .rsvp-name { font-size: clamp(26px, 7%, 36px); }
@@ -567,12 +514,7 @@
 }
 
 @media (max-width: 520px) {
-  .rsvp { padding: 16px 12px 32px; }
-  .rsvp-header { margin-bottom: 20px; }
-  .rsvp-eyebrow { gap: 8px; font-size: 9.5px; letter-spacing: 0.24em; }
-  .rsvp-eyebrow-rule { max-width: 40px; }
-  .rsvp-title { font-size: clamp(28px, 9%, 38px); margin-bottom: 10px; }
-  .rsvp-deadline { font-size: 12.5px; line-height: 1.5; }
+  .rsvp { padding: var(--content-top) 12px 20px; }
   .rsvp-card { padding: 24px 18px; gap: 18px; border-radius: 18px; }
   .rsvp-name { font-size: clamp(28px, 9%, 34px); }
   .rsvp-choice { flex-direction: column; gap: 8px; }
@@ -657,4 +599,258 @@
   .rsvp-meal-tile.is-on .rsvp-meal-lbl,
   .rsvp-meal-tile:hover .rsvp-meal-lbl,
   .rsvp-meal-tile:focus-visible .rsvp-meal-lbl { transform: none; }
+}
+
+/* ============================================================
+   Storybook scene — header + guest stepper
+   ============================================================ */
+.rsvp-head { text-align: center; }
+.rsvp-sub {
+  margin: 12px 0 0;
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 14.5px;
+  letter-spacing: 0.04em;
+  color: var(--text-soft);
+}
+
+.rsvp-deck {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  width: 100%;
+}
+
+.rsvp-nav {
+  flex: none;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--accent-deep);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  box-shadow: var(--glass-shadow);
+  transition: transform 200ms cubic-bezier(.22, 1, .36, 1), background 200ms ease, color 200ms ease, opacity 200ms ease;
+}
+.rsvp-nav svg { width: 22px; height: 22px; }
+.rsvp-nav:hover:not(:disabled) { transform: scale(1.08); color: var(--accent); background: var(--glass-bg-hover); }
+.rsvp-nav:active:not(:disabled) { transform: scale(0.95); }
+.rsvp-nav:disabled { opacity: 0.3; cursor: default; }
+
+/* carousel: viewport clips; the track slides one card-width per guest for a
+   smooth, continuous transition (no remount). */
+.rsvp-viewport {
+  flex: 1 1 960px;
+  min-width: 0;
+  max-width: 1000px;
+  overflow: hidden;
+}
+.rsvp-track {
+  display: flex;
+  align-items: stretch; /* every slide gets the full (tallest-card) height */
+  transition: transform 520ms cubic-bezier(.22, 1, .36, 1);
+}
+.rsvp-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center; /* center the card vertically — matters for short (declining) cards */
+  justify-content: center;
+  padding: 4px;
+}
+.rsvp-deck .rsvp-card {
+  width: 100%;
+  max-width: 960px;
+  padding: 34px;
+  gap: 10px;
+  align-items: stretch;
+  text-align: left;
+}
+.rsvp-deck .rsvp-name { font-size: 36px; }
+
+/* name + accept/decline live on one row to use the width and keep height down */
+.rsvp-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  width: 100%;
+}
+.rsvp-card-who { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+.rsvp-count {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 9.5px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* meals: a row that flexes to fill the width (and wraps on narrow screens)
+   so all five fit with no horizontal scroll. Scoped to .rsvp-deck to override
+   the standalone-page tile layouts. */
+.rsvp-deck .rsvp-meal-grid {
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 2px 0 0;
+}
+.rsvp-deck .rsvp-meals { align-items: flex-start; text-align: left; }
+.rsvp-deck .rsvp-meal-tile {
+  flex: 1 1 128px;
+  min-width: 0;
+  max-width: 200px;
+  width: auto;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: none;
+}
+.rsvp-deck .rsvp-meal-image {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  height: 100px;
+  border-radius: 0;
+}
+.rsvp-deck .rsvp-meal-veil {
+  width: 100%;
+  height: 100px;
+  background: linear-gradient(180deg, rgba(21, 50, 74, 0) 58%, rgba(21, 50, 74, 0.2) 100%);
+}
+.rsvp-deck .rsvp-meal-text { padding: 8px 11px; gap: 3px; align-items: flex-start; justify-content: center; }
+.rsvp-deck .rsvp-meal-lbl { font-size: 17px; }
+/* full description of the hovered/selected dish — fixed height so swapping
+   between dishes never resizes the card */
+.rsvp-meal-caption {
+  margin: 0 2px;
+  min-height: 2.5em;
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-soft);
+  text-align: left;
+}
+.rsvp-meal-caption.is-prompt { font-style: italic; color: var(--text-muted); }
+.rsvp-deck .rsvp-meal-desc { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; font-size: 12.5px; line-height: 1.4; }
+.rsvp-deck .rsvp-extras-inner { gap: 10px; padding-top: 10px; }
+.rsvp-deck .rsvp-field textarea { min-height: 44px; }
+.rsvp-deck .rsvp-menu-label { margin-bottom: 6px; }
+/* fun accept / decline toggle — a springy sliding thumb with a popping icon */
+.rsvp-toggle {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: auto;
+  max-width: 100%;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(58, 111, 149, 0.10);
+  border: 1px solid var(--rule-soft);
+}
+.rsvp-toggle-thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent-soft), var(--accent));
+  box-shadow: 0 10px 22px -10px rgba(58, 111, 149, 0.65), 0 0 18px rgba(110, 167, 201, 0.5);
+  opacity: 0;
+  transform: scale(.8);
+  transition: transform 460ms cubic-bezier(.34, 1.56, .64, 1), opacity 240ms ease, background 320ms ease;
+  z-index: 0;
+}
+.rsvp-toggle--yes .rsvp-toggle-thumb { opacity: 1; transform: translateX(0) scale(1); }
+.rsvp-toggle--no .rsvp-toggle-thumb  { opacity: 1; transform: translateX(100%) scale(1); background: linear-gradient(135deg, var(--accent-deep), var(--ink-blue)); }
+.rsvp-toggle-opt {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 18px;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: color 260ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.rsvp-toggle-opt svg { width: 16px; height: 16px; }
+.rsvp-toggle-opt:hover { color: var(--ink-blue); }
+.rsvp-toggle--yes .rsvp-toggle-opt--yes { color: #fff; }
+.rsvp-toggle--no .rsvp-toggle-opt--no { color: var(--accent-bright); }
+/* the chosen side's icon pops in playfully */
+.rsvp-toggle--yes .rsvp-toggle-opt--yes svg { animation: opt-pop 560ms cubic-bezier(.34, 1.56, .64, 1); }
+.rsvp-toggle--no .rsvp-toggle-opt--no svg { animation: opt-pop 460ms cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes opt-pop {
+  0%   { transform: scale(.4) rotate(-14deg); }
+  55%  { transform: scale(1.35) rotate(8deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* stack name over a full-width toggle on narrow cards */
+@media (max-width: 700px) {
+  .rsvp-card-head { flex-direction: column; align-items: stretch; gap: 12px; }
+  .rsvp-card-who { align-items: center; text-align: center; }
+  .rsvp-toggle { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rsvp-track { transition: none; }
+  .rsvp-toggle-thumb { transition: opacity 240ms ease; }
+  .rsvp-toggle-opt svg { animation: none; }
+}
+
+.rsvp-dots { display: flex; align-items: center; gap: 9px; }
+.rsvp-dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+  background: transparent;
+  cursor: pointer;
+  transition: width 260ms cubic-bezier(.22, 1, .36, 1), background 220ms ease, border-color 220ms ease;
+}
+.rsvp-dot.is-done { background: var(--accent-bright); border-color: var(--accent-bright); }
+.rsvp-dot.is-on { width: 26px; border-radius: 999px; background: var(--accent); border-color: var(--accent); }
+
+.rsvp-savenote {
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* very short viewports: let the card scroll internally rather than clip */
+@media (max-height: 700px) {
+  .rsvp { overflow-y: auto; }
 }

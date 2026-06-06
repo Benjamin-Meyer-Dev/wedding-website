@@ -22,47 +22,52 @@ export default function Home() {
     return () => clearInterval(id)
   }, [])
 
+  const units = [
+    { n: String(t.days), l: 'Days' },
+    { n: String(t.hrs).padStart(2, '0'), l: 'Hrs' },
+    { n: String(t.min).padStart(2, '0'), l: 'Min' },
+    { n: String(t.sec).padStart(2, '0'), l: 'Sec' },
+  ]
+
   return (
-    <section className="hero">
-      <figure className="hero-figure">
-        <img
-          src={heroPhoto}
-          alt="Elizabeth and Benjamin"
-          className="hero-img"
-          width="1068"
-          height="1600"
-        />
-      </figure>
+    <section className="scene home">
+      <div className="home-stage">
+        <figure className="home-figure plx" style={{ '--d': '26px' }}>
+          <span className="home-figure-glow rev-pop" style={{ '--rd': '260ms' }} />
+          <img
+            src={heroPhoto}
+            alt="Elizabeth and Benjamin"
+            className="home-img rev-pop"
+            style={{ '--rd': '120ms' }}
+            width="1068"
+            height="1600"
+          />
+        </figure>
 
-      <article className="hero-content glass">
-        <p className="hero-tag">Save the Date</p>
-        <h1 className="hero-names">
-          <span className="name">Elizabeth</span>
-          <span className="amp">&amp;</span>
-          <span className="name">Benjamin</span>
-        </h1>
-        <div className="hero-rule" />
-        <p className="hero-date">Saturday &middot; 29 May 2027 &middot; 4:00 PM</p>
+        <div className="home-copy">
+          <p className="home-tag rev-fall" style={{ '--rd': '220ms' }}>Save the Date</p>
 
-        <div className="hero-countdown" aria-label="Time until the wedding">
-          <div className="hcd-item">
-            <span className="hcd-num">{String(t.days).padStart(3, '0').replace(/^0+(\d)/, '$1')}</span>
-            <span className="hcd-lbl">Days</span>
-          </div>
-          <div className="hcd-item">
-            <span className="hcd-num">{String(t.hrs).padStart(2, '0')}</span>
-            <span className="hcd-lbl">Hrs</span>
-          </div>
-          <div className="hcd-item">
-            <span className="hcd-num">{String(t.min).padStart(2, '0')}</span>
-            <span className="hcd-lbl">Min</span>
-          </div>
-          <div className="hcd-item">
-            <span className="hcd-num">{String(t.sec).padStart(2, '0')}</span>
-            <span className="hcd-lbl">Sec</span>
+          <h1 className="home-names">
+            <span className="home-name rev-mask" style={{ '--rd': '320ms' }}>Elizabeth</span>
+            <span className="home-amp plx" style={{ '--d': '-18px' }}>
+              <span className="rev-pop" style={{ '--rd': '660ms' }}>&amp;</span>
+            </span>
+            <span className="home-name rev-mask" style={{ '--rd': '480ms' }}>Benjamin</span>
+          </h1>
+
+          <span className="home-rule rev-grow" style={{ '--rd': '820ms' }} />
+          <p className="home-date rev" style={{ '--rd': '900ms' }}>Saturday &middot; 29 May 2027 &middot; 4:00 PM</p>
+
+          <div className="home-countdown" aria-label="Time until the wedding">
+            {units.map((u, i) => (
+              <div className="hcd-item rev-pop" style={{ '--rd': `${980 + i * 90}ms` }} key={u.l}>
+                <span className="hcd-num">{u.n}</span>
+                <span className="hcd-lbl">{u.l}</span>
+              </div>
+            ))}
           </div>
         </div>
-      </article>
+      </div>
     </section>
   )
 }

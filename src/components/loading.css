@@ -2,13 +2,16 @@
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: var(--bg);
   display: grid;
   place-items: center;
   pointer-events: none;
   overflow: hidden;
   contain: strict;
-  transition: opacity 480ms ease;
+  background:
+    radial-gradient(circle at 50% 36%, var(--powder-mist) 0%, transparent 56%),
+    radial-gradient(circle at 82% 88%, var(--powder-deep) 0%, transparent 60%),
+    var(--bg);
+  transition: opacity 560ms ease;
 }
 .loading-screen.phase-2 { opacity: 0; }
 
@@ -17,82 +20,116 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(16px, 2%, 22px);
+  gap: 21px;
   padding: 0 24px;
   text-align: center;
+  transform: translateY(-64px); /* sit above centre */
+}
+
+/* big pulsing aura behind the monogram */
+.loading-mark::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 46%;
+  width: 860px;
+  height: 860px;
+  transform: translate(-50%, -50%) scale(.7);
+  background: radial-gradient(circle, rgba(168, 204, 224, 0.55) 0%, rgba(110, 167, 201, 0.18) 38%, transparent 66%);
+  filter: blur(18px);
   opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 600ms cubic-bezier(.4, 0, .2, 1),
-              transform 600ms cubic-bezier(.4, 0, .2, 1);
+  animation:
+    lm-aura 1100ms cubic-bezier(.16, 1, .3, 1) 120ms forwards,
+    lm-breathe 4s ease-in-out 1200ms infinite;
 }
-.loading-screen.phase-1 .loading-mark,
-.loading-screen.phase-2 .loading-mark {
-  opacity: 1;
-  transform: translateY(0);
-}
+@keyframes lm-aura { to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+@keyframes lm-breathe { 0%, 100% { filter: blur(18px); } 50% { filter: blur(28px); } }
 
 .lm-tag {
   margin: 0;
   font-family: var(--font-ui);
-  font-weight: 500;
-  font-size: 11px;
-  letter-spacing: 0.46em;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.5em;
   text-transform: uppercase;
   color: var(--accent);
+  opacity: 0;
+  animation: lm-fade-up 700ms cubic-bezier(.16, 1, .3, 1) 80ms both;
 }
 
 .lm-names {
+  position: relative;
   margin: 0;
   display: inline-flex;
-  align-items: baseline;
-  gap: clamp(10px, 1.4%, 18px);
+  align-items: center; /* centre the smaller "&" vertically between E and B (not baseline) */
+  gap: 28px;
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(72px, 12%, 160px);
-  line-height: 0.96;
+  font-size: 230px; /* was a broken % clamp stuck at the floor */
+  line-height: 0.9;
   color: var(--ink-blue);
   letter-spacing: 0.01em;
 }
+/* each letter rises + settles, staggered */
+.lm-names span {
+  display: inline-block;
+  opacity: 0;
+  animation: lm-letter 950ms cubic-bezier(.16, 1, .3, 1) both;
+}
+.lm-names span:nth-child(1) { animation-delay: 220ms; }
+.lm-names .lm-amp           { animation-delay: 470ms; }
+.lm-names span:nth-child(3) { animation-delay: 340ms; }
+@keyframes lm-letter {
+  from { opacity: 0; transform: translateY(48px) scale(.82) rotate(-3deg); }
+  to   { opacity: 1; transform: none; }
+}
+
 .lm-amp {
   font-family: var(--font-amp);
   font-style: italic;
   color: var(--accent);
   font-size: 0.7em;
   line-height: 1;
-  text-shadow: 0 0 28px rgba(168, 204, 224, 0.55);
+  text-shadow: 0 0 40px rgba(168, 204, 224, 0.7);
 }
 
 .lm-date {
   margin: 0;
   font-family: var(--font-ui);
   font-weight: 500;
-  font-size: clamp(11px, 1%, 13px);
-  letter-spacing: 0.42em;
+  font-size: 15px;
+  letter-spacing: 0.46em;
   text-transform: uppercase;
   color: var(--text-soft);
+  opacity: 0;
+  animation: lm-fade-up 700ms cubic-bezier(.16, 1, .3, 1) 640ms both;
 }
 
 .lm-rule {
   display: block;
-  margin-top: 6px;
-  height: 1px;
-  width: 80px;
-  background: var(--accent);
+  width: 220px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
   opacity: 0;
   transform: scaleX(0);
-  transform-origin: center;
-  animation: lm-rule-draw 700ms cubic-bezier(.4, 0, .2, 1) 320ms forwards;
+  animation: lm-rule-draw 820ms cubic-bezier(.16, 1, .3, 1) 720ms forwards;
 }
+@keyframes lm-rule-draw { 0% { transform: scaleX(0); opacity: 0; } 100% { transform: scaleX(1); opacity: 0.85; } }
 
-@keyframes lm-rule-draw {
-  0% { transform: scaleX(0); opacity: 0; }
-  100% { transform: scaleX(1); opacity: 0.8; }
-}
+@keyframes lm-fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 520px) {
-  .loading-mark { gap: 14px; }
-  .lm-tag { font-size: 10px; letter-spacing: 0.36em; }
-  .lm-names { gap: 8px; font-size: clamp(48px, 16%, 80px); }
-  .lm-date { font-size: 10px; letter-spacing: 0.32em; }
-  .lm-rule { width: 60px; }
+  .loading-mark { gap: 16px; }
+  .lm-tag { font-size: 10px; letter-spacing: 0.4em; }
+  .lm-names { gap: 10px; font-size: 104px; }
+  .lm-date { font-size: 11px; letter-spacing: 0.34em; }
+  .lm-rule { width: 92px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lm-names span, .lm-tag, .lm-date, .lm-rule,
+  .loading-mark::before { animation: none; opacity: 1; transform: none; }
+  .lm-rule { transform: scaleX(1); }
+  .loading-mark::before { transform: translate(-50%, -50%); }
 }

@@ -1,0 +1,143 @@
+/* Compound `.scene.faq` to outrank base `.scene` regardless of CSS import order. */
+.scene.faq {
+  display: block;       /* normal block scroll — no flex overflow quirks */
+  overflow-y: auto;
+  scrollbar-gutter: stable both-edges; /* keep header centred whether or not it scrolls */
+  padding: var(--content-top) 32px 32px;
+}
+.faq::-webkit-scrollbar { width: 6px; }
+
+.faq-inner {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+.faq-head { text-align: center; }
+/* The .faq-inner gap already separates header and grid, so drop the extra
+   .page-head bottom margin (compound selector to outrank app.css's .page-head). */
+.page-head.faq-head { margin-bottom: 0; }
+
+/* ---------------- Flip-card deck ---------------- */
+.faq-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.faq-cell { display: block; }
+
+.faq-card {
+  width: 100%;
+  height: 210px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  perspective: 1200px;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .4s cubic-bezier(.22, 1, .36, 1);
+}
+.faq-card:hover { transform: translateY(-6px); }
+.faq-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 20px; }
+
+.faq-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform .62s cubic-bezier(.34, 1.35, .5, 1);
+}
+.faq-card.is-flipped .faq-card-inner { transform: rotateY(180deg); }
+
+.faq-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  border-radius: 20px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.faq-front {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  box-shadow: var(--glass-shadow);
+}
+.faq-back {
+  transform: rotateY(180deg);
+  color: #fff;
+  border: 1px solid transparent;
+  box-shadow: 0 24px 48px -22px rgba(58, 111, 149, 0.65);
+}
+/* colourful backs that vary across the deck */
+.faq-cell:nth-child(3n + 1) .faq-back { background: linear-gradient(150deg, var(--accent-soft), var(--accent)); }
+.faq-cell:nth-child(3n + 2) .faq-back { background: linear-gradient(150deg, var(--accent), var(--accent-deep)); }
+.faq-cell:nth-child(3n)     .faq-back { background: linear-gradient(150deg, var(--accent-deep), var(--ink-blue)); }
+
+.faq-num {
+  flex: none;
+  width: 70px;
+  height: 70px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1.6px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-weight: 400;
+  transition: transform .4s cubic-bezier(.34, 1.56, .64, 1), background .3s ease, color .3s ease;
+}
+.faq-num svg { width: 32px; height: 32px; }
+.faq-card:hover .faq-num { transform: scale(1.08) rotate(-4deg); background: var(--accent); color: #fff; }
+.faq-q {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.15;
+  color: var(--ink-blue);
+  letter-spacing: -0.01em;
+}
+.faq-a {
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #fff;
+}
+.faq-hint {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.faq-front .faq-hint { color: var(--text-muted); }
+.faq-back .faq-hint { color: rgba(255, 255, 255, 0.82); }
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 720px) {
+  .faq-grid { grid-template-columns: repeat(2, 1fr); }
+  .faq-card { height: 180px; }
+}
+@media (max-width: 440px) {
+  .faq-grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-card, .faq-card-inner, .faq-num { transition: none; }
+}

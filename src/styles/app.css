@@ -1,6 +1,7 @@
 .app {
   position: relative;
-  min-height: 100%;
+  height: 100%;
+  overflow: hidden; /* storybook: each page is one full-screen, scroll-free scene */
   background:
     radial-gradient(circle at 20% 8%, var(--powder-mist) 0%, transparent 55%),
     radial-gradient(circle at 88% 92%, var(--powder-deep) 0%, transparent 60%),
@@ -10,17 +11,70 @@
 .main {
   position: relative;
   z-index: 1;
-  min-height: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
-/* Pages that aren't the photo-led hero need top padding so content clears
-   the floating glass nav. The hero pages handle their own spacing. */
-.app--page-rsvp .main,
-.app--page-schedule .main {
-  padding-top: 110px;
+/* ================================================================
+   Shared page header — eyebrow + title + subtitle. Used by any page
+   with a titled header (RSVP, Travel) so they read identically.
+   ================================================================ */
+.page-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto 36px;
+  max-width: 680px;
 }
 
-@media (max-width: 720px) {
-  .app--page-rsvp .main,
-  .app--page-schedule .main { padding-top: 72px; }
+.page-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 0 0 16px;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+/* tapered hairlines that fade outward, away from the label */
+.page-eyebrow-rule {
+  width: 72px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--rule));
+}
+.page-eyebrow-rule:last-child {
+  background: linear-gradient(90deg, var(--rule), transparent);
+}
+
+.page-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 52px;
+  line-height: 1.12;
+  color: var(--ink-blue);
+  letter-spacing: -0.014em;
+}
+
+.page-sub {
+  margin: 14px 0 0;
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--text-soft);
+  max-width: 52ch;
+}
+
+@media (max-width: 520px) {
+  .page-head { margin-bottom: 22px; }
+  .page-eyebrow { gap: 10px; font-size: 9.5px; letter-spacing: 0.28em; }
+  .page-eyebrow-rule { width: 40px; }
+  .page-title { font-size: 40px; }
+  .page-sub { margin-top: 10px; font-size: 13px; }
 }

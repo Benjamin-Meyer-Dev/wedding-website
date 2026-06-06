@@ -1,9 +1,9 @@
 .topbar {
   position: fixed;
-  top: 18px;
+  top: var(--nav-top, 18px);
   left: 50%;
   transform: translateX(-50%);
-  width: min(96%, 920px);
+  width: min(96%, 1120px);
   z-index: 30;
   animation: topbar-in 420ms cubic-bezier(.4, 0, .2, 1);
 }
@@ -71,12 +71,12 @@
   position: relative;
   background: transparent;
   border: 0;
-  padding: 10px 18px;
+  padding: 10px 13px; /* trimmed from 18px so all tabs fit the pill */
   color: var(--text-soft);
   font-family: var(--font-ui);
   font-weight: 500;
   font-size: 12px;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   cursor: pointer;
   border-radius: 999px;
@@ -294,7 +294,7 @@
 }
 
 @media (max-width: 860px) {
-  .topbar { top: 8px; width: min(94%, 920px); }
+  .topbar { width: min(94%, 920px); } /* top comes from --nav-top (global.css) */
   .topbar-inner { padding: 4px 14px 4px 10px; grid-template-columns: 1fr auto; border-radius: 22px; }
   .topbar-monogram { font-size: 15px; padding: 2px 4px; height: auto; line-height: 1; }
   .topbar-nav { display: none; }

@@ -1,305 +1,219 @@
-.app--page-home,
-.app--page-home .main { height: 100%; }
+.home {
+  padding: 80px 32px 40px;
+}
 
-.hero {
-  position: relative;
-  height: 100%;
-  min-height: 100%;
+.home-stage {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(24px, 3%, 44px);
-  /* Padding scales with viewport HEIGHT (%) rather than width so the
-     photo never overflows on a short laptop screen with a wide monitor.
-     Top min 84px clears the floating navbar (which ends at ~70px). */
-  padding: clamp(84px, 9%, 100px) clamp(20px, 5%, 64px) clamp(28px, 4%, 44px);
+  gap: 84px;
+  width: 100%;
+  max-width: 1180px;
 }
 
-/* ---------- Portrait photo (the hero) ----------
-   Sized by viewport HEIGHT so the photo is as tall as possible without
-   forcing scroll. Width is derived from the image's natural aspect ratio.
-   Math: at 768px viewport height, 82% = 630px + 84+30 = 744 ≤ 768. At
-   1080p, 82% = 886px + 97+43 = 1026 ≤ 1080. */
-.hero-figure {
+/* ---------- Portrait (a drifting parallax layer) ---------- */
+.home-figure {
   position: relative;
   flex: 0 0 auto;
-  height: 80%;
-  animation: page-rise 700ms cubic-bezier(.4, 0, .2, 1);
+  height: min(528px, 580px);
 }
-
-.hero-figure::before {
-  /* Accent block top-right behind photo */
-  content: '';
+.home-figure-glow {
   position: absolute;
-  top: -22px;
-  right: -22px;
-  width: 58%;
-  aspect-ratio: 1;
-  background: var(--accent-bright);
-  border-radius: 22px;
+  inset: -8% -10% -12% -8%;
+  border-radius: 48% 52% 46% 54% / 56% 44% 56% 44%;
+  background:
+    radial-gradient(60% 60% at 70% 18%, rgba(168, 204, 224, 0.7), transparent 70%),
+    radial-gradient(70% 70% at 26% 86%, rgba(110, 167, 201, 0.45), transparent 72%);
+  filter: blur(6px);
   z-index: -1;
-  opacity: 0.65;
 }
-.hero-figure::after {
-  /* Accent block bottom-left behind photo */
-  content: '';
-  position: absolute;
-  bottom: -22px;
-  left: -22px;
-  width: 44%;
-  aspect-ratio: 1;
-  background: var(--accent-soft);
-  border-radius: 18px;
-  z-index: -1;
-  opacity: 0.4;
-}
-
-.hero-img {
+.home-img {
   display: block;
   height: 100%;
   width: auto;
-  border-radius: 22px;
+  max-width: 538px;
+  object-fit: cover;
+  border-radius: 220px 220px 22px 22px; /* arched top — storybook frame */
   box-shadow:
-    0 48px 96px -32px rgba(21, 50, 74, 0.55),
-    0 22px 44px -22px rgba(21, 50, 74, 0.4),
+    0 48px 96px -34px rgba(21, 50, 74, 0.6),
+    0 18px 40px -22px rgba(21, 50, 74, 0.42),
     0 0 0 1px rgba(255, 255, 255, 0.6) inset;
 }
 
-/* ---------- Glass content card ---------- */
-.hero-content {
+/* ---------- Copy column ---------- */
+.home-copy {
   position: relative;
-  flex: 0 1 520px;
-  width: 100%;
-  max-width: 520px;
-  padding: clamp(28px, 3.4%, 44px);
-  border-radius: 24px;
+  flex: 0 1 540px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: clamp(14px, 2%, 22px);
-  color: var(--text);
-  animation: page-fade 500ms ease 120ms both;
 }
 
-.hero-tag {
-  margin: 0;
+.home-tag {
+  margin: 0 0 11px;
   font-family: var(--font-ui);
-  font-weight: 500;
-  font-size: 11px;
-  letter-spacing: 0.42em;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.46em;
   text-transform: uppercase;
   color: var(--accent);
 }
 
-.hero-names {
+.home-names {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(40px, 5%, 80px);
-  line-height: 0.96;
-  letter-spacing: -0.014em;
   color: var(--ink-blue);
+  letter-spacing: -0.02em;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: clamp(2px, 0.6%, 6px);
 }
-.hero-names .name { font-feature-settings: "ss01" on, "lnum" on; }
-.hero-names .amp {
+.home-name {
+  display: block;
+  font-size: 100px;
+  line-height: 0.9;
+}
+.home-amp {
+  display: block;
+  margin: 2px 0 2px 54px;
+  line-height: 0.8;
+}
+.home-amp > span {
+  display: inline-block;
   font-family: var(--font-amp);
   font-style: italic;
-  font-weight: 400;
+  font-size: 78px;
   color: var(--accent);
-  font-size: 0.7em;
-  line-height: 1;
-  margin-left: clamp(14px, 2%, 32px);
 }
 
-.hero-rule {
-  width: 60px;
-  height: 1px;
-  background: var(--accent);
-  opacity: 0.7;
+.home-rule {
+  width: 110px;
+  height: 2px;
+  margin: 19px 0 0;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  border-radius: 2px;
 }
 
-.hero-date {
-  margin: 0;
+.home-date {
+  margin: 14px 0 0;
   font-family: var(--font-ui);
   font-weight: 400;
-  font-size: clamp(13px, 1%, 15px);
+  font-size: 15px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--text-soft);
 }
 
-/* ---------- Countdown row ---------- */
-.hero-countdown {
-  margin-top: clamp(4px, 1%, 10px);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: clamp(8px, 1.4%, 16px);
+/* ---------- Countdown (inline, no card) ---------- */
+.home-countdown {
+  margin-top: 24px;
+  display: flex;
+  gap: 30px;
   width: 100%;
-  padding-top: clamp(14px, 2%, 22px);
-  border-top: 1px solid var(--rule-soft);
+  max-width: 500px;
 }
-
+/* Equal, fixed-width columns so a skinnier "1" or thicker "8" never resizes a
+   section (Playfair has no tabular figures, so the box width can't depend on
+   the digits). The number is centered inside its stable column. */
 .hcd-item {
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  text-align: center;
   gap: 6px;
-  padding: 4px 0;
-  min-width: 0;
+  position: relative;
 }
-
+.hcd-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: calc(30px / -2);
+  top: 14%;
+  bottom: 14%;
+  width: 1px;
+  background: var(--rule-soft);
+}
 .hcd-num {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: clamp(24px, 2.8%, 36px);
+  font-size: 48px;
   line-height: 1;
   color: var(--ink-blue);
   font-variant-numeric: lining-nums tabular-nums;
-  letter-spacing: -0.005em;
 }
-
 .hcd-lbl {
   font-family: var(--font-ui);
   font-weight: 500;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
-/* ---------------- Responsive ----------------
-   Photo full-bleed background, condensed card at the bottom. The image is
-   scaled from its bottom edge so its content shifts up — subject moves
-   from ~50% of viewport to ~43%, giving the "image moved up a bit" feel
-   the user asked for, without any layout restructuring. */
-/* Desktop tall-and-narrow: when the viewport gets taller than wide-ish,
-   80% of the viewport HEIGHT makes the image overflow horizontally and
-   crowd the content card. Step the figure height down as aspect ratio
-   gets more portrait. */
-@media (min-width: 861px) and (max-aspect-ratio: 5/4) {
-  .hero-figure { height: 65%; }
-}
-@media (min-width: 861px) and (max-aspect-ratio: 1/1) {
-  .hero-figure { height: 55%; }
-}
-@media (min-width: 861px) and (max-aspect-ratio: 4/5) {
-  .hero-figure { height: 45%; }
-}
-
+/* ============================================================
+   Mobile: photo becomes a full-bleed backdrop, copy floats over it.
+   Still one scroll-free scene.
+   ============================================================ */
 @media (max-width: 860px) {
-  .hero {
-    display: flex;
+  .home { padding: 0; }
+  .home-stage {
     flex-direction: column;
-    align-items: center;
     justify-content: flex-end;
-    position: relative;
-    min-height: 100%;
-    padding: 0 clamp(14px, 4%, 24px) clamp(18px, 4%, 32px);
-    overflow: hidden;
+    gap: 0;
+    height: 100%;
+    max-width: none;
   }
-
-  .hero-figure {
+  .home-figure {
     position: absolute;
     inset: 0;
-    width: auto;
     height: auto;
-    margin: 0;
-    flex: none;
     z-index: 0;
-    overflow: hidden;
   }
-  .hero-figure::before,
-  .hero-figure::after { display: none; }
-
-  .hero-img {
+  .home-figure-glow { display: none; }
+  .home-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    object-position: center;
-    /* Zoom from the bottom edge — bigger scale shifts subject upward more. */
-    transform: scale(1.4);
-    transform-origin: center bottom;
+    max-width: none;
+    object-position: center 30%;
     border-radius: 0;
+    transform: scale(1.06);
     box-shadow: none;
   }
-
-  .hero::after {
+  .home::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(15, 30, 50, 0.10) 0%,
-      rgba(15, 30, 50, 0.05) 30%,
-      rgba(15, 30, 50, 0.18) 60%,
-      rgba(15, 30, 50, 0.6) 100%
-    );
     z-index: 1;
     pointer-events: none;
+    background: linear-gradient(180deg,
+      rgba(15, 30, 50, 0.10) 0%,
+      rgba(15, 30, 50, 0.06) 34%,
+      rgba(15, 30, 50, 0.30) 66%,
+      rgba(15, 30, 50, 0.74) 100%);
   }
-
-  .hero-content {
+  .home-copy {
     position: relative;
-    flex: 0 0 auto;
-    width: 100%;
-    max-width: 420px;
-    margin: 0;
     z-index: 2;
-    padding: clamp(14px, 3%, 22px) clamp(18px, 5%, 24px);
-    border-radius: 20px;
     align-items: center;
     text-align: center;
-    gap: clamp(8px, 1.4%, 12px);
+    width: 100%;
+    padding: 0 32px 48px;
   }
-  .hero-tag { font-size: 9.5px; letter-spacing: 0.36em; }
-  .hero-names {
-    align-items: center;
-    font-size: clamp(28px, 7.5%, 38px);
-    line-height: 0.94;
-    gap: 0;
-  }
-  .hero-names .amp { margin-left: 0; }
-  .hero-rule { width: 32px; }
-  .hero-date { font-size: 10.5px; letter-spacing: 0.22em; }
-  .hero-countdown {
-    margin-top: 3px;
-    padding-top: 9px;
-    gap: 6px;
-  }
-  .hcd-item { align-items: center; padding: 0; gap: 2px; }
-  .hcd-num { font-size: clamp(20px, 5%, 26px); }
-  .hcd-lbl { font-size: 8.5px; letter-spacing: 0.22em;
-  }
+  .home-tag { color: var(--powder-mist); }
+  .home-names { align-items: center; color: #fff; }
+  .home-amp { margin-left: 0; }
+  .home-amp > span { color: var(--accent-bright); }
+  .home-rule { align-self: center; background: linear-gradient(90deg, transparent, var(--accent-bright), transparent); }
+  .home-date { color: rgba(238, 244, 249, 0.86); }
+  .hcd-num { color: #fff; }
+  .hcd-lbl { color: rgba(238, 244, 249, 0.7); }
+  .hcd-item:not(:last-child)::after { background: rgba(255, 255, 255, 0.25); }
 }
 
-@media (max-width: 520px) {
-  .hero { padding: 0 12px 16px; }
-  .hero-content {
-    padding: 14px 18px;
-    border-radius: 18px;
-    gap: 8px;
-  }
-  .hero-tag { font-size: 9px; }
-  .hero-names { font-size: clamp(24px, 7%, 32px); }
-  .hero-rule { width: 24px; }
-  .hero-date { font-size: 9.5px; letter-spacing: 0.18em; }
-  .hero-countdown {
-    margin-top: 1px;
-    padding-top: 8px;
-    gap: 4px;
-  }
-  .hcd-num { font-size: clamp(17px, 4.4%, 22px); }
-  .hcd-lbl { font-size: 8px; letter-spacing: 0.18em; }
+@media (max-width: 420px) {
+  .home-name { font-size: 48px; }
+  .home-amp > span { font-size: 40px; }
+  .hcd-num { font-size: 30px; }
 }
-
-@media (max-width: 360px) {
-  .hero-content { padding: 12px 14px; gap: 6px; }
-  .hero-names { font-size: 22px; }
-  .hcd-num { font-size: 16px; }
-  .hcd-lbl { font-size: 7.5px; }
-}
-

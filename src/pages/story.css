@@ -1,0 +1,162 @@
+/* Compound `.scene.story` so this beats the base `.scene` rule regardless of
+   CSS import order — scene.css loads last, so a bare `.story` (equal specificity)
+   would lose and the page would inherit `.scene`'s flex-centred overflow:hidden. */
+.scene.story {
+  display: block;       /* normal block scroll — no flex overflow quirks */
+  overflow-y: auto;
+  scrollbar-gutter: stable both-edges; /* keep header centred whether or not it scrolls */
+  padding: var(--content-top) 32px 48px;
+}
+.story::-webkit-scrollbar { width: 6px; }
+
+.story-inner {
+  width: 100%;
+  max-width: 940px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 29px;
+}
+.story-head { text-align: center; }
+/* The .story-inner gap already separates header and timeline, so drop the extra
+   .page-head bottom margin (compound selector to outrank app.css's .page-head). */
+.page-head.story-head { margin-bottom: 0; }
+
+/* ---------------- Narrative timeline ---------------- */
+.story-timeline {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+.story-timeline::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, var(--accent-soft) 0%, var(--accent) 50%, var(--ink-blue) 100%);
+  border-radius: 2px;
+}
+
+.story-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  align-items: center;
+}
+/* alternate which side the photo sits on */
+.story-item--right { direction: rtl; }
+.story-item--right > * { direction: ltr; }
+
+.story-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--powder-mist);
+  box-shadow: 0 0 0 2px var(--accent);
+  z-index: 1;
+}
+
+.story-photo {
+  position: relative;
+  margin: 0;
+  height: 192px;
+  border-radius: 18px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.9);
+  background-color: var(--accent);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 26px 50px -26px rgba(21, 50, 74, 0.5);
+}
+.story-photo.tone-0 { background-image: linear-gradient(150deg, var(--accent-soft), var(--accent)); }
+.story-photo.tone-1 { background-image: linear-gradient(150deg, var(--accent), var(--accent-deep)); }
+.story-photo.tone-2 { background-image: linear-gradient(150deg, var(--accent-deep), var(--ink-blue)); }
+.story-photo svg { width: 40px; height: 40px; opacity: 0.85; }
+
+.story-content { display: flex; flex-direction: column; gap: 8px; }
+.story-date {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.story-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.1;
+  color: var(--ink-blue);
+  letter-spacing: -0.012em;
+}
+.story-text {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-soft);
+}
+
+/* ---------------- Favourites gallery ---------------- */
+.story-gallery-label {
+  margin: 16px 0 0;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.story-gallery {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.story-gallery-cell {
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.82);
+  background-color: var(--accent);
+  background-size: cover;
+  background-position: center;
+}
+.story-gallery-cell.tone-0 { background-image: linear-gradient(150deg, var(--accent-soft), var(--accent)); }
+.story-gallery-cell.tone-1 { background-image: linear-gradient(150deg, var(--accent), var(--accent-deep)); }
+.story-gallery-cell.tone-2 { background-image: linear-gradient(150deg, var(--accent-deep), var(--ink-blue)); }
+.story-gallery-cell svg { width: 26px; height: 26px; }
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 720px) {
+  .story-timeline::before { left: 18px; }
+  .story-item,
+  .story-item--right { grid-template-columns: 1fr; direction: ltr; gap: 12px; padding-left: 44px; }
+  .story-dot { left: 18px; top: 26px; transform: translate(-50%, 0); }
+  .story-photo { height: 220px; }
+  .story-gallery { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* reveals handled globally; nothing extra to disable here */
+}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
 import heroPhoto from '../assets/HomePage.jpg'
 import { supabase } from '../lib/supabase'
 import './login.css'
@@ -22,7 +23,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    const cleanUsername = username.trim().toLowerCase()
+    const cleanUsername = username.trim().toLowerCase().slice(0, 64)
     if (!cleanUsername || !password) {
       setError('Please enter your username and password.')
       return
@@ -39,8 +40,8 @@ export default function Login() {
   }
 
   return (
-    <section className="login">
-      <figure className="login-figure">
+    <section className="scene login">
+      <figure className="login-figure plx" style={{ '--d': '24px' }}>
         <img
           src={heroPhoto}
           alt="Elizabeth and Benjamin"
@@ -52,19 +53,19 @@ export default function Login() {
 
       <article className="login-card glass">
         <header className="login-card-head">
-          <p className="login-tag">Save the Date</p>
-          <h1 className="login-mono">
+          <p className="login-tag rev-fall" style={{ '--rd': '220ms' }}>Save the Date</p>
+          <h1 className="login-mono rev-pop" style={{ '--rd': '320ms' }}>
             <span>E</span>
             <span className="amp">&amp;</span>
             <span>B</span>
           </h1>
-          <p className="login-date">29 May 2027</p>
+          <p className="login-date rev" style={{ '--rd': '460ms' }}>29 May 2027</p>
         </header>
 
-        <div className="login-rule" />
+        <div className="login-rule rev-grow" style={{ '--rd': '560ms' }} />
 
         <form className="login-form" onSubmit={handleSubmit} noValidate>
-          <label className="field">
+          <label className="field rev" style={{ '--rd': '620ms' }}>
             <span className="field-lbl">Username</span>
             <input
               type="text"
@@ -73,11 +74,12 @@ export default function Login() {
               onChange={(e) => setUsername(e.target.value)}
               spellCheck="false"
               autoCapitalize="off"
+              maxLength={64}
               required
             />
           </label>
 
-          <label className="field">
+          <label className="field rev" style={{ '--rd': '700ms' }}>
             <span className="field-lbl">Password</span>
             <div className="field-input-wrap">
               <input
@@ -86,6 +88,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={pwAnimating ? 'is-toggling' : ''}
+                maxLength={128}
                 required
               />
               <button
@@ -95,26 +98,15 @@ export default function Login() {
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                 tabIndex={-1}
               >
-                <svg className="icon-eye" viewBox="0 0 24 24" width="20" height="20"
-                     fill="none" stroke="currentColor" strokeWidth="1.6"
-                     strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-                <svg className="icon-eye-off" viewBox="0 0 24 24" width="20" height="20"
-                     fill="none" stroke="currentColor" strokeWidth="1.6"
-                     strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 3l18 18" />
-                  <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
-                  <path d="M9.9 5.1A10.7 10.7 0 0 1 12 5c5 0 9.3 3.1 11 7-.4 1-1 2-1.7 2.8M6.6 6.6C4.4 8 2.7 9.9 2 12c1.7 3.9 6 7 11 7 1.9 0 3.6-.4 5.2-1.2" />
-                </svg>
+                <Eye className="icon-eye" />
+                <EyeOff className="icon-eye-off" />
               </button>
             </div>
           </label>
 
           {error && <p className="login-error" role="alert">{error}</p>}
 
-          <button type="submit" className="login-btn" disabled={loading}>
+          <button type="submit" className="login-btn rev" style={{ '--rd': '800ms' }} disabled={loading}>
             {loading ? 'Signing In…' : 'Enter'}
           </button>
         </form>

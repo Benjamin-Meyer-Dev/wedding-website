@@ -1,43 +1,35 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import {
+  Home as IconHome,
+  BookHeart as IconStory,
+  Users as IconParty,
+  CalendarDays as IconSchedule,
+  Map as IconTravel,
+  MessageCircleQuestion as IconFaq,
+  Gift as IconRegistry,
+  Mail as IconRsvp,
+  LogOut as IconSignOut,
+} from 'lucide-react'
 import './navbar.css'
-
-const IconHome = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-       strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M3 11.5 12 4l9 7.5" />
-    <path d="M5 10.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9.5" />
-  </svg>
-)
-
-const IconSchedule = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-       strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <rect x="3.5" y="5" width="17" height="15" rx="2" />
-    <path d="M3.5 9.5h17" />
-    <path d="M8 3.5v3M16 3.5v3" />
-    <path d="M8 13h2M8 16.5h2M13 13h3M13 16.5h3" />
-  </svg>
-)
-
-const IconRsvp = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-       strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <rect x="3" y="6" width="18" height="13" rx="2" />
-    <path d="m3.5 7 8.5 6.5L20.5 7" />
-  </svg>
-)
-
-const IconSignOut = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-       strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
-    <path d="M10 17l-5-5 5-5" />
-    <path d="M15 12H5" />
-  </svg>
-)
 
 export default function NavBar({ page, onNavigate, onSignOut }) {
   const [open, setOpen] = useState(false)
+  const headerRef = useRef(null)
+
+  // Publish the navbar's live height so pages can offset their content to sit a
+  // fixed 15px below it (consumed as --content-top in global.css). Re-measures
+  // on resize and after the display font loads — both change the bar's height.
+  useLayoutEffect(() => {
+    const el = headerRef.current
+    if (!el || typeof window === 'undefined') return
+    const setH = () =>
+      document.documentElement.style.setProperty('--topbar-h', `${Math.round(el.offsetHeight)}px`)
+    setH()
+    const ro = new ResizeObserver(setH)
+    ro.observe(el)
+    document.fonts?.ready?.then(setH)
+    return () => ro.disconnect()
+  }, [])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -53,7 +45,7 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
   }
 
   return (
-    <header className={`topbar${open ? ' is-open' : ''}`}>
+    <header className={`topbar${open ? ' is-open' : ''}`} ref={headerRef}>
       <div className="topbar-inner glass">
         <button
           type="button"
@@ -76,10 +68,45 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
           </button>
           <button
             type="button"
+            className={`topbar-link${page === 'story' ? ' is-active' : ''}`}
+            onClick={() => handleNavigate('story')}
+          >
+            Our Story
+          </button>
+          <button
+            type="button"
+            className={`topbar-link${page === 'party' ? ' is-active' : ''}`}
+            onClick={() => handleNavigate('party')}
+          >
+            Wedding Party
+          </button>
+          <button
+            type="button"
             className={`topbar-link${page === 'schedule' ? ' is-active' : ''}`}
             onClick={() => handleNavigate('schedule')}
           >
             Schedule
+          </button>
+          <button
+            type="button"
+            className={`topbar-link${page === 'travel' ? ' is-active' : ''}`}
+            onClick={() => handleNavigate('travel')}
+          >
+            Travel
+          </button>
+          <button
+            type="button"
+            className={`topbar-link${page === 'faq' ? ' is-active' : ''}`}
+            onClick={() => handleNavigate('faq')}
+          >
+            FAQ
+          </button>
+          <button
+            type="button"
+            className={`topbar-link${page === 'registry' ? ' is-active' : ''}`}
+            onClick={() => handleNavigate('registry')}
+          >
+            Registry
           </button>
           <button
             type="button"
@@ -98,12 +125,7 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
               onClick={onSignOut}
               aria-label="Sign out"
             >
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
-                   strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" />
-                <path d="M10 17l-5-5 5-5" />
-                <path d="M15 12H5" />
-              </svg>
+              <IconSignOut />
               <span className="topbar-signout-lbl">Sign Out</span>
             </button>
           )}
@@ -132,11 +154,51 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
             </button>
             <button
               type="button"
+              className={`topbar-drawer-link${page === 'story' ? ' is-active' : ''}`}
+              onClick={() => handleNavigate('story')}
+            >
+              <span className="topbar-drawer-link-icon"><IconStory /></span>
+              <span className="topbar-drawer-link-lbl">Our Story</span>
+            </button>
+            <button
+              type="button"
+              className={`topbar-drawer-link${page === 'party' ? ' is-active' : ''}`}
+              onClick={() => handleNavigate('party')}
+            >
+              <span className="topbar-drawer-link-icon"><IconParty /></span>
+              <span className="topbar-drawer-link-lbl">Wedding Party</span>
+            </button>
+            <button
+              type="button"
               className={`topbar-drawer-link${page === 'schedule' ? ' is-active' : ''}`}
               onClick={() => handleNavigate('schedule')}
             >
               <span className="topbar-drawer-link-icon"><IconSchedule /></span>
               <span className="topbar-drawer-link-lbl">Schedule</span>
+            </button>
+            <button
+              type="button"
+              className={`topbar-drawer-link${page === 'travel' ? ' is-active' : ''}`}
+              onClick={() => handleNavigate('travel')}
+            >
+              <span className="topbar-drawer-link-icon"><IconTravel /></span>
+              <span className="topbar-drawer-link-lbl">Travel</span>
+            </button>
+            <button
+              type="button"
+              className={`topbar-drawer-link${page === 'faq' ? ' is-active' : ''}`}
+              onClick={() => handleNavigate('faq')}
+            >
+              <span className="topbar-drawer-link-icon"><IconFaq /></span>
+              <span className="topbar-drawer-link-lbl">FAQ</span>
+            </button>
+            <button
+              type="button"
+              className={`topbar-drawer-link${page === 'registry' ? ' is-active' : ''}`}
+              onClick={() => handleNavigate('registry')}
+            >
+              <span className="topbar-drawer-link-icon"><IconRegistry /></span>
+              <span className="topbar-drawer-link-lbl">Registry</span>
             </button>
             <button
               type="button"

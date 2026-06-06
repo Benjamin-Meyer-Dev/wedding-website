@@ -1,0 +1,138 @@
+/* ============================================================
+   Storybook scene system
+   Full-screen scenes, pointer parallax, entrance reveals, and the
+   curtain-wipe page transition. Imported globally.
+   ============================================================ */
+
+/* ---- A scene fills the viewport and never scrolls ---- */
+.scene {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Pointer parallax ----
+   The app root carries --px/--py (set by useParallax, range -1..1).
+   .plx layers drift by their own --d depth. Never put a reveal animation
+   on the same element as .plx (both drive transform). */
+.plx {
+  transform: translate3d(calc(var(--px, 0) * var(--d, 12px)),
+                         calc(var(--py, 0) * var(--d, 12px)), 0);
+  transition: transform 240ms cubic-bezier(.22, 1, .36, 1);
+  will-change: transform;
+}
+
+/* ---- Entrance reveals (replay every time a scene mounts) ---- */
+@keyframes sb-rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes sb-fall { from { opacity: 0; transform: translateY(-24px); } to { opacity: 1; transform: none; } }
+@keyframes sb-pop  { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: scale(1); } }
+@keyframes sb-mask { from { clip-path: inset(0 0 102% 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes sb-grow { from { opacity: 0; transform: scaleX(0); } to { opacity: 1; transform: scaleX(1); } }
+@keyframes sb-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.rev      { opacity: 0; animation: sb-rise 820ms cubic-bezier(.16, 1, .3, 1) both;  animation-delay: var(--rd, 0ms); }
+.rev-fall { opacity: 0; animation: sb-fall 820ms cubic-bezier(.16, 1, .3, 1) both;  animation-delay: var(--rd, 0ms); }
+.rev-pop  { opacity: 0; animation: sb-pop 780ms cubic-bezier(.34, 1.56, .64, 1) both; animation-delay: var(--rd, 0ms); }
+.rev-mask { animation: sb-mask 1000ms cubic-bezier(.76, 0, .24, 1) both;             animation-delay: var(--rd, 0ms); }
+.rev-grow { opacity: 0; transform-origin: left center; animation: sb-grow 900ms cubic-bezier(.76, 0, .24, 1) both; animation-delay: var(--rd, 0ms); }
+.rev-fade { opacity: 0; animation: sb-fade 760ms ease both; animation-delay: var(--rd, 0ms); } /* opacity-only — safe with hover transforms */
+
+/* ---- Decoration: sprigs + sparkles ---- */
+.decor { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.decor-sprig {
+  position: absolute;
+  width: 220px;
+  color: var(--accent-soft);
+  opacity: 0;
+  animation: decor-in 1200ms cubic-bezier(.16, 1, .3, 1) 200ms both;
+}
+.decor-sprig svg { width: 100%; height: 100%; display: block; }
+.decor-sprig--tl { top: -2%; left: -2%; transform-origin: top left; rotate: -18deg; }
+.decor-sprig--br { bottom: -3%; right: -2%; rotate: 162deg; opacity: 0; }
+@keyframes decor-in { from { opacity: 0; } to { opacity: .5; } }
+
+.decor-spark {
+  position: absolute;
+  width: var(--s, 6px);
+  height: var(--s, 6px);
+  background: radial-gradient(circle, #fff 0%, var(--accent-bright) 45%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0;
+  animation: spark-tw 4.5s ease-in-out infinite;
+}
+@keyframes spark-tw {
+  0%, 100% { opacity: 0; transform: scale(.6); }
+  50%      { opacity: .9; transform: scale(1); }
+}
+
+/* ============================================================
+   Curtain-wipe page transition
+   ============================================================ */
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  overflow: hidden;
+  pointer-events: auto; /* block interaction mid-swap */
+}
+
+/* Iris/portal: a tinted disc expands from the centre to cover the screen,
+   then contracts away to reveal the new scene from the edges inward. */
+.curtain-iris {
+  position: absolute;
+  inset: 0;
+  clip-path: circle(0% at 50% 50%);
+  background:
+    radial-gradient(120% 120% at 50% 50%, var(--accent) 0%, var(--accent-deep) 46%, var(--ink-blue) 100%);
+}
+.curtain--cover .curtain-iris  { animation: iris-cover 560ms cubic-bezier(.66, 0, .34, 1) forwards; }
+.curtain--reveal .curtain-iris { clip-path: circle(82% at 50% 50%); animation: iris-reveal 620ms cubic-bezier(.66, 0, .34, 1) forwards; }
+@keyframes iris-cover  { from { clip-path: circle(0% at 50% 50%); } to { clip-path: circle(82% at 50% 50%); } }
+@keyframes iris-reveal { from { clip-path: circle(82% at 50% 50%); } to { clip-path: circle(0% at 50% 50%); } }
+
+.curtain-mono {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 96px;
+  letter-spacing: 0.04em;
+  color: var(--powder-mist);
+  text-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+}
+.curtain-mono-row { display: inline-flex; align-items: baseline; gap: 10px; }
+.curtain-mono .amp { color: var(--accent-bright); font-style: italic; font-size: 0.74em; }
+.curtain-mono::after {
+  content: '';
+  width: 220px;
+  height: 2px;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, var(--accent-bright), transparent);
+}
+.curtain--cover .curtain-mono       { animation: mono-in 360ms cubic-bezier(.16, 1, .3, 1) 200ms both; }
+.curtain--cover .curtain-mono::after { animation: mono-line 380ms cubic-bezier(.16, 1, .3, 1) 320ms both; }
+.curtain--reveal .curtain-mono      { opacity: 1; animation: mono-out 300ms ease both; }
+@keyframes mono-in   { from { opacity: 0; } to { opacity: 1; } }
+@keyframes mono-line { from { opacity: 0; } to { opacity: 1; } }
+@keyframes mono-out  { to { opacity: 0; } }
+
+/* ---- Reduced motion: kill parallax drift, reveals, sparkle ---- */
+@media (prefers-reduced-motion: reduce) {
+  .plx { transition: none; transform: none; }
+  .rev, .rev-fall, .rev-pop, .rev-mask, .rev-grow, .rev-fade,
+  .decor-sprig, .decor-spark { animation: none; opacity: 1; }
+  .rev-mask { clip-path: none; }
+  .rev-grow { transform: none; }
+  .decor-spark { opacity: .5; }
+}
