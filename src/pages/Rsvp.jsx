@@ -85,6 +85,25 @@ export default function Rsvp() {
   const [savedAt, setSavedAt] = useState(null)
   const [active, setActive] = useState(0)        // which guest the carousel is showing
   const swipeRef = useRef(null) // touch start {x, y} for swipe-to-change-card
+  const viewportRef = useRef(null) // carousel viewport — height follows the active slide
+
+  // Pin the viewport's height to the ACTIVE slide and keep it pinned as that
+  // slide resizes (meal section expanding, textarea growing). height:auto
+  // can't animate, so an explicit pixel height + the CSS transition on
+  // .rsvp-viewport is what lets the deck glide between a tall accepting card
+  // and a short declined one instead of snapping.
+  const safeActiveIdx = Math.min(active, Math.max(0, members.length - 1))
+  useEffect(() => {
+    const vp = viewportRef.current
+    if (!vp) return
+    const slide = vp.querySelectorAll('.rsvp-slide')[safeActiveIdx]
+    if (!slide) return
+    const setH = () => { vp.style.height = `${slide.offsetHeight}px` }
+    setH()
+    const ro = new ResizeObserver(setH)
+    ro.observe(slide)
+    return () => ro.disconnect()
+  }, [safeActiveIdx, members.length, rsvpsLoading, householdLoading])
 
   useEffect(() => {
     if (householdLoading || !householdId || members.length === 0) return
@@ -242,7 +261,7 @@ export default function Rsvp() {
             </button>
           )}
 
-          <div className="rsvp-viewport" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+          <div className="rsvp-viewport" ref={viewportRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
             <div className="rsvp-track" style={{ transform: `translateX(-${safeActive * 100}%)` }}>
               {orderedMembers.map((mm, i) => {
                 const d = drafts[mm.user_id] ?? emptyDraft()
@@ -318,7 +337,7 @@ export default function Rsvp() {
                               onChange={(e) => setField(mm.user_id, 'dietary_notes', e.target.value)}
                               rows={2}
                               maxLength={500}
-                              placeholder="Allergies, intolerances, anything we should know"
+                              placeholder="Allergies, intolerances, anything we should know."
                             />
                           </label>
                         </div>

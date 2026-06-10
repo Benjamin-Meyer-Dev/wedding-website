@@ -60,6 +60,9 @@
   font-size: 20px;
   letter-spacing: 0.04em;
   cursor: pointer;
+  /* no blue tap flash / text selection when tapped on mobile */
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
   transition: color 180ms ease;
 }
 .topbar-monogram .amp {
@@ -111,7 +114,10 @@
   transition: transform 220ms cubic-bezier(.4, 0, .2, 1);
   transform-origin: center;
 }
-.topbar-link:hover { color: var(--ink-blue); }
+.topbar-link:hover {
+  color: var(--ink-blue);
+  background: var(--glass-bg-hover); /* soft powder chip so the hover reads clearly */
+}
 .topbar-link.is-active {
   color: var(--accent);
 }
@@ -144,7 +150,15 @@
   color: var(--accent);
   background: rgba(255, 255, 255, 0.45);
 }
-.topbar-signout svg { width: 16px; height: 16px; }
+.topbar-signout svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 200ms cubic-bezier(.22, 1, .36, 1);
+}
+/* pointer-only: the door icon nudges toward the exit */
+@media (hover: hover) {
+  .topbar-signout:hover svg { transform: translateX(2px); }
+}
 
 .topbar-burger {
   display: none;

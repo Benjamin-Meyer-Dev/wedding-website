@@ -57,6 +57,12 @@
 
 /* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; }
+/* Photos are decor, not content: no drag ghost, no selection highlight.
+   (Firefox ignores -webkit-user-drag — the imgs also set draggable={false}.) */
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
 html, body, #root { height: 100%; }
 /* No scrollbar-gutter on <html>: the root never scrolls (.app is height:100%
    overflow:hidden), so reserving a root gutter just paints an empty strip to

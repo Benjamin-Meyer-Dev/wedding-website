@@ -17,7 +17,14 @@
       "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:5173/wedding-website/\" -UseBasicParsing; $r.StatusCode; $r.Content.Substring\\(0, [Math]::Min\\(500, $r.Content.Length\\)\\))",
       "PowerShell(git -C \"c:\\\\Users\\\\Ben\\\\Documents\\\\Coding\\\\wedding-website\" diff --stat)",
       "PowerShell(git -C \"c:\\\\Users\\\\Ben\\\\Documents\\\\Coding\\\\wedding-website\" diff -- src/pages/registry.css src/pages/login.css src/styles/global.css src/components/navbar.css)",
-      "PowerShell(Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public static class SPI { [DllImport\\(\"user32.dll\", SetLastError=true\\)] public static extern bool SystemParametersInfo\\(uint uiAction, uint uiParam, ref bool pvParam, uint fWinIni\\); }'; $val = $false; [void][SPI]::SystemParametersInfo\\(0x1042, 0, [ref]$val, 0\\); if \\($val\\) { 'Windows animation effects: ON \\(not the cause\\)' } else { 'Windows animation effects: OFF - this is the cause' })"
+      "PowerShell(Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public static class SPI { [DllImport\\(\"user32.dll\", SetLastError=true\\)] public static extern bool SystemParametersInfo\\(uint uiAction, uint uiParam, ref bool pvParam, uint fWinIni\\); }'; $val = $false; [void][SPI]::SystemParametersInfo\\(0x1042, 0, [ref]$val, 0\\); if \\($val\\) { 'Windows animation effects: ON \\(not the cause\\)' } else { 'Windows animation effects: OFF - this is the cause' })",
+      "PowerShell(git config *)",
+      "PowerShell(git credential *)",
+      "PowerShell(try { \\(Get-Command npx -ErrorAction Stop\\).Source } catch {}; node -e \"try{require.resolve\\('playwright'\\);console.log\\('playwright: local'\\)}catch\\(e\\){console.log\\('playwright: none'\\)}\"; node -e \"try{require.resolve\\('puppeteer'\\)}catch\\(e\\){console.log\\('puppeteer: none'\\)}\")",
+      "PowerShell(node --version; @\\(\"$env:ProgramFiles\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe\", \"${env:ProgramFiles\\(x86\\)}\\\\Microsoft\\\\Edge\\\\Application\\\\msedge.exe\", \"$env:ProgramFiles\\\\Microsoft\\\\Edge\\\\Application\\\\msedge.exe\"\\) | Where-Object { Test-Path $_ })",
+      "PowerShell(node \"C:\\\\Users\\\\BenMe\\\\AppData\\\\Local\\\\Temp\\\\reg-hover-test\\\\cdp-test.mjs\")",
+      "PowerShell(git *)",
+      "PowerShell(Remove-Item *)"
     ]
   }
 }

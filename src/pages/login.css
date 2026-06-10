@@ -6,11 +6,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 64px;
-  /* Photo frame height. The form card hugs its own content and is centred
-     against this by `align-items: center` above. */
-  --hero-h: clamp(440px, min(656px, 742px), 920px);
-  /* vh/vw padding so it scales with the actual viewport, not the parent box */
+  gap: 48px;
+  /* Photo frame height, shrinking on short viewports so it never clips. */
+  --hero-h: min(656px, calc(100vh - 80px));
+  /* symmetric padding: the row centres truly vertically (no navbar here) */
   padding: 24px 32px;
 }
 
@@ -72,9 +71,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* enlarge slightly so there's room to slide, then shift the couple LEFT
-     within the (unchanged) frame */
-  transform: scale(1.25) translateX(-32px);
+  /* mirror the homepage portrait's pan/zoom exactly (home.css .home-img —
+     the homepage is the source of truth for the photo's crop and scale) */
+  transform: scale(1.15) translate(-6.4%, -5.2%);
 }
 
 /* ---------- Glass form card ---------- */
@@ -227,11 +226,16 @@
   pointer-events: none;
   z-index: 2;
   perspective: 280px;
-  transition: color 200ms ease, background 200ms ease, opacity 220ms ease;
+  transition: color 200ms ease, background 200ms ease, opacity 220ms ease,
+              transform 200ms cubic-bezier(.22, 1, .36, 1);
   -webkit-tap-highlight-color: transparent;
 }
 .field-toggle.is-visible { opacity: 1; pointer-events: auto; }
 .field-toggle:hover { color: var(--accent); background: rgba(58, 111, 149, 0.08); }
+/* pointer-only: grow slightly under the cursor (keep the -50% centring) */
+@media (hover: hover) {
+  .field-toggle:hover { transform: translateY(-50%) scale(1.1); }
+}
 .field-toggle:active { transform: translateY(-50%) scale(0.94); }
 .field-toggle svg {
   position: absolute;
@@ -249,14 +253,40 @@
 .field-toggle.is-shown .icon-eye { transform: translate(-50%, -50%) rotateX(-180deg); }
 .field-toggle.is-shown .icon-eye-off { transform: translate(-50%, -50%) rotateX(0deg); }
 
-.login-error {
-  margin: 0;
-  font-family: var(--font-ui);
-  font-size: 11px;
-  letter-spacing: 0.18em;
+/* ---------- Error alert: a pill that drops in at the top of the screen ---------- */
+.login-alert {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 32px);
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: var(--glass-bg);
+  border: 1px solid rgba(185, 69, 69, 0.4);
+  box-shadow: var(--glass-shadow);
   color: #b94545;
-  text-transform: uppercase;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  /* translateX(-50%) centring lives in the keyframes (animations own transform) */
+  animation: login-alert-in 360ms cubic-bezier(.22, 1, .36, 1) both;
 }
+.login-alert svg { width: 16px; height: 16px; flex: none; }
+.login-alert--out { animation: login-alert-out 280ms ease both; }
+@keyframes login-alert-in {
+  from { opacity: 0; transform: translate(-50%, -16px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+@keyframes login-alert-out {
+  from { opacity: 1; transform: translate(-50%, 0); }
+  to   { opacity: 0; transform: translate(-50%, -12px); }
+}
+
 
 /* ---------- Submit ---------- */
 .login-btn {
@@ -285,85 +315,93 @@
 .login-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
 /* ---------------- Responsive ----------------
-   Photo full-bleed background, condensed form card pinned to the bottom.
-   NOTE: the card-to-bottom alignment must use the compound `.scene.login`
-   selector — a bare `.login { justify-content: flex-end }` is outranked by
-   base `.scene { justify-content: center }` (scene.css loads last), which
-   would leave the card centered over the couple. */
+   Mirrors the mobile homepage: "Save the Date" head at the TOP, the photo as
+   an arched window filling the middle, and the login form at the BOTTOM.
+   NOTE: keep the compound `.scene.login` selector — a bare `.login` rule is
+   outranked by base `.scene` (scene.css loads last). */
 @media (max-width: 1200px) {
-  /* `.scene.login` (0,2,0) — beats base `.scene` so the card actually pins to
-     the bottom instead of being centered over the couple. */
   .scene.login {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
+    display: block;
     position: relative;
     min-height: 100%;
-    padding: 0 32px 40px;
+    padding: 0;
     overflow: hidden;
   }
 
+  /* The arch fills everything between the slim horizontal head band and the
+     form below — nothing overlays the photo. */
   .login-figure {
     position: absolute;
-    inset: 0;
+    top: calc(14px + 48px + 8px); /* below the head band */
+    bottom: calc(12px + 196px + 8px); /* above the form block */
+    /* centred via auto margins, NOT translateX(-50%): the figure carries
+       .plx, whose transform (scene.css loads last) would override it */
+    left: 16px;
+    right: 16px;
     width: auto;
     height: auto;
-    margin: 0;
-    flex: none;
-    z-index: 0;
+    max-width: 640px;
+    margin: 0 auto;
     overflow: hidden;
+    border-radius: 50% 50% 20px 20px / 30% 30% 20px 20px;
+    box-shadow: var(--glass-shadow);
   }
   .login-figure::before,
   .login-figure::after { display: none; }
-  /* On mobile the figure itself is the full-bleed clip, so the frame is a
-     no-op passthrough (the photo fills the figure directly). */
+  /* On mobile the figure itself is the arch clip, so the frame is a no-op
+     passthrough (the photo fills the figure directly). */
   .login-frame { display: contents; }
   .login-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 84% center; /* nudge the couple left of centre */
-    transform: scale(1.5); /* bottom-anchored — a larger scale lifts the couple a bit higher */
-    transform-origin: center bottom;
+    /* mirror the homepage arch crop exactly (home.css .home-img) */
+    object-position: 50% 75%;
+    transform: scale(1.18) translate(-7%, -6%);
     border-radius: 0;
     box-shadow: none;
   }
 
-  .login::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    /* dull the photo like the mobile homepage scrim (home.css .home::after),
-       but keep the heavier base behind the bottom-pinned card */
-    background: linear-gradient(
-      180deg,
-      rgba(15, 30, 50, 0.30) 0%,
-      rgba(15, 30, 50, 0.50) 42%,
-      rgba(15, 30, 50, 0.50) 64%,
-      rgba(15, 30, 50, 0.68) 100%
-    );
-    z-index: 1;
-    pointer-events: none;
-  }
-
+  /* The card dissolves: its head and form become flex items of the scene,
+     sandwiching the arch (head pulled above it, form after it). */
   .login-card {
-    position: relative;
-    flex: 0 0 auto;
-    width: 100%;
-    max-width: min(420px, 1178px);
-    margin: 0;
-    z-index: 2;
-    padding: 24px 28px;
-    border-radius: 20px;
-    gap: 16px;
+    display: contents;
   }
-  .login-card-head { gap: 8px; }
-  .login-tag { font-size: 9px; letter-spacing: 0.34em; }
-  .login-mono { font-size: 42px; }
-  .login-date { font-size: 10px; letter-spacing: 0.26em; }
+  /* "Save the Date" head: ONE horizontal line above the arch (tag · E&B ·
+     date) — a 48px band instead of the old 76px stack, so the frame gets
+     the reclaimed height. Grid (1fr auto 1fr), not flex: it pins the E&B
+     monogram to the exact horizontal centre regardless of how wide the tag
+     and date to either side are. */
+  .login-card-head {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    right: 16px;
+    height: 48px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 12px;
+  }
+  .login-card-head .login-tag { justify-self: end; }
+  .login-card-head .login-date { justify-self: start; }
+  .login-tag { font-size: 10.5px; letter-spacing: 0.34em; }
+  .login-mono { font-size: 34px; } /* sized for the one-line head band */
+  .login-date { font-size: 11.5px; letter-spacing: 0.26em; }
   .login-rule { display: none; }
-  .login-form { gap: 14px; }
+  /* The form: a plain block BELOW the arch (196px slot), on the page
+     background like the homepage's text bands — nothing overlays the photo.
+     Bottom-anchored so an error message grows upward into the gap. */
+  .login-form {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 12px;
+    width: auto;
+    max-width: 400px;
+    margin: 0 auto;
+    gap: 12px;
+  }
   .field { gap: 6px; }
   .field-lbl { font-size: 8.5px; letter-spacing: 0.26em; }
   .field input { font-size: 16px; padding: 12px 14px; border-radius: 10px; }
@@ -371,16 +409,12 @@
 }
 
 @media (max-width: 520px) {
-  /* match the 1200px rule's specificity (.scene.login) or this padding is outranked */
-  .scene.login { padding: 0 12px 16px; }
-  .login-card {
-    padding: 14px 16px;
-    border-radius: 18px;
-    gap: 12px;
-  }
-  .login-tag { font-size: 8.5px; }
-  .login-mono { font-size: 36px; }
-  .login-date { font-size: 9.5px; letter-spacing: 0.22em; }
+  /* The condensed fields below make the form ~30px shorter — shrink the
+     arch's bottom slot to match so the frame stays snug to the form. */
+  .login-figure { bottom: calc(12px + 168px + 8px); }
+  .login-tag { font-size: 9.5px; }
+  .login-mono { font-size: 30px; } /* one-line head band on narrow phones */
+  .login-date { font-size: 10.5px; letter-spacing: 0.22em; }
   .login-form { gap: 10px; }
   .field { gap: 2px; }
   .field-lbl { font-size: 8.5px; letter-spacing: 0.22em; }
@@ -388,21 +422,14 @@
   .login-btn { padding: 11px 16px; font-size: 10.5px; letter-spacing: 0.26em; }
 }
 
-/* Short / landscape screens (e.g. a phone turned sideways): the full-bleed
-   photo + bottom card can run out of vertical room, so compress the card and
-   ease the photo zoom rather than letting it scroll or clip. */
+/* Short / landscape screens (e.g. a phone turned sideways): compress the
+   form and tighten the arch's bottom slot to match, so the frame keeps as
+   much height as possible without anything scrolling or clipping. */
 @media (max-width: 1200px) and (max-height: 560px) {
-  .login-img { transform: scale(1.2); }
-  .login-card {
-    max-width: min(380px, 1152px);
-    padding: 12px 18px;
-    gap: 8px;
-  }
-  .login-card-head { gap: 2px; }
-  .login-mono { font-size: 32px; }
   .login-form { gap: 6px; }
   .field { gap: 2px; }
   .field input { padding: 7px 12px; }
   .login-btn { padding: 9px 16px; }
+  .login-figure { bottom: calc(12px + 148px + 8px); }
 }
 

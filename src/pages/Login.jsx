@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Eye, EyeOff, CircleAlert } from 'lucide-react'
 import heroPhoto from '../assets/HomePage.jpg'
 import { supabase } from '../lib/supabase'
 import './login.css'
@@ -11,8 +11,21 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [pwAnimating, setPwAnimating] = useState(false)
-  const [error, setError] = useState('')
+  // Errors surface as a toast pill at the top of the screen (no inline text).
+  // `id` keys the element so back-to-back failures replay the drop-in.
+  const [alert, setAlert] = useState(null) // { id, text, leaving }
   const [loading, setLoading] = useState(false)
+
+  const showAlert = (text) => setAlert({ id: Date.now(), text, leaving: false })
+
+  // Auto-dismiss: hold ~4s, play the slide-out, then unmount.
+  useEffect(() => {
+    if (!alert) return
+    const t = alert.leaving
+      ? setTimeout(() => setAlert(null), 300)
+      : setTimeout(() => setAlert((a) => (a && a.id === alert.id ? { ...a, leaving: true } : a)), 3900)
+    return () => clearTimeout(t)
+  }, [alert])
 
   const togglePassword = () => {
     setPwAnimating(true)
@@ -22,10 +35,10 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
+    setAlert(null)
     const cleanUsername = username.trim().toLowerCase().slice(0, 64)
     if (!cleanUsername || !password) {
-      setError('Please enter your username and password.')
+      showAlert('Please enter your username and password.')
       return
     }
     setLoading(true)
@@ -35,13 +48,25 @@ export default function Login() {
     })
     setLoading(false)
     if (authError) {
-      setError('Invalid username or password.')
+      showAlert('Invalid username or password.')
     }
   }
 
   return (
     <section className="scene login">
-      <figure className="login-figure">
+      {alert && (
+        <div
+          key={alert.id}
+          className={`login-alert${alert.leaving ? ' login-alert--out' : ''}`}
+          role="alert"
+        >
+          <CircleAlert aria-hidden="true" />
+          <span>{alert.text}</span>
+        </div>
+      )}
+      {/* plx with the same depth as the homepage figure: the pointer parallax
+          offset matches at the moment of the sign-in transition. */}
+      <figure className="login-figure plx" style={{ '--d': '16px' }}>
         <span className="login-frame">
           <img
             src={heroPhoto}
@@ -50,6 +75,7 @@ export default function Login() {
             width="1068"
             height="1600"
             decoding="async"
+            draggable={false}
           />
         </span>
       </figure>
@@ -106,8 +132,6 @@ export default function Login() {
               </button>
             </div>
           </label>
-
-          {error && <p className="login-error" role="alert">{error}</p>}
 
           <button type="submit" className="login-btn rev" style={{ '--rd': '800ms' }} disabled={loading}>
             {loading ? 'Signing In…' : 'Enter'}

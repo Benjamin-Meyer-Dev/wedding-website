@@ -19,6 +19,9 @@ import './styles/app.css'
 
 const COVER_MS = 560
 const REVEAL_MS = 620
+// Sentinel `pending` target: the curtain is covering the LOGIN, and at the
+// midpoint it swaps the auth gate to the app instead of switching pages.
+const ENTER_APP = '__enter-app__'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -29,12 +32,18 @@ export default function App() {
   const [introExiting, setIntroExiting] = useState(false)
   const [introDone, setIntroDone] = useState(false)
   const [page, setPage] = useState('home')
+  // What the auth gate shows. Deliberately lags `session` on sign-in so the
+  // curtain can sweep over the login BEFORE the app swaps in beneath it.
+  const [gate, setGate] = useState('login')
 
   // Curtain transition: 'idle' -> 'cover' (sweep in, swap page) -> 'reveal'.
   const [phase, setPhase] = useState('idle')
   const [pending, setPending] = useState(null)
 
   const appRef = useRef(null)
+  // The auth listener is registered once; read the live gate through a ref.
+  const gateRef = useRef(gate)
+  useEffect(() => { gateRef.current = gate }, [gate])
 
   // Pointer parallax: writes --px/--py onto the app root for .plx layers.
   useParallax(appRef)
@@ -42,6 +51,7 @@ export default function App() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session)
+      setGate(data.session ? 'app' : 'login')
       setAuthReady(true)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
@@ -52,6 +62,15 @@ export default function App() {
         setPage('home')
         setPhase('idle')
         setPending(null)
+        setGate('login')
+      }
+      // Fresh sign-in from the login gate: instead of an instant tree swap,
+      // sweep the curtain over the login; the cover-end handler flips the
+      // gate to the app underneath it, then the curtain reveals the homepage.
+      // (gateRef guards against SIGNED_IN re-fires while already in the app.)
+      if (event === 'SIGNED_IN' && gateRef.current === 'login') {
+        setPending(ENTER_APP)
+        setPhase('cover')
       }
     })
     return () => subscription.unsubscribe()
@@ -60,7 +79,11 @@ export default function App() {
   // Drive the curtain timeline.
   useEffect(() => {
     if (phase === 'cover') {
-      const t = setTimeout(() => { setPage(pending); setPhase('reveal') }, COVER_MS)
+      const t = setTimeout(() => {
+        if (pending === ENTER_APP) setGate('app')
+        else setPage(pending)
+        setPhase('reveal')
+      }, COVER_MS)
       return () => clearTimeout(t)
     }
     if (phase === 'reveal') {
@@ -106,20 +129,20 @@ export default function App() {
     )
   }
 
-  if (!session) {
+  if (gate === 'login') {
     return (
       <div className="app" ref={appRef}>
         <BackgroundOrbs />
         <SceneDecor />
         {/* Render once the loader starts fading so it crossfades to the login. */}
         {showApp && <Login />}
+        {/* The sign-in curtain covers the login here; after the gate flips,
+            the app tree below picks it up mid-transition for the reveal. */}
+        {curtain}
         {intro}
       </div>
     )
   }
-
-  // While covering, the active tab already points at the destination.
-  const activePage = phase === 'cover' ? pending : page
 
   return (
     <HouseholdProvider>
@@ -130,7 +153,7 @@ export default function App() {
         {showApp && (
           <>
             <NavBar
-              page={activePage}
+              page={page}
               onNavigate={navigate}
               onSignOut={() => supabase.auth.signOut()}
             />

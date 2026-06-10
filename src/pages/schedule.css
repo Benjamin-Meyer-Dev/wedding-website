@@ -238,7 +238,13 @@
   animation: tl-draw-v 900ms cubic-bezier(.22, 1, .36, 1) 120ms both;
 }
 /* traveling comet/progress — horizontal layout only */
-.timeline-progress { display: none; }
+.timeline-progress {
+  display: none;
+  /* the circles pop in late (tl-pop, staggered) and the spine draws over ~1s;
+     without this the pulsing head sits exposed on the bare first circle from
+     frame one. Hold it invisible until the timeline has drawn, then fade in. */
+  animation: comet-in 240ms ease-out 1.02s backwards;
+}
 
 /* Mobile/vertical spine: draw it per-gap (each node links to the next) so it
    stops exactly at the LAST circle. The single container-spanning
@@ -303,6 +309,8 @@
   padding: 0 0 30px 56px;
   cursor: pointer;
   outline: none;
+  /* kill the mobile tap flash — a big translucent blue box over the card */
+  -webkit-tap-highlight-color: transparent;
   animation: tl-pop 620ms cubic-bezier(.22, 1, .36, 1) backwards;
   animation-delay: calc(var(--i) * 80ms + 220ms);
 }
@@ -553,6 +561,10 @@
 }
 
 /* ---------------- Animations ---------------- */
+@keyframes comet-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
 @keyframes tl-pop {
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }

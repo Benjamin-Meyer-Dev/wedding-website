@@ -17,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 84px;
+  gap: 48px; /* matches the login page's photo-to-card gap */
   width: 100%;
   max-width: 1180px;
 }
@@ -45,37 +45,46 @@
   filter: blur(6px);
   z-index: -1;
 }
-.home-img {
+/* The frame: a fixed arched clip box (the photo's native aspect) that the
+   photo pans INSIDE — the frame itself stays put (mirrors .login-frame). */
+.home-frame {
   display: block;
   height: 100%;
-  width: auto;
-  max-width: 538px;
-  object-fit: cover;
-  transform: translateX(-50px); /* nudge the framed couple left */
+  aspect-ratio: 1068 / 1600;
+  overflow: hidden;
+  transform: translateX(-50px); /* nudge the whole framed portrait left */
   border-radius: 220px 220px 22px 22px; /* arched top — storybook frame */
   box-shadow:
     0 48px 96px -34px rgba(21, 50, 74, 0.6),
     0 18px 40px -22px rgba(21, 50, 74, 0.42),
     0 0 0 1px rgba(255, 255, 255, 0.6) inset;
 }
+.home-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* zoom slightly to buy pan room (the frame is the photo's native aspect,
+     so unzoomed there'd be nothing to pan), then slide the couple LEFT + UP.
+     Percentages (of the img's own box), not px: the pan scales with the
+     frame, so it can never out-run the zoom slack (max safe ≈ 6.5% each
+     axis at scale 1.15) and bare an edge on short viewports. */
+  transform: scale(1.15) translate(-6.4%, -5.2%);
+}
 
 /* ---------- Copy column ---------- */
+/* Group wrappers for the title block (tag + names + rule) and the date +
+   countdown. Pure pass-throughs on desktop; the mobile block below turns
+   them into frosted panels over the full-bleed photo. */
+.home-head,
+.home-foot { display: contents; }
+
 .home-copy {
   position: relative;
   flex: 0 1 540px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-
-.home-tag {
-  margin: 0 0 11px;
-  font-family: var(--font-ui);
-  font-weight: 600;
-  font-size: 12px;
-  letter-spacing: 0.46em;
-  text-transform: uppercase;
-  color: var(--accent);
 }
 
 .home-names {
@@ -158,7 +167,8 @@
   top: 14%;
   bottom: 14%;
   width: 1px;
-  background: var(--rule-soft);
+  /* brighter than --rule-soft (18% accent) so the columns read clearly */
+  background: var(--accent-soft);
 }
 .hcd-num {
   font-family: var(--font-display);
@@ -178,82 +188,113 @@
 }
 
 /* ============================================================
-   Mobile (≤1200px): the photo becomes a full-bleed backdrop and the copy
-   floats over it — "Save the Date" + names pinned to the TOP, date +
-   countdown to the BOTTOM. Still one scroll-free scene.
+   Mobile (≤1200px): a vertical stack — title panel at the TOP (under the
+   navbar), the photo as an arched window filling the middle, and the date +
+   countdown panel at the BOTTOM. Still one scroll-free scene.
    ============================================================ */
 @media (max-width: 1200px) {
   .home { padding: 0; }
   .home-stage {
     flex-direction: column;
     align-items: stretch;
-    gap: 0;
+    gap: 8px;
     height: 100%;
     max-width: none;
+    /* Hug the navbar a little tighter than the standard clearance (the title
+       band has its own breathing room) so the arch gets the extra height.
+       Narrow gutters so the arch + panels run nearly edge to edge. */
+    padding: calc(var(--content-top) - 12px) 16px 12px;
   }
+  /* The photo: an arched window between the two panels (a mobile echo of the
+     login dome). flex:1 soaks up every pixel the slim panels leave, so the
+     image stays the hero of the screen. */
   .home-figure {
-    position: absolute;
-    inset: 0;
-    height: auto;
-    z-index: 0;
+    position: relative;
+    /* basis 0 (not auto): the photo's intrinsic height must not factor into
+       layout — the arch gets exactly the space the panels leave, no more */
+    flex: 1 1 0;
+    min-height: 0;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 50% 50% 20px 20px / 30% 30% 20px 20px;
+    box-shadow: var(--glass-shadow);
   }
   /* The soft glow only made sense behind the framed desktop portrait. */
   .home-figure-glow { display: none; }
+  /* The figure itself is the arch clip on mobile; the frame is a pass-through. */
+  .home-frame {
+    display: contents;
+  }
   .home-img {
     width: 100%;
     height: 100%;
     max-width: none;
-    object-position: 84% 30%; /* nudge the couple left of centre */
-    /* Overscan so the pointer-parallax drift (figure --d) never bares an edge:
-       scale(1.1) = 5% buffer per side, which covers the ≤16px drift at any size. */
-    transform: scale(1.1);
+    object-fit: cover;
+    /* The arch is wider than the photo's aspect, so cover fills the width
+       and object-position 75% biases the vertical crop down. The pan is
+       percentage-based (of the img's own box) so it scales with the arch
+       and can never out-run the zoom slack (max safe ≈ 7.6% each axis at
+       scale 1.18) and bare an edge — px pans cut off on small arches. */
+    object-position: 50% 75%;
+    transform: scale(1.18) translate(-7%, -6%);
     border-radius: 0;
     box-shadow: none;
   }
-  /* The copy is now centred, so darken the middle band (behind the text) and
-     ease off toward the edges where the photo shows through. */
-  .home::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    background: linear-gradient(180deg,
-      rgba(15, 30, 50, 0.30) 0%,
-      rgba(15, 30, 50, 0.50) 42%,
-      rgba(15, 30, 50, 0.50) 64%,
-      rgba(15, 30, 50, 0.40) 100%);
-  }
+  /* The copy wrapper dissolves: the title/countdown panels become direct flex
+     items of the stage, sandwiching the arch. Inherited text styling still
+     applies through display:contents. */
   .home-copy {
-    z-index: 2;
-    flex: 1;
-    width: 100%;
-    align-items: center;
-    justify-content: flex-start; /* tag + names sit at the TOP, just below the navbar */
+    display: contents;
     text-align: center;
-    /* Clear the fixed navbar at the top — content-top already sits 16px below
-       the navbar, a middle ground between flush and the roomier +16px. Date +
-       countdown drop to the bottom via margin-top:auto on .home-date. */
-    padding: var(--content-top) 32px 18px;
   }
-  .home-tag { color: var(--powder-mist); }
-  .home-names { align-items: center; color: #fff; }
-  .home-name { font-size: clamp(40px, 12vw, 100px); } /* scale down so long names never overflow narrow screens */
-  .home-amp { margin: 2px 0; }
-  .home-amp > span { font-size: clamp(30px, 9.4vw, 78px); color: var(--accent-bright); }
+  .home-head { order: -1; } /* title above the arch; foot follows it in DOM order */
+  /* Slim text bands above and below the arch — plain type straight on the
+     page background, no card chrome, so the arch is the only framed shape.
+     Fixed slot heights keep the layout deterministic: the flex-filled arch
+     between them gets every remaining pixel. */
+  .home-head,
+  .home-foot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto; /* stay centred when the 640px cap kicks in on tablets */
+    padding: 0 18px;
+  }
+  .home-head { height: 60px; }
+  .home-foot { height: 84px; }
+  /* Names flow on ONE line (wrapping only if a name is too long for the
+     screen) — trading the tall stacked block for horizontal space so the
+     panel stays a slim band. */
+  .home-names {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    column-gap: 0.24em;
+  }
+  .home-name { font-size: clamp(24px, 7.4vw, 44px); }
+  .home-amp { margin: 0; }
+  .home-amp > span { font-size: clamp(18px, 5.8vw, 34px); }
   .home-rule {
     align-self: center;
-    background: linear-gradient(90deg, transparent, var(--accent-bright), transparent);
+    width: 90px;
+    margin-top: 10px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
   }
-  /* margin-top:auto drops the date + countdown to the BOTTOM, leaving the
-     tag + names + rule as a title block at the top. */
-  .home-date { color: rgba(238, 244, 249, 0.86); margin-top: auto; }
+  /* the panel's padding provides the spacing the desktop top margin gave */
+  .home-date { margin-top: 0; font-size: 12px; }
   .home-countdown {
-    --cd-gap: clamp(12px, 4vw, 30px); /* shrink the gap on narrow screens so the row fits */
+    --cd-gap: clamp(10px, 3vw, 22px); /* shrink the gap on narrow screens so the row fits */
     gap: var(--cd-gap);
-    margin-top: 10px; /* tighter date→countdown gap on mobile (base is 24px) */
+    margin-top: 8px; /* tighter date→countdown gap on mobile (base is 24px) */
   }
-  .hcd-item:not(:last-child)::after { background: rgba(255, 255, 255, 0.25); }
-  .hcd-num { font-size: clamp(26px, 6.4vw, 48px); color: #fff; }
-  .hcd-lbl { color: rgba(238, 244, 249, 0.7); }
+  .hcd-item { gap: 3px; }
+  .hcd-num { font-size: clamp(20px, 5vw, 34px); }
+  .hcd-lbl { font-size: 9px; letter-spacing: 0.24em; }
 }

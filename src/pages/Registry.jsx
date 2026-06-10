@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Plane, CookingPot, Cake, BedDouble, Wine, Coffee, ExternalLink } from 'lucide-react'
+import { Plane, CookingPot, Cake, BedDouble, Wine, Coffee, ArrowRight } from 'lucide-react'
+import honeymoonPhoto from '../assets/honeymoon.jpg'
 import './registry.css'
 
 // Rough items. For each: set `price`, a real `link` (Buy Now destination), and
 // optionally an `image` URL (product photo) — until then a themed panel shows.
 const GIFTS = [
-  { Icon: Plane,      title: 'Honeymoon Fund',        price: 'Any amount', link: '#', cta: 'Contribute', image: '' },
+  { Icon: Plane,      title: 'Honeymoon Fund',        price: 'Any amount', link: '#', cta: 'Contribute', image: honeymoonPhoto },
   { Icon: CookingPot, title: 'Enamel Dutch Oven',     price: '$380',       link: '#', cta: 'Buy Now',    image: '' },
   { Icon: Cake,       title: 'Stand Mixer',           price: '$430',       link: '#', cta: 'Buy Now',    image: '' },
   { Icon: BedDouble,  title: 'Linen Bedding Set',     price: '$220',       link: '#', cta: 'Buy Now',    image: '' },
@@ -45,7 +46,7 @@ export default function Registry() {
                   rel="noreferrer"
                   onClick={(e) => { if (g.link === '#') e.preventDefault() }}
                 >
-                  {g.cta} <ExternalLink />
+                  {g.cta} <ArrowRight />
                 </a>
               </div>
             </div>

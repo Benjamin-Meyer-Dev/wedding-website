@@ -144,11 +144,12 @@ export default function Schedule() {
                   src={shown.photo}
                   alt=""
                   decoding="async"
+                  draggable={false}
                   onLoad={(e) => e.currentTarget.classList.add('is-loaded')}
                   onError={(e) => e.currentTarget.classList.remove('is-loaded')}
                 />
               ) : (
-                <img className="stage-img is-loaded" src={heroPhoto} alt="" />
+                <img className="stage-img is-loaded" src={heroPhoto} alt="" draggable={false} />
               )}
             </div>
 

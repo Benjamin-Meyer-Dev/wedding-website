@@ -413,8 +413,10 @@
 /* When one tile in a grid is selected, fade and desaturate the others —
    and lock out the hover effects so only the chosen meal animates. */
 .rsvp-meal-grid:has(.rsvp-meal-tile.is-on) .rsvp-meal-tile:not(.is-on) {
-  filter: grayscale(0.55) brightness(0.98);
+  filter: grayscale(0.9) brightness(0.96);
+  opacity: 0.55;
   transition: filter 240ms cubic-bezier(.4, 0, .2, 1),
+              opacity 240ms cubic-bezier(.4, 0, .2, 1),
               border-color 240ms cubic-bezier(.4, 0, .2, 1),
               box-shadow 240ms cubic-bezier(.4, 0, .2, 1),
               transform 200ms cubic-bezier(.22, 1, .36, 1);
@@ -653,17 +655,22 @@
   min-width: 0;
   max-width: 1000px;
   overflow: hidden;
+  /* Height is pinned to the ACTIVE slide by Rsvp.jsx (height:auto can't
+     animate) and transitions in step with the horizontal glide below, so
+     paging between a tall (accepting) and short (declined) card flows
+     instead of snapping. */
+  transition: height 640ms cubic-bezier(.22, 1, .36, 1);
 }
 .rsvp-track {
   display: flex;
-  align-items: stretch; /* every slide gets the full (tallest-card) height */
-  transition: transform 520ms cubic-bezier(.22, 1, .36, 1);
+  align-items: flex-start; /* natural heights; the viewport clips the taller inactive cards */
+  transition: transform 640ms cubic-bezier(.22, 1, .36, 1);
 }
 .rsvp-slide {
   flex: 0 0 100%;
   min-width: 0;
   display: flex;
-  align-items: center; /* center the card vertically — matters for short (declining) cards */
+  align-items: flex-start;
   justify-content: center;
   padding: 4px;
 }
@@ -771,6 +778,17 @@
 }
 .rsvp-toggle--yes .rsvp-toggle-thumb { opacity: 1; transform: translateX(0) scale(1); }
 .rsvp-toggle--no .rsvp-toggle-thumb  { opacity: 1; transform: translateX(100%) scale(1); background: linear-gradient(135deg, var(--accent-deep), var(--ink-blue)); }
+/* Default "no selection yet" mode: neither side is lit (the thumb stays
+   hidden) and a soft breathing halo marks the toggle as awaiting an answer —
+   clearly distinct from both the yes and no states. */
+.rsvp-toggle--none {
+  border-color: var(--accent-soft);
+  animation: toggle-await 2.8s ease-in-out infinite;
+}
+@keyframes toggle-await {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(110, 167, 201, 0); }
+  50%      { box-shadow: 0 0 0 5px rgba(110, 167, 201, 0.22); }
+}
 .rsvp-toggle-opt {
   position: relative;
   z-index: 1;
@@ -793,8 +811,16 @@
   transition: color 260ms ease;
   -webkit-tap-highlight-color: transparent;
 }
-.rsvp-toggle-opt svg { width: 16px; height: 16px; }
+.rsvp-toggle-opt svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 220ms cubic-bezier(.22, 1, .36, 1);
+}
 .rsvp-toggle-opt:hover { color: var(--ink-blue); }
+/* pointer-only: the check / X tilts awake before you commit */
+@media (hover: hover) {
+  .rsvp-toggle-opt:hover svg { transform: scale(1.2) rotate(-8deg); }
+}
 .rsvp-toggle--yes .rsvp-toggle-opt--yes { color: #fff; }
 .rsvp-toggle--no .rsvp-toggle-opt--no { color: var(--accent-bright); }
 /* the chosen side's icon pops in playfully */
@@ -849,7 +875,12 @@
   border: 1px solid var(--rule);
   background: transparent;
   cursor: pointer;
-  transition: width 260ms cubic-bezier(.22, 1, .36, 1), background 220ms ease, border-color 220ms ease;
+  transition: width 260ms cubic-bezier(.22, 1, .36, 1), background 220ms ease, border-color 220ms ease,
+              transform 200ms cubic-bezier(.22, 1, .36, 1);
+}
+/* pointer-only: dots swell under the cursor so they read as paging targets */
+@media (hover: hover) {
+  .rsvp-dot:hover { transform: scale(1.35); border-color: var(--accent); }
 }
 .rsvp-dot.is-done { background: var(--accent-bright); border-color: var(--accent-bright); }
 .rsvp-dot.is-on { width: 26px; border-radius: 999px; background: var(--accent); border-color: var(--accent); }
@@ -914,10 +945,4 @@
   /* display:block beats the standalone-page 2-line clamp (same media width,
      lower specificity) — the full description always shows */
   .rsvp-deck .rsvp-meal-desc { display: block; overflow: visible; font-size: 11.5px; line-height: 1.4; }
-  /* Don't stretch every slide to the tallest card on mobile — let the carousel
-     follow the ACTIVE card's height, so a short (declining) card isn't centred
-     in a tall slide with big empty gaps above and below it. Inactive slides
-     collapse to 0 height but keep their 100% width, so the translateX paging
-     still lines up. */
-  .rsvp-slide[aria-hidden="true"] { height: 0; min-height: 0; padding: 0; overflow: hidden; }
 }

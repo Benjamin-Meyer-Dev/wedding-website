@@ -90,8 +90,9 @@
   box-shadow: 0 8px 20px -8px rgba(21, 50, 74, 0.55);
 }
 
-/* Title + buy button overlaid on the bottom of the photo card. A dark scrim
-   (transparent → navy) keeps them legible over any photo. */
+/* Solid white footer band holding the title + buy button — flush with the
+   card's edges (the card's overflow:hidden rounds its bottom corners), so
+   the accent button always stands out on a constant background. */
 .reg-stage-foot {
   position: absolute;
   left: 0;
@@ -99,14 +100,12 @@
   bottom: 0;
   z-index: 2;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 26px 24px 22px;
-  background: linear-gradient(to top,
-    rgba(13, 30, 48, 0.82) 0%,
-    rgba(13, 30, 48, 0.5) 48%,
-    transparent 100%);
+  padding: 14px 18px;
+  background: #fff;
+  border-top: 1px solid var(--rule-soft);
 }
 .reg-feature-title {
   margin: 0;
@@ -115,9 +114,8 @@
   font-weight: 400;
   font-size: 34px;
   line-height: 1.06;
-  color: #fff;
+  color: var(--ink-blue); /* on the white footer band */
   letter-spacing: -0.012em;
-  text-shadow: 0 2px 14px rgba(13, 30, 48, 0.55);
   animation: reg-rise 520ms cubic-bezier(.16, 1, .3, 1);
 }
 @keyframes reg-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -138,9 +136,23 @@
   text-transform: uppercase;
   text-decoration: none;
   transition: background .2s ease, transform .2s cubic-bezier(.22, 1, .36, 1), box-shadow .2s ease;
+  /* no blue tap flash on mobile */
+  -webkit-tap-highlight-color: transparent;
 }
-.reg-buy svg { width: 14px; height: 14px; }
+.reg-buy svg {
+  width: 14px;
+  height: 14px;
+  /* hover-off: same evenly-decelerating settle as the row icon chips */
+  transition: transform .5s cubic-bezier(.25, .46, .45, .94);
+}
 .reg-buy:hover { background: var(--accent-deep); transform: translateY(-2px); box-shadow: 0 14px 28px -10px rgba(21, 50, 74, 0.55); }
+/* pointer-only: the arrow leads the way on hover (quick engage, slow settle) */
+@media (hover: hover) {
+  .reg-buy:hover svg {
+    transform: translateX(3px);
+    transition: transform .22s cubic-bezier(.22, 1, .36, 1);
+  }
+}
 
 /* picker list — the wrapper is the flex track that stretches to the feature's
    height; the list fills it absolutely so its own content can't grow the
@@ -208,9 +220,22 @@
   border-radius: 12px;
   background: var(--powder-mist);
   color: var(--accent);
-  transition: background .25s ease, color .25s ease;
+  /* this transform leg is the hover-OFF: a long easeOutQuad settle. `ease`
+     front-loads ~85% of the return into the first 200ms, which reads as a
+     snap; easeOutQuad spreads the motion evenly and decelerates into rest. */
+  transition: background .25s ease, color .25s ease,
+              transform .6s cubic-bezier(.25, .46, .45, .94);
 }
 .reg-row-icon svg { width: 22px; height: 22px; }
+/* pointer-only: the row's icon chip tilts awake under the cursor */
+@media (hover: hover) {
+  .reg-row:hover .reg-row-icon {
+    transform: scale(1.08) rotate(-4deg);
+    /* quick engage; the base rule's slower settle takes over on hover-off */
+    transition: background .25s ease, color .25s ease,
+                transform .22s cubic-bezier(.22, 1, .36, 1);
+  }
+}
 .reg-row.is-active .reg-row-icon { background: var(--accent); color: #fff; }
 /* name + price live in their own group: the texts baseline-align with each
    other (the two fonts' metrics differ, so box-centering left the price
@@ -268,7 +293,7 @@
   .reg-list-wrap { flex: 1 1 auto; width: 100%; min-height: 0; }
   .reg-list { justify-content: flex-start; }
   .reg-stage-photo { flex: none; height: 224px; min-height: 0; max-height: none; }
-  .reg-stage-foot { padding: 16px 16px 14px; }
+  .reg-stage-foot { padding: 10px 14px; }
   .reg-feature-title { font-size: 24px; }
   .reg-buy { padding: 8px 14px; font-size: 9.5px; }
   .reg-price { font-size: 11px; padding: 4px 10px; }

@@ -25,6 +25,9 @@ const PAGE_LABELS = {
   rsvp: 'RSVP',
 }
 
+// `page` is the page actually on screen — it drives both the link highlight
+// and the mobile centre label, so both update at the curtain's covered
+// midpoint rather than before the page visibly changes.
 export default function NavBar({ page, onNavigate, onSignOut }) {
   const [open, setOpen] = useState(false)
   const [resizing, setResizing] = useState(false)

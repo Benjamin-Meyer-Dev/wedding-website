@@ -23,6 +23,8 @@
 .faq::-webkit-scrollbar { width: 6px; }
 
 .faq-inner {
+  /* gentle fade + lift on entry, like the RSVP cards */
+  animation: page-rise 460ms cubic-bezier(.4, 0, .2, 1);
   flex: none;           /* keep natural height; the scene scrolls, not the inner */
   width: 100%;
   max-width: 1000px;

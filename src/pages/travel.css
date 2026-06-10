@@ -26,6 +26,8 @@
 .travel::-webkit-scrollbar { width: 6px; }
 
 .travel-inner {
+  /* gentle fade + lift on entry, like the RSVP cards */
+  animation: page-rise 460ms cubic-bezier(.4, 0, .2, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -199,21 +201,30 @@
               background 200ms ease, border-color 200ms ease,
               box-shadow 200ms ease, color 200ms ease, filter 200ms ease;
 }
-.tv-action svg { width: 15px; height: 15px; }
+.tv-action svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 200ms cubic-bezier(.22, 1, .36, 1);
+}
+/* pointer-only: the button's icon perks up under the cursor */
+@media (hover: hover) {
+  .tv-action:hover svg { transform: scale(1.18); }
+}
 .tv-action:hover {
   transform: translateY(-2px);
   border-color: var(--accent);
   box-shadow: 0 12px 24px -16px rgba(21, 50, 74, 0.5);
 }
 .tv-action:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-/* the directions button leads — filled in the venue's own phase colour */
-.tv-action--primary { color: #fff; border-color: transparent; }
-.tv-venue--ceremony  .tv-action--primary { background: var(--ceremony); }
-.tv-venue--reception .tv-action--primary { background: var(--reception); }
+/* the directions button leads — one shared accent fill on both venues */
+.tv-action--primary { color: #fff; border-color: transparent; background: var(--accent); }
 .tv-action--primary:hover { filter: brightness(1.07); box-shadow: 0 14px 26px -14px rgba(21, 50, 74, 0.6); }
 
 /* ---------------- Journey connector ---------------- */
 .travel-route {
+  /* stretch makes the column's height definite (= tallest card), so the
+     percentage line heights below can resolve; the centred content spans
+     ~80% of the card height */
   align-self: stretch;
   display: flex;
   flex-direction: column;
@@ -222,8 +233,11 @@
   gap: 12px;
 }
 .travel-route-line {
-  flex: 1;
+  flex: none;
   width: 2px;
+  /* each dashed run = 40% of the card height minus half the badge block
+     (badge ≈ 76px + two 12px gaps ≈ 100px) → lines + badge ≈ 80% total */
+  height: calc(40% - 50px);
   min-height: 22px;
   border-radius: 2px;
   background: repeating-linear-gradient(to bottom, var(--accent) 0 5px, transparent 5px 12px);
@@ -255,6 +269,14 @@
   70%, 100% { box-shadow: 0 14px 28px -14px rgba(58, 111, 149, 0.7), 0 0 0 18px rgba(110, 167, 201, 0); }
 }
 .travel-route-badge svg { width: 22px; height: 22px; }
+/* pointer-only: the badge's icons (car + arrow) bob gently while hovered */
+@media (hover: hover) {
+  .travel-route-badge:hover svg { animation: route-icon-bob 700ms ease-in-out infinite; }
+}
+@keyframes route-icon-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
 .travel-route-time {
   font-family: var(--font-ui);
   font-weight: 700;
@@ -295,12 +317,14 @@
   .tv-venue { flex: none; }
   .tv-map { height: 260px; }
   .tv-name { font-size: 28px; }
-  .travel-route { flex-direction: row; align-self: center; gap: 12px; }
+  /* 80% of the card width, badge centred, dashes filling each side */
+  .travel-route { flex-direction: row; align-self: center; width: 80%; gap: 12px; }
   .travel-route-line {
+    flex: 1 1 0;
     width: auto;
     height: 2px;
     min-height: 0;
-    min-width: 52px; /* longer dashed run on mobile — a few more dashes each side */
+    min-width: 24px;
     background: repeating-linear-gradient(to right, var(--accent) 0 5px, transparent 5px 12px);
   }
 }

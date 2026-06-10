@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import heroPhoto from '../assets/HomePage.jpg'
 import './home.css'
 
-const WEDDING_DATE = new Date('2027-05-29T16:00:00-04:00') // Sat May 29, 2027
+const WEDDING_DATE = new Date('2027-05-29T14:00:00-04:00') // Sat May 29, 2027
 
 function diffToParts(target) {
   const now = new Date()
@@ -34,41 +34,50 @@ export default function Home() {
       <div className="home-stage">
         <figure className="home-figure plx" style={{ '--d': '16px' }}>
           <span className="home-figure-glow" aria-hidden="true" />
-          {/* rev-fade (opacity only), NOT rev-pop: a transform-animating reveal
-              would override the .home-img scale() overscan and let the parallax
-              drift bare the background at the edges. */}
-          <img
-            src={heroPhoto}
-            alt="Elizabeth and Benjamin"
-            className="home-img rev-fade"
-            style={{ '--rd': '120ms' }}
-            width="1068"
-            height="1600"
-            decoding="async"
-          />
+          {/* The frame clips; the img pans inside it via its own transform.
+              rev-fade (opacity only), NOT rev-pop: a transform-animating reveal
+              would override the .home-img pan/zoom transform. */}
+          <span className="home-frame">
+            <img
+              src={heroPhoto}
+              alt="Elizabeth and Benjamin"
+              className="home-img rev-fade"
+              style={{ '--rd': '120ms' }}
+              width="1068"
+              height="1600"
+              decoding="async"
+              draggable={false}
+            />
+          </span>
         </figure>
 
         <div className="home-copy">
-          <p className="home-tag rev-fall" style={{ '--rd': '220ms' }}>Save the Date</p>
+          {/* home-head / home-foot are layout no-ops on desktop (display:
+              contents) and become frosted backing panels on mobile, where the
+              copy floats directly over the full-bleed photo. */}
+          <div className="home-head">
+            <h1 className="home-names">
+              <span className="home-name rev-mask" style={{ '--rd': '320ms' }}>Elizabeth</span>
+              <span className="home-amp plx" style={{ '--d': '-18px' }}>
+                <span className="rev-pop" style={{ '--rd': '660ms' }}>&amp;</span>
+              </span>
+              <span className="home-name rev-mask" style={{ '--rd': '480ms' }}>Benjamin</span>
+            </h1>
 
-          <h1 className="home-names">
-            <span className="home-name rev-mask" style={{ '--rd': '320ms' }}>Elizabeth</span>
-            <span className="home-amp plx" style={{ '--d': '-18px' }}>
-              <span className="rev-pop" style={{ '--rd': '660ms' }}>&amp;</span>
-            </span>
-            <span className="home-name rev-mask" style={{ '--rd': '480ms' }}>Benjamin</span>
-          </h1>
+            <span className="home-rule rev-grow" style={{ '--rd': '820ms' }} />
+          </div>
 
-          <span className="home-rule rev-grow" style={{ '--rd': '820ms' }} />
-          <p className="home-date rev" style={{ '--rd': '900ms' }}>Saturday &middot; 29 May 2027 &middot; 4:00 PM</p>
+          <div className="home-foot">
+            <p className="home-date rev" style={{ '--rd': '900ms' }}>Saturday &middot; 29 May 2027 &middot; 2:00 PM</p>
 
-          <div className="home-countdown" aria-label="Time until the wedding">
-            {units.map((u, i) => (
-              <div className="hcd-item rev-pop" style={{ '--rd': `${980 + i * 90}ms` }} key={u.l}>
-                <span className="hcd-num">{u.n}</span>
-                <span className="hcd-lbl">{u.l}</span>
-              </div>
-            ))}
+            <div className="home-countdown" aria-label="Time until the wedding">
+              {units.map((u, i) => (
+                <div className="hcd-item rev-pop" style={{ '--rd': `${980 + i * 90}ms` }} key={u.l}>
+                  <span className="hcd-num">{u.n}</span>
+                  <span className="hcd-lbl">{u.l}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

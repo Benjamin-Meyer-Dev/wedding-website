@@ -21,6 +21,8 @@
 .party::-webkit-scrollbar { width: 6px; }
 
 .party-inner {
+  /* gentle fade + lift on entry, like the RSVP cards */
+  animation: page-rise 460ms cubic-bezier(.4, 0, .2, 1);
   flex: none;           /* keep natural height; the scene scrolls, not the inner */
   width: 100%;
   max-width: 1140px;
@@ -135,9 +137,13 @@
   text-align: left;
   transition: transform 240ms cubic-bezier(.22, 1, .36, 1), box-shadow 240ms ease;
 }
-.party-person:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 24px 44px -22px rgba(21, 50, 74, 0.42);
+/* pointer-only: on touch, a tap would otherwise stick the card in its
+   lifted hover state until the next tap (the cards aren't clickable) */
+@media (hover: hover) {
+  .party-person:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 24px 44px -22px rgba(21, 50, 74, 0.42);
+  }
 }
 
 /* lead = Maid of Honor / Best Man: same size, EXTRA ACCENTS only */
@@ -147,10 +153,12 @@
     0 24px 50px -26px rgba(var(--party-glow-rgb), 0.5),
     0 0 0 4px rgba(var(--party-glow-rgb), 0.14);
 }
-.party-person--lead:hover {
-  box-shadow:
-    0 32px 58px -26px rgba(var(--party-glow-rgb), 0.55),
-    0 0 0 4px rgba(var(--party-glow-rgb), 0.2);
+@media (hover: hover) {
+  .party-person--lead:hover {
+    box-shadow:
+      0 32px 58px -26px rgba(var(--party-glow-rgb), 0.55),
+      0 0 0 4px rgba(var(--party-glow-rgb), 0.2);
+  }
 }
 
 /* ---------------- Photo (uniform circle) ---------------- */
