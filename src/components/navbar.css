@@ -6,12 +6,13 @@
   width: min(96%, 1120px);
   z-index: 30;
   animation: topbar-in 420ms cubic-bezier(.4, 0, .2, 1);
-  /* Accent-tinted hairline (not the near-white --glass-border) so the bar stays
-     defined when it floats over white content — otherwise it's white-on-white.
+  /* Grey hairline (--text-soft tinted; not the near-white --glass-border) so
+     the bar stays defined when it floats over white content — otherwise it's
+     white-on-white.
      NOTE: don't give .topbar-inner the `glass` class — global.css's `.glass`
      loads after this file and would re-apply --glass-border, hiding this.
      Subtle on the powder-blue canvas, clearly visible on white. PC + mobile. */
-  --topbar-border: rgba(58, 111, 149, 0.45);
+  --topbar-border: rgba(74, 81, 97, 0.45);
 }
 
 @keyframes topbar-in {
@@ -325,7 +326,7 @@
   transform: translateX(2px) rotate(0);
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1200px) {
   .topbar { width: min(94%, 920px); } /* top comes from --nav-top (global.css) */
   .topbar-inner { padding: 4px 14px 4px 10px; grid-template-columns: 1fr auto; border-radius: 22px; }
   .topbar-monogram { font-size: 15px; padding: 2px 4px; height: auto; line-height: 1; }
@@ -342,7 +343,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: var(--accent);
+    color: var(--text-soft);
     font-family: var(--font-ui);
     font-weight: 600;
     font-size: 12px;

@@ -1,7 +1,7 @@
 /* ============================================================
    Home — "Save the Date" hero.
    Desktop: a framed storybook portrait beside the copy column.
-   Mobile (≤860px): the photo becomes a full-bleed backdrop and the copy
+   Mobile (≤1200px): the photo becomes a full-bleed backdrop and the copy
    floats over it — names at the TOP (under the navbar) and date + countdown
    at the BOTTOM. One scroll-free scene at every width.
    ============================================================ */
@@ -178,11 +178,11 @@
 }
 
 /* ============================================================
-   Mobile (≤860px): the photo becomes a full-bleed backdrop and the copy
+   Mobile (≤1200px): the photo becomes a full-bleed backdrop and the copy
    floats over it — "Save the Date" + names pinned to the TOP, date +
    countdown to the BOTTOM. Still one scroll-free scene.
    ============================================================ */
-@media (max-width: 860px) {
+@media (max-width: 1200px) {
   .home { padding: 0; }
   .home-stage {
     flex-direction: column;

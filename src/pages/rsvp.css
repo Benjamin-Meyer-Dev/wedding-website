@@ -40,7 +40,7 @@
   align-items: start;
 }
 
-@media (min-width: 860px) {
+@media (min-width: 1201px) {
   .rsvp-list.count-2 { grid-template-columns: 1fr 1fr; }
 }
 
@@ -851,12 +851,6 @@
   }
   .rsvp-toggle--yes .rsvp-toggle-thumb { transform: translateY(0) scale(1); }
   .rsvp-toggle--no .rsvp-toggle-thumb { transform: translateY(100%) scale(1); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .rsvp-track { transition: none; }
-  .rsvp-toggle-thumb { transition: opacity 240ms ease; }
-  .rsvp-toggle-opt svg { animation: none; }
 }
 
 .rsvp-dots { display: flex; align-items: center; gap: 9px; }

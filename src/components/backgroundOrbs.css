@@ -33,11 +33,6 @@
   to   { transform: translate3d(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px)), 0); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .bg-orbs { animation: none; opacity: 1; } /* skip the fade-in but stay visible */
-  .bg-orb { animation: none; }
-}
-
 @media (max-width: 720px) {
   .bg-orb { transform: translate3d(-50%, -50%, 0) scale(0.62); }
   @keyframes orb-drift {

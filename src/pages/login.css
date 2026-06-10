@@ -334,11 +334,13 @@
     content: '';
     position: absolute;
     inset: 0;
+    /* dull the photo like the mobile homepage scrim (home.css .home::after),
+       but keep the heavier base behind the bottom-pinned card */
     background: linear-gradient(
       180deg,
-      rgba(15, 30, 50, 0.12) 0%,
-      rgba(15, 30, 50, 0.10) 30%,
-      rgba(15, 30, 50, 0.30) 60%,
+      rgba(15, 30, 50, 0.30) 0%,
+      rgba(15, 30, 50, 0.50) 42%,
+      rgba(15, 30, 50, 0.50) 64%,
       rgba(15, 30, 50, 0.68) 100%
     );
     z-index: 1;

@@ -134,13 +134,3 @@
 @keyframes mono-in   { from { opacity: 0; } to { opacity: 1; } }
 @keyframes mono-line { from { opacity: 0; } to { opacity: 1; } }
 @keyframes mono-out  { to { opacity: 0; } }
-
-/* ---- Reduced motion: kill parallax drift, reveals, sparkle ---- */
-@media (prefers-reduced-motion: reduce) {
-  .plx { transition: none; transform: none; }
-  .rev, .rev-fall, .rev-pop, .rev-mask, .rev-grow, .rev-fade,
-  .decor-sprig, .decor-spark { animation: none; opacity: 1; }
-  .rev-mask { clip-path: none; }
-  .rev-grow { transform: none; }
-  .decor-spark { opacity: .5; }
-}

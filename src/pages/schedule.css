@@ -629,18 +629,3 @@
   0%, 100% { box-shadow: 0 0 18px 4px rgba(110, 167, 201, 0.8); }
   50%      { box-shadow: 0 0 30px 9px rgba(110, 167, 201, 1); }
 }
-
-/* ---------------- Reduced motion ---------------- */
-@media (prefers-reduced-motion: reduce) {
-  .sched,
-  .tl-node,
-  .timeline-line,
-  .sched-stage,
-  .stage-photo-ph svg { animation: none; }
-  .stage-img.is-loaded { animation: none; opacity: 1; }
-  .stage-shell { opacity: 1 !important; transform: none !important; transition: none; }
-  .timeline, .timeline-progress { transition: none; }
-  .tl-card, .tl-marker, .tl-node, .tl-base { transition: none; }
-  .sched-aura,
-  .timeline-progress::after { animation: none; }
-}

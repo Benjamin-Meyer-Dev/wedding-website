@@ -66,8 +66,10 @@ export default function Registry() {
                       onClick={() => setActive(i)}
                     >
                       <span className="reg-row-icon" aria-hidden="true"><RowIcon /></span>
-                      <span className="reg-row-name">{item.title}</span>
-                      <span className="reg-row-price">{item.price}</span>
+                      <span className="reg-row-text">
+                        <span className="reg-row-name">{item.title}</span>
+                        <span className="reg-row-price">{item.price}</span>
+                      </span>
                     </button>
                   </li>
                 )

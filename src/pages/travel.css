@@ -278,7 +278,7 @@
 .travel-route-cta svg { width: 12px; height: 12px; }
 
 /* ---------------- Responsive ---------------- */
-@media (max-width: 860px) {
+@media (max-width: 1200px) {
   /* Top/bottom spacing comes from the ::before/::after spacers now, so there's
      no container padding to reset here — the ::after spacer reliably paints the
      bottom gap at the scroll end (a real flex element), unlike scroll-container
@@ -301,9 +301,4 @@
     min-width: 52px; /* longer dashed run on mobile — a few more dashes each side */
     background: repeating-linear-gradient(to right, var(--accent) 0 5px, transparent 5px 12px);
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tv-venue, .tv-map iframe { transition: none; }
-  .tv-map-sheen, .tv-map-ph svg, .travel-route-line, .travel-route-badge { animation: none; }
 }

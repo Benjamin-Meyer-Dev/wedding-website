@@ -199,7 +199,3 @@
   .story-photo { height: 220px; }
   .story-gallery { grid-template-columns: repeat(2, 1fr); }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  /* reveals handled globally; nothing extra to disable here */
-}

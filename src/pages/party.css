@@ -224,7 +224,7 @@
 }
 
 /* ---------------- Responsive ---------------- */
-@media (max-width: 860px) {
+@media (max-width: 1200px) {
   .party-sides { grid-template-columns: 1fr; gap: 24px; }
   .party-side { gap: 16px; }
   .party-people { max-width: 560px; }

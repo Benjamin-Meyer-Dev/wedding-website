@@ -3,12 +3,11 @@ import { useEffect } from 'react'
 // Tracks the pointer and writes normalized offsets (-1..1) as CSS custom
 // properties (--px, --py) onto the given element. Children with the `.plx`
 // class then drift by their own `--d` depth — one listener powers the whole
-// scene's parallax. Honors prefers-reduced-motion (stays put).
+// scene's parallax.
 export default function useParallax(ref) {
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     if (!window.matchMedia('(hover: hover)').matches) return // skip on touch
 
     let raf = 0

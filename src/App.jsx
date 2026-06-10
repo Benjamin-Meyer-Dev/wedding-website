@@ -19,9 +19,6 @@ import './styles/app.css'
 
 const COVER_MS = 560
 const REVEAL_MS = 620
-const reduceMotion = () =>
-  typeof window !== 'undefined' &&
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -47,8 +44,15 @@ export default function App() {
       setSession(data.session)
       setAuthReady(true)
     })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s)
+      // The app stays mounted across sign-out/sign-in, so `page` would persist
+      // — reset it so the next login always lands on the homepage.
+      if (event === 'SIGNED_OUT') {
+        setPage('home')
+        setPhase('idle')
+        setPending(null)
+      }
     })
     return () => subscription.unsubscribe()
   }, [])
@@ -67,7 +71,6 @@ export default function App() {
 
   const navigate = (target) => {
     if (target === page || phase !== 'idle') return
-    if (reduceMotion()) { setPage(target); return }
     setPending(target)
     setPhase('cover')
   }

@@ -126,10 +126,3 @@
   .lm-date { font-size: 11px; letter-spacing: 0.34em; }
   .lm-rule { width: 92px; }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .lm-names span, .lm-tag, .lm-date, .lm-rule,
-  .loading-mark::before { animation: none; opacity: 1; transform: none; }
-  .lm-rule { transform: scaleX(1); }
-  .loading-mark::before { transform: translate(-50%, -50%); }
-}

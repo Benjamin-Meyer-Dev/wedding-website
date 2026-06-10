@@ -47,7 +47,7 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const mql = window.matchMedia('(min-width: 861px)')
+    const mql = window.matchMedia('(min-width: 1201px)')
     const onChange = (e) => { if (e.matches) setOpen(false) }
     mql.addEventListener('change', onChange)
     return () => mql.removeEventListener('change', onChange)

@@ -22,6 +22,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* `safe center`: when the showcase hits its 560px cap on tall screens the
+     leftover space splits above/below (vertically centered) instead of all
+     pooling at the bottom; on short screens it falls back to top-aligned. */
+  justify-content: safe center;
   gap: 26px;
 }
 .registry-head { text-align: center; flex: none; }
@@ -208,6 +212,16 @@
 }
 .reg-row-icon svg { width: 22px; height: 22px; }
 .reg-row.is-active .reg-row-icon { background: var(--accent); color: #fff; }
+/* name + price live in their own group: the texts baseline-align with each
+   other (the two fonts' metrics differ, so box-centering left the price
+   looking high) while the group as a whole stays centered in the row. */
+.reg-row-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
 .reg-row-name {
   flex: 1;
   min-width: 0;
@@ -221,13 +235,20 @@
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  /* a word wider than the column wraps instead of clipping at the box edge */
+  overflow-wrap: break-word;
   /* the clamp box clips at its edge, shearing descenders (the "y" in Honeymoon)
-     when line-height is tight; pad the box down for room, pull layout back up. */
-  padding-bottom: 3px;
-  margin-bottom: -3px;
+     when line-height is tight; pad the box for room, pull layout back in with
+     negative margins. Symmetric so the text stays vertically centered next to
+     the price. */
+  padding: 3px 0;
+  margin: -3px 0;
 }
 .reg-row-price {
   flex: none;
+  /* sitting on the name's baseline, the smaller price reads optically low —
+     nudge it up toward the name's visual midline */
+  transform: translateY(-1.5px);
   font-family: var(--font-ui);
   font-weight: 600;
   font-size: 12px;
@@ -251,9 +272,12 @@
   .reg-feature-title { font-size: 24px; }
   .reg-buy { padding: 8px 14px; font-size: 9.5px; }
   .reg-price { font-size: 11px; padding: 4px 10px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reg-stage-photo, .reg-feature-title { animation: none; }
-  .reg-row, .reg-row-icon, .reg-buy { transition: none; }
+  /* tighter row metrics so longer names ("Honeymoon Fund") keep whole words */
+  .scene.registry { padding-left: 18px; padding-right: 18px; }
+  .reg-row { padding: 12px 12px; gap: 10px; }
+  .reg-row-text { gap: 10px; }
+  .reg-row-icon { width: 38px; height: 38px; }
+  .reg-row-icon svg { width: 19px; height: 19px; }
+  .reg-row-name { font-size: 17px; }
+  .reg-row-price { font-size: 11px; }
 }
