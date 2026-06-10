@@ -1,36 +1,38 @@
-import { Crown, Flower2, User } from 'lucide-react'
+import { Crown, Flower, Flower2, Gem, User } from 'lucide-react'
 import './party.css'
 
 // Two sides of the aisle. Every person gets the same card; the lead (Maid of
 // Honor / Best Man) is marked `lead: true` and picks up extra accents only —
-// same size as everyone else. Drop a URL into any `photo` for a real picture.
+// same size as everyone else. `BadgeIcon` puts a small icon badge on the
+// photo (leads, flower girl, ring bearer). Drop a URL into any `photo` for a
+// real picture.
 const HER_SIDE = {
   key: 'her',
   label: 'Her Side',
-  LeadIcon: Flower2,
   people: [
-    { role: 'Maid of Honor', name: 'Charlotte Hayes', blurb: 'Elizabeth’s sister and lifelong partner in mischief, her first call for everything.', photo: '', lead: true },
+    { role: 'Maid of Honor', name: 'Charlotte Hayes', blurb: 'Elizabeth’s sister and lifelong partner in mischief, her first call for everything.', photo: '', lead: true, BadgeIcon: Flower2 },
     { role: 'Bridesmaid', name: 'Ava Thompson', blurb: 'College roommate turned forever friend, and the world’s most enthusiastic dancer.', photo: '' },
     { role: 'Bridesmaid', name: 'Mia Romano', blurb: 'Brunch ringleader and keeper of two decades of inside jokes.', photo: '' },
     { role: 'Bridesmaid', name: 'Grace Patel', blurb: 'Calm in every storm and the group’s unofficial photographer.', photo: '' },
     { role: 'Bridesmaid', name: 'Hannah Cole', blurb: 'Cousin, confidante, and always first to start the singalong.', photo: '' },
+    { role: 'Flower Girl', name: 'Sophie Hayes', blurb: 'Elizabeth’s niece, ready to scatter petals with great ceremony.', photo: '', BadgeIcon: Flower },
   ],
 }
 
 const HIS_SIDE = {
   key: 'his',
   label: 'His Side',
-  LeadIcon: Crown,
   people: [
-    { role: 'Best Man', name: 'James Carter', blurb: 'Benjamin’s brother and the steadiest hand in any room, speech at the ready.', photo: '', lead: true },
+    { role: 'Best Man', name: 'James Carter', blurb: 'Benjamin’s brother and the steadiest hand in any room, speech at the ready.', photo: '', lead: true, BadgeIcon: Crown },
     { role: 'Groomsman', name: 'Daniel Walsh', blurb: 'Childhood neighbor and partner on every questionable road trip.', photo: '' },
     { role: 'Groomsman', name: 'Ethan Brooks', blurb: 'Teammate since little league and the loudest cheer in any crowd.', photo: '' },
     { role: 'Groomsman', name: 'Noah Foster', blurb: 'College roommate, grill master, and keeper of the playlist.', photo: '' },
     { role: 'Groomsman', name: 'Liam Park', blurb: 'The friend who shows up early and stays to stack the chairs.', photo: '' },
+    { role: 'Ring Bearer', name: 'Oliver Carter', blurb: 'Benjamin’s nephew, entrusted with the most important delivery of the day.', photo: '', BadgeIcon: Gem },
   ],
 }
 
-function Person({ person, LeadIcon, tone, delay }) {
+function Person({ person, tone, delay }) {
   return (
     <article
       className={`party-person${person.lead ? ' party-person--lead' : ''} rev-fade`}
@@ -41,7 +43,7 @@ function Person({ person, LeadIcon, tone, delay }) {
         style={person.photo ? { backgroundImage: `url(${person.photo})` } : undefined}
       >
         {!person.photo && <User aria-hidden="true" />}
-        {person.lead && <span className="party-badge" aria-hidden="true"><LeadIcon /></span>}
+        {person.BadgeIcon && <span className="party-badge" aria-hidden="true"><person.BadgeIcon /></span>}
       </figure>
       <div className="party-person-body">
         <span className="party-role">{person.role}</span>
@@ -58,7 +60,7 @@ function Side({ side, baseDelay }) {
       <h2 className="party-side-title rev" style={{ '--rd': `${baseDelay}ms` }}>{side.label}</h2>
       <div className="party-people">
         {side.people.map((p, i) => (
-          <Person key={p.name} person={p} LeadIcon={side.LeadIcon} tone={i % 3} delay={baseDelay + 90 + i * 70} />
+          <Person key={p.name} person={p} tone={i % 3} delay={baseDelay + 90 + i * 70} />
         ))}
       </div>
     </section>

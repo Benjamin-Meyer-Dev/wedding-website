@@ -90,6 +90,9 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  /* start level with the cards, not the side titles: skip the title's height
+     (23px font, line-height 1) plus the .party-side gap (20px) above the cards */
+  margin-top: calc(23px + 20px);
 }
 .party-divider::before,
 .party-divider::after {
@@ -111,8 +114,10 @@
 .party-people {
   width: 100%;
   max-width: 500px;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  /* equal rows: every card in the column stretches to match the tallest one
+     (longer blurbs were making some cards taller than their neighbours) */
+  grid-auto-rows: 1fr;
   gap: 14px;
 }
 
@@ -233,6 +238,7 @@
     align-self: auto;
     width: 100%;
     gap: 16px;
+    margin-top: 0; /* horizontal between stacked sides — no title to clear */
   }
   .party-divider::before,
   .party-divider::after {

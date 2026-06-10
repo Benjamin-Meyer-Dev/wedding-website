@@ -1,23 +1,29 @@
 import { useEffect, useRef, useState } from 'react'
 import { DoorOpen, Church, Car, Martini, Utensils, Music, Wine, Sparkles, MapPin } from 'lucide-react'
 import heroPhoto from '../assets/HomePage.jpg'
+import welcomePhoto from '../assets/welcome.jpg'
+import massPhoto from '../assets/mass.jpg'
 import travelPhoto from '../assets/travel.jpg'
+import cocktailPhoto from '../assets/cocktail.jpg'
+import dinnerPhoto from '../assets/dinner.jpg'
+import partyPhoto from '../assets/party.jpg'
+import barPhoto from '../assets/bar.jpg'
+import sparklersPhoto from '../assets/sparklers.jpg'
 import './schedule.css'
 
 // One continuous timeline of the day, flowing from the afternoon ceremony
 // into the evening reception. Each event's end is the next event's start
-// (the last runs to midnight). `photo` is a bundled image from src/assets —
-// to add one, drop the file there, import it above, and set it on the event.
-// Events with photo: null show a themed placeholder (gradient + icon).
+// (the last runs to midnight). `photo` is a bundled image from src/assets;
+// `icon` is the Lucide icon shown in the event's timeline medallion.
 const EVENTS = [
-  { time: '1:30 PM', title: 'Guests Arrive', venue: 'St. Agnes Church', desc: 'Find your seat before the procession.', phase: 'ceremony', icon: 'arrive', photo: null },
-  { time: '2:00 PM', title: 'Mass Starts', venue: 'St. Agnes Church', desc: 'The nuptial Mass begins.', phase: 'ceremony', icon: 'church', photo: null },
+  { time: '1:30 PM', title: 'Guests Arrive', venue: 'St. Agnes Church', desc: 'Find your seat before the procession.', phase: 'ceremony', icon: 'arrive', photo: welcomePhoto },
+  { time: '2:00 PM', title: 'Mass Starts', venue: 'St. Agnes Church', desc: 'The nuptial Mass begins.', phase: 'ceremony', icon: 'church', photo: massPhoto },
   { time: '3:30 PM', title: 'Travel to Reception', venue: 'En route', desc: 'A short drive over to the celebration.', phase: 'ceremony', icon: 'car', photo: travelPhoto },
-  { time: '4:30 PM', title: 'Cocktail Hour', venue: 'Rebel Creek Golf Club', desc: 'Drinks & canapés out on the terrace.', phase: 'reception', icon: 'cocktail', photo: null },
-  { time: '6:00 PM', title: 'Dinner Start', venue: 'Rebel Creek Golf Club', desc: 'A seated dinner is served.', phase: 'reception', icon: 'dinner', photo: null },
-  { time: '8:00 PM', title: 'Party Time', venue: 'Rebel Creek Golf Club', desc: 'The dance floor opens, let’s celebrate.', phase: 'reception', icon: 'music', photo: null },
-  { time: '11:30 PM', title: 'Last Call', venue: 'Rebel Creek Golf Club', desc: 'One more from the bar before we wrap.', phase: 'reception', icon: 'glass', photo: null },
-  { time: '12:00 AM', title: 'Heading Home', venue: 'Rebel Creek Golf Club', desc: 'A sparkler send-off as you head home.', phase: 'reception', icon: 'home', photo: null },
+  { time: '4:30 PM', title: 'Cocktail Hour', venue: 'Rebel Creek Golf Club', desc: 'Drinks & canapés out on the terrace.', phase: 'reception', icon: 'cocktail', photo: cocktailPhoto },
+  { time: '6:00 PM', title: 'Dinner Start', venue: 'Rebel Creek Golf Club', desc: 'A seated dinner is served.', phase: 'reception', icon: 'dinner', photo: dinnerPhoto },
+  { time: '8:00 PM', title: 'Party Time', venue: 'Rebel Creek Golf Club', desc: 'The dance floor opens, let’s celebrate.', phase: 'reception', icon: 'music', photo: partyPhoto },
+  { time: '11:30 PM', title: 'Last Call', venue: 'Rebel Creek Golf Club', desc: 'One more from the bar before we wrap.', phase: 'reception', icon: 'glass', photo: barPhoto },
+  { time: '12:00 AM', title: 'Heading Home', venue: 'Rebel Creek Golf Club', desc: 'A sparkler send-off as you head home.', phase: 'reception', icon: 'home', photo: sparklersPhoto },
 ]
 
 const ROTATE_MS = 8000   // how long each card stays up
@@ -54,6 +60,18 @@ export default function Schedule() {
   // of life (all the cards are already shown). Pauses while the guest is
   // hovering/pinning a node or hovering the hero.
   const paused = hovered != null || pinned != null || heroHover
+
+  // Preload every card photo once so a rotated-to image is already decoded and
+  // shows immediately — no placeholder flash or fade when the stage swaps.
+  useEffect(() => {
+    EVENTS.forEach((ev) => {
+      if (ev.photo) {
+        const img = new Image()
+        img.src = ev.photo
+      }
+    })
+  }, [])
+
   useEffect(() => {
     if (paused) return
     const id = setInterval(() => setAuto((a) => (a + 1) % EVENTS.length), ROTATE_MS)
@@ -120,26 +138,17 @@ export default function Schedule() {
           <div className="stage-shell">
             <div className={`stage-photo stage-photo--${tone}`}>
               {shown ? (
-                <>
-                  <span className="stage-photo-ph" key={`ph-${displayIdx}`}><Icon name={shown.icon} /></span>
-                  {shown.photo && (
-                    <img
-                      className="stage-img"
-                      key={`img-${displayIdx}`}
-                      src={shown.photo}
-                      alt=""
-                      decoding="async"
-                      onLoad={(e) => e.currentTarget.classList.add('is-loaded')}
-                      onError={(e) => e.currentTarget.classList.remove('is-loaded')}
-                    />
-                  )}
-                  <span className="stage-photo-fade" />
-                </>
+                <img
+                  className="stage-img"
+                  key={`img-${displayIdx}`}
+                  src={shown.photo}
+                  alt=""
+                  decoding="async"
+                  onLoad={(e) => e.currentTarget.classList.add('is-loaded')}
+                  onError={(e) => e.currentTarget.classList.remove('is-loaded')}
+                />
               ) : (
-                <>
-                  <img className="stage-img is-loaded" src={heroPhoto} alt="" />
-                  <span className="stage-photo-fade" />
-                </>
+                <img className="stage-img is-loaded" src={heroPhoto} alt="" />
               )}
             </div>
 

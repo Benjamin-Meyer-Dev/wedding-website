@@ -84,7 +84,6 @@ export default function Rsvp() {
   const [saveError, setSaveError] = useState(null)
   const [savedAt, setSavedAt] = useState(null)
   const [active, setActive] = useState(0)        // which guest the carousel is showing
-  const [previewMeal, setPreviewMeal] = useState(null) // meal whose description is shown
   const swipeRef = useRef(null) // touch start {x, y} for swipe-to-change-card
 
   useEffect(() => {
@@ -207,7 +206,7 @@ export default function Rsvp() {
 
   const total = orderedMembers.length
   const safeActive = Math.min(active, total - 1)
-  const go = (delta) => { setPreviewMeal(null); setActive((a) => Math.max(0, Math.min(total - 1, Math.min(a, total - 1) + delta))) }
+  const go = (delta) => setActive((a) => Math.max(0, Math.min(total - 1, Math.min(a, total - 1) + delta)))
 
   // Touch swipe (mobile): a clear horizontal drag flips to the prev/next guest,
   // mirroring the arrows. We never preventDefault, so a vertical drag still
@@ -296,10 +295,6 @@ export default function Rsvp() {
                                     aria-checked={selected}
                                     className={`rsvp-meal-tile${selected ? ' is-on' : ''}${image ? ' has-image' : ''}`}
                                     onClick={() => setField(mm.user_id, 'meal_choice', selected ? null : value)}
-                                    onMouseEnter={() => setPreviewMeal(value)}
-                                    onMouseLeave={() => setPreviewMeal(null)}
-                                    onFocus={() => setPreviewMeal(value)}
-                                    onBlur={() => setPreviewMeal(null)}
                                   >
                                     <span
                                       className="rsvp-meal-image"
@@ -308,19 +303,12 @@ export default function Rsvp() {
                                     <span className="rsvp-meal-veil" />
                                     <span className="rsvp-meal-text">
                                       <span className="rsvp-meal-lbl">{label}</span>
+                                      <span className="rsvp-meal-desc">{desc}</span>
                                     </span>
                                   </button>
                                 )
                               })}
                             </div>
-                            {(() => {
-                              const cur = MEAL_OPTIONS.find((o) => o.value === (d.meal_choice || previewMeal))
-                              return (
-                                <p className={`rsvp-meal-caption${cur ? '' : ' is-prompt'}`}>
-                                  {cur ? cur.desc : 'Hover a dish for the full description.'}
-                                </p>
-                              )
-                            })()}
                           </fieldset>
 
                           <label className="rsvp-field">
@@ -360,7 +348,7 @@ export default function Rsvp() {
                   role="tab"
                   aria-selected={i === safeActive}
                   className={`rsvp-dot${i === safeActive ? ' is-on' : ''}${a ? ' is-done' : ''}`}
-                  onClick={() => { setPreviewMeal(null); setActive(i) }}
+                  onClick={() => setActive(i)}
                   aria-label={`Go to ${mm.first_name}`}
                 />
               )
