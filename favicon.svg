@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="E and B">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6ea7c9"/>
+      <stop offset=".55" stop-color="#3a6f95"/>
+      <stop offset="1" stop-color="#15324a"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#bg)"/>
+  <text x="32" y="34" text-anchor="middle" dominant-baseline="central"
+        font-family="Georgia, 'Playfair Display', 'Times New Roman', serif" font-size="28" font-weight="500">
+    <tspan fill="#eef4f9">E</tspan><tspan fill="#a8cce0" font-style="italic">&amp;</tspan><tspan fill="#eef4f9">B</tspan>
+  </text>
+</svg>
