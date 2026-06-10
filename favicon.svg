@@ -1,14 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="E and B">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Magnolia flower">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#6ea7c9"/>
-      <stop offset=".55" stop-color="#3a6f95"/>
-      <stop offset="1" stop-color="#15324a"/>
-    </linearGradient>
+    <path id="petal" d="M32 32 C24 27 24 12 32 6 C40 12 40 27 32 32 Z"/>
   </defs>
-  <rect width="64" height="64" rx="15" fill="url(#bg)"/>
-  <text x="32" y="34" text-anchor="middle" dominant-baseline="central"
-        font-family="Georgia, 'Playfair Display', 'Times New Roman', serif" font-size="28" font-weight="500">
-    <tspan fill="#eef4f9">E</tspan><tspan fill="#a8cce0" font-style="italic">&amp;</tspan><tspan fill="#eef4f9">B</tspan>
-  </text>
+  <rect width="64" height="64" rx="14" fill="#3a6f95"/>
+  <g fill="#fefcf7">
+    <use href="#petal"/>
+    <use href="#petal" transform="rotate(60 32 32)"/>
+    <use href="#petal" transform="rotate(120 32 32)"/>
+    <use href="#petal" transform="rotate(180 32 32)"/>
+    <use href="#petal" transform="rotate(240 32 32)"/>
+    <use href="#petal" transform="rotate(300 32 32)"/>
+  </g>
+  <circle cx="32" cy="32" r="5.5" fill="#6ea7c9"/>
 </svg>
