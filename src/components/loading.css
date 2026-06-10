@@ -11,6 +11,7 @@
      behind this z-100 layer) show through, so the loader shares the site's look
      instead of a flat panel. They animate in beneath the centred mark. */
   background: transparent;
+  will-change: opacity; /* pre-promote so the fade-out starts without a layerization hitch */
   transition: opacity 900ms ease; /* gentle crossfade out onto the page beneath */
 }
 .loading-screen.phase-2 { opacity: 0; }
@@ -37,14 +38,20 @@
   height: 860px;
   transform: translate(-50%, -50%) scale(.7);
   background: radial-gradient(circle, rgba(168, 204, 224, 0.55) 0%, rgba(110, 167, 201, 0.18) 38%, transparent 66%);
+  /* static blur only — ANIMATING the blur radius (old lm-breathe) re-rendered
+     this 860px layer every frame; breathing via transform is compositor-only */
   filter: blur(18px);
   opacity: 0;
+  will-change: transform, opacity;
   animation:
     lm-aura 1100ms cubic-bezier(.16, 1, .3, 1) 120ms forwards,
     lm-breathe 4s ease-in-out 1200ms infinite;
 }
 @keyframes lm-aura { to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
-@keyframes lm-breathe { 0%, 100% { filter: blur(18px); } 50% { filter: blur(28px); } }
+@keyframes lm-breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50%      { transform: translate(-50%, -50%) scale(1.06); }
+}
 
 .lm-tag {
   margin: 0;

@@ -32,7 +32,7 @@
   justify-content: flex-start;
   gap: 24px;
   width: 100%;
-  max-width: 1120px;
+  max-width: 1320px;
   flex: none;   /* keep natural height; the scene scrolls, the inner doesn't */
 }
 
@@ -66,7 +66,7 @@
 .tv-map {
   position: relative;
   width: 100%;
-  height: 256px;
+  height: 340px;
   overflow: hidden;
   background: var(--powder-deep);
   border-bottom: 1px solid var(--glass-border);
@@ -101,22 +101,24 @@
 .tv-map iframe.is-loaded { opacity: 1; }
 .tv-venue:hover .tv-map iframe.is-loaded { filter: saturate(1); }
 
-/* periodic light sheen across the map */
+/* periodic light sheen across the map — swept via transform (compositor-only)
+   rather than background-position, which repainted the whole map every frame.
+   .tv-map's overflow:hidden clips the stripe while it sits off to the side. */
 .tv-map-sheen {
   position: absolute;
   inset: 0;
   z-index: 2;
   pointer-events: none;
   background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.26) 50%, transparent 60%);
-  background-size: 250% 100%;
-  background-position: 160% 0;
   mix-blend-mode: screen;
+  transform: translateX(110%);
+  will-change: transform;
   animation: tv-sheen 6.5s ease-in-out infinite;
 }
 .tv-venue--reception .tv-map-sheen { animation-delay: 3.25s; }
 @keyframes tv-sheen {
-  0%, 72%   { background-position: 160% 0; }
-  93%, 100% { background-position: -60% 0; }
+  0%, 72%   { transform: translateX(110%); }
+  93%, 100% { transform: translateX(-110%); }
 }
 
 /* ---- details (bottom of card) ---- */
@@ -125,7 +127,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 5px;
-  padding: 24px 26px 26px;
+  padding: 28px 30px 30px;
 }
 .tv-phase {
   font-family: var(--font-ui);
@@ -283,15 +285,15 @@
      no container padding to reset here — the ::after spacer reliably paints the
      bottom gap at the scroll end (a real flex element), unlike scroll-container
      padding-bottom which mobile browsers drop. */
-  /* tighter card padding on phones — desktop keeps its roomier 24/26 */
-  .tv-info { padding: 16px 22px 18px; }
+  /* tighter card padding on phones — desktop keeps its roomier 28/30 */
+  .tv-info { padding: 20px 24px 22px; }
   .travel-venues { flex-direction: column; align-items: stretch; gap: 16px; }
   /* Stacked in a column, the cards must size to their content. Keeping the
      desktop `flex: 1 1 0` (basis 0) here would collapse them to 0 height —
      the column has no free space to grow into and `.tv-venue`'s overflow:hidden
      drops its automatic min-size to 0 — so the cards (and their maps) vanish. */
   .tv-venue { flex: none; }
-  .tv-map { height: 176px; }
+  .tv-map { height: 260px; }
   .tv-name { font-size: 28px; }
   .travel-route { flex-direction: row; align-self: center; gap: 12px; }
   .travel-route-line {

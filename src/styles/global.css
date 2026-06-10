@@ -117,12 +117,13 @@ input, textarea, [contenteditable] {
    site's delicate line work. Size/colour still come from each icon's context. */
 .lucide { stroke-width: 1.7; }
 
-/* Glass panel utility */
+/* Glass panel utility.
+   No backdrop-filter: --glass-bg is opaque white, so the blur was never
+   visible — but it forced every card to re-blur its backdrop on each frame
+   while the orbs drifted behind (the navbar dropped it for the same reason). */
 .glass {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
   box-shadow: var(--glass-shadow);
 }
 

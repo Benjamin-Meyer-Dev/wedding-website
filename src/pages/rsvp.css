@@ -508,7 +508,7 @@
 }
 
 /* ---------------- Responsive ---------------- */
-@media (max-width: 960px) {
+@media (max-width: 1200px) {
   /* Use `.scene.rsvp` (0,2,0) so this beats the base `.scene.rsvp` padding —
      a plain `.rsvp` (0,1,0) loses and the desktop 32px padding sticks. */
   .scene.rsvp { padding: var(--content-top) 16px 24px; }
@@ -646,8 +646,7 @@
   display: grid;
   place-items: center;
   cursor: pointer;
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  /* no backdrop-filter: bg is opaque, the blur only cost frame time */
   box-shadow: var(--glass-shadow);
   transition: transform 200ms cubic-bezier(.22, 1, .36, 1), background 200ms ease, color 200ms ease, opacity 200ms ease;
 }
@@ -893,7 +892,7 @@
    Placed at the END of the file so these win over the base .rsvp-deck /
    .rsvp-viewport / .rsvp-nav rules at equal specificity (media queries don't
    add specificity, so source order decides). */
-@media (max-width: 960px) {
+@media (max-width: 1200px) {
   .rsvp-deck { flex-wrap: wrap; gap: 14px; }
   .rsvp-viewport { flex: 1 1 100%; max-width: none; order: 0; }
   .rsvp-nav { order: 1; width: 48px; height: 48px; }

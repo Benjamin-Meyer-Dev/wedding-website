@@ -258,7 +258,7 @@
 }
 
 /* ---------------- Responsive ---------------- */
-@media (max-width: 760px) {
+@media (max-width: 1200px) {
   /* Stacked: the featured gift keeps its natural height on top, and the picker
      list fills the remaining viewport and scrolls internally — so the page
      itself doesn't scroll on phones either (.registry-inner + .reg-list keep

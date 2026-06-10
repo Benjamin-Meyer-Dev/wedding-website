@@ -44,6 +44,7 @@ export default function Home() {
             style={{ '--rd': '120ms' }}
             width="1068"
             height="1600"
+            decoding="async"
           />
         </figure>
 

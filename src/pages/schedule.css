@@ -55,9 +55,11 @@
   height: 496px;
   transform: translateX(-50%);
   z-index: -1;
-  filter: blur(46px);
+  /* no filter:blur — the radial gradient already fades softly, and blurring a
+     scaling layer re-filtered ~1180×496px on every frame of the breathe */
   pointer-events: none;
   opacity: 0.6;
+  will-change: transform, opacity;
   transition: background 800ms ease;
   animation: sched-aura 7s ease-in-out infinite;
 }
@@ -102,16 +104,14 @@
   display: flex;
   flex: 1;
   min-width: 0;
-  /* slick crossfade: fade + gentle zoom out over the first half of the pulse's
-     travel, swap while hidden, then fade + settle in over the second half
+  /* slick crossfade: fade out over the first half of the pulse's travel,
+     swap while hidden, then fade back in over the second half
      (each 225ms, ease-in-out for a smooth in-and-out) */
-  transition: opacity 225ms ease-in-out, transform 225ms ease-in-out;
-  transform: scale(1) translateZ(0);
-  will-change: opacity, transform;
+  transition: opacity 225ms ease-in-out;
+  will-change: opacity;
 }
 .sched-stage.is-covering .stage-shell {
   opacity: 0;
-  transform: scale(1.03) translateZ(0);
 }
 
 .stage-photo {
@@ -160,7 +160,7 @@
     radial-gradient(120% 100% at 28% 22%, rgba(255, 255, 255, 0.22), transparent 60%),
     linear-gradient(150deg, var(--accent-soft), var(--accent-deep));
 }
-/* the actual photo — wipes + zooms in once loaded, hiding the placeholder */
+/* the actual photo — fades in once loaded, hiding the placeholder */
 .stage-img {
   position: absolute;
   inset: 0;
@@ -169,11 +169,10 @@
   object-fit: cover;
   object-position: center 28%;
   opacity: 0;
+  transition: opacity 400ms ease;
 }
 .stage-img.is-loaded {
   opacity: 1;
-  /* slow continuous Ken Burns drift while shown */
-  animation: stage-pan 11s ease-out both;
 }
 /* soft seam into the text panel, above the image */
 .stage-photo-fade {
@@ -292,8 +291,8 @@
    stops exactly at the LAST circle. The single container-spanning
    .timeline-line overshoots past the final marker by the height of the last
    node's card. Scoped to the same condition as the vertical layout (i.e. NOT
-   the desktop horizontal layout, which is min-width:821 + hover). */
-@media (max-width: 820px), (hover: none) {
+   the desktop horizontal layout, which is min-width:1201 + hover). */
+@media (max-width: 1200px), (hover: none) {
   .timeline-line { display: none; }
   .tl-node:not(:last-child)::before {
     content: '';
@@ -406,7 +405,6 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
-  transition: opacity .4s ease;
 }
 .tl-time {
   font-family: var(--font-ui);
@@ -474,7 +472,7 @@
 /* ================================================================
    HORIZONTAL journey + STAGE — only when there's room AND a pointer.
    ================================================================ */
-@media (min-width: 821px) and (hover: hover) {
+@media (min-width: 1201px) and (hover: hover) {
   .sched-stage {
     position: relative;
     display: flex;
@@ -567,9 +565,6 @@
   /* details live in the stage on desktop, so hide the inline card */
   .tl-card { display: none; }
 
-  /* keep the circles solid; only fade the LABELS of inactive nodes */
-  .timeline.has-active .tl-node:not(.is-active) .tl-base { opacity: 0.45; }
-
   /* let the comet arrive first, THEN populate the circle quickly (a snap,
      not a slow fade). The delay only applies in the "to active" direction;
      un-highlighting stays immediate. */
@@ -587,7 +582,7 @@
    its phase's legend colour (ceremony → accent, reception → ink-blue) via the
    base .is-active rules, so a tap reveals where you are in the day.
    (Desktop keeps the phased colours + legend everywhere.) */
-@media (max-width: 820px) {
+@media (max-width: 1200px) {
   .sched-legend { display: none; }
   .tl-node--reception::before { background: var(--accent); }
   .tl-node--reception .tl-marker { border-color: var(--accent); color: var(--accent); }
@@ -612,11 +607,6 @@
 @keyframes stage-in {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
-}
-/* slow continuous Ken Burns drift while a photo is shown */
-@keyframes stage-pan {
-  from { transform: scale(1.12) translate(1.5%, -1%); }
-  to   { transform: scale(1.04) translate(-1.5%, 1%); }
 }
 /* gentle vertical float of the placeholder icon (a drift, not a pulse) */
 @keyframes ph-float {

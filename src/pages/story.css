@@ -190,7 +190,7 @@
 .story-gallery-cell svg { width: 26px; height: 26px; }
 
 /* ---------------- Responsive ---------------- */
-@media (max-width: 720px) {
+@media (max-width: 1200px) {
   .story-timeline::before { left: 18px; }
   .story-timeline-cap { left: 18px; }
   .story-item,

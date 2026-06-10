@@ -1,21 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
 import { DoorOpen, Church, Car, Martini, Utensils, Music, Wine, Sparkles, MapPin } from 'lucide-react'
 import heroPhoto from '../assets/HomePage.jpg'
+import travelPhoto from '../assets/travel.jpg'
 import './schedule.css'
 
 // One continuous timeline of the day, flowing from the afternoon ceremony
 // into the evening reception. Each event's end is the next event's start
-// (the last runs to midnight). `photo` points at an optional image in
-// /public/timeline/ — until those files exist, a themed placeholder shows.
+// (the last runs to midnight). `photo` is a bundled image from src/assets —
+// to add one, drop the file there, import it above, and set it on the event.
+// Events with photo: null show a themed placeholder (gradient + icon).
 const EVENTS = [
-  { time: '1:30 PM', title: 'Guests Arrive', venue: 'St. Agnes Church', desc: 'Find your seat before the procession.', phase: 'ceremony', icon: 'arrive', photo: '/timeline/arrival.jpg' },
-  { time: '2:00 PM', title: 'Mass Starts', venue: 'St. Agnes Church', desc: 'The nuptial Mass begins.', phase: 'ceremony', icon: 'church', photo: '/timeline/mass.jpg' },
-  { time: '3:30 PM', title: 'Travel to Reception', venue: 'En route', desc: 'A short drive over to the celebration.', phase: 'ceremony', icon: 'car', photo: '/timeline/travel.jpg' },
-  { time: '4:30 PM', title: 'Cocktail Hour', venue: 'Rebel Creek Golf Club', desc: 'Drinks & canapés out on the terrace.', phase: 'reception', icon: 'cocktail', photo: '/timeline/cocktails.jpg' },
-  { time: '6:00 PM', title: 'Dinner Start', venue: 'Rebel Creek Golf Club', desc: 'A seated dinner is served.', phase: 'reception', icon: 'dinner', photo: '/timeline/dinner.jpg' },
-  { time: '8:00 PM', title: 'Party Time', venue: 'Rebel Creek Golf Club', desc: 'The dance floor opens, let’s celebrate.', phase: 'reception', icon: 'music', photo: '/timeline/party.jpg' },
-  { time: '11:30 PM', title: 'Last Call', venue: 'Rebel Creek Golf Club', desc: 'One more from the bar before we wrap.', phase: 'reception', icon: 'glass', photo: '/timeline/last-call.jpg' },
-  { time: '12:00 AM', title: 'Heading Home', venue: 'Rebel Creek Golf Club', desc: 'A sparkler send-off as you head home.', phase: 'reception', icon: 'home', photo: '/timeline/heading-home.jpg' },
+  { time: '1:30 PM', title: 'Guests Arrive', venue: 'St. Agnes Church', desc: 'Find your seat before the procession.', phase: 'ceremony', icon: 'arrive', photo: null },
+  { time: '2:00 PM', title: 'Mass Starts', venue: 'St. Agnes Church', desc: 'The nuptial Mass begins.', phase: 'ceremony', icon: 'church', photo: null },
+  { time: '3:30 PM', title: 'Travel to Reception', venue: 'En route', desc: 'A short drive over to the celebration.', phase: 'ceremony', icon: 'car', photo: travelPhoto },
+  { time: '4:30 PM', title: 'Cocktail Hour', venue: 'Rebel Creek Golf Club', desc: 'Drinks & canapés out on the terrace.', phase: 'reception', icon: 'cocktail', photo: null },
+  { time: '6:00 PM', title: 'Dinner Start', venue: 'Rebel Creek Golf Club', desc: 'A seated dinner is served.', phase: 'reception', icon: 'dinner', photo: null },
+  { time: '8:00 PM', title: 'Party Time', venue: 'Rebel Creek Golf Club', desc: 'The dance floor opens, let’s celebrate.', phase: 'reception', icon: 'music', photo: null },
+  { time: '11:30 PM', title: 'Last Call', venue: 'Rebel Creek Golf Club', desc: 'One more from the bar before we wrap.', phase: 'reception', icon: 'glass', photo: null },
+  { time: '12:00 AM', title: 'Heading Home', venue: 'Rebel Creek Golf Club', desc: 'A sparkler send-off as you head home.', phase: 'reception', icon: 'home', photo: null },
 ]
 
 const ROTATE_MS = 8000   // how long each card stays up
@@ -126,6 +128,7 @@ export default function Schedule() {
                       key={`img-${displayIdx}`}
                       src={shown.photo}
                       alt=""
+                      decoding="async"
                       onLoad={(e) => e.currentTarget.classList.add('is-loaded')}
                       onError={(e) => e.currentTarget.classList.remove('is-loaded')}
                     />
