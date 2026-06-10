@@ -1,6 +1,12 @@
 /* Compound `.scene.registry` to outrank base `.scene` regardless of CSS import order. */
 .scene.registry {
-  display: block;       /* normal block scroll — no flex overflow quirks */
+  /* Flex column sized to the viewport: the header takes its natural height and
+     the showcase fills the rest, shrinking (photo scales, list scrolls) so the
+     page itself never needs to scroll. overflow-y is only a fallback for very
+     short screens where even the shrunk content can't fit. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   overflow-y: auto;
   scrollbar-gutter: stable both-edges; /* keep header centred whether or not it scrolls */
   padding: var(--content-top) 32px 32px;
@@ -11,18 +17,23 @@
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
+  flex: 1;            /* fill the scene height so the showcase can size to fit */
+  min-height: 0;      /* allow the showcase (and its list) to shrink/scroll */
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 26px;
 }
-.registry-head { text-align: center; }
+.registry-head { text-align: center; flex: none; }
 /* The .registry-inner gap already separates header and showcase, so drop the
    extra .page-head bottom margin (compound selector to outrank .page-head). */
 .page-head.registry-head { margin-bottom: 0; }
 
 /* ---------------- Showcase: featured gift + picker ---------------- */
 .reg-showcase {
+  flex: 1;            /* fill the available height so the card + list show more rows */
+  min-height: 0;
+  max-height: 560px;  /* but don't let the hero card grow unbounded on tall screens */
   display: flex;
   gap: 48px;
   width: 100%;
@@ -32,13 +43,15 @@
 .reg-feature {
   flex: 1 1 56%;
   min-width: 0;
+  min-height: 0;      /* let the photo shrink rather than force the page to scroll */
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
 .reg-stage-photo {
   position: relative;
-  height: 368px;
+  flex: 1 1 auto;     /* fills the feature height; the overlaid foot sits at its base */
+  min-height: 200px;
   border-radius: 24px;
   overflow: hidden;
   display: grid;
@@ -64,29 +77,43 @@
   background: #fff;
   color: var(--ink-blue);
   font-family: var(--font-ui);
-  font-weight: 700;
-  font-size: 15px;
+  font-weight: 600;
+  font-size: 12px;
   letter-spacing: 0.01em;
   font-variant-numeric: lining-nums tabular-nums;
-  padding: 7px 15px;
+  padding: 5px 12px;
   border-radius: 999px;
   box-shadow: 0 8px 20px -8px rgba(21, 50, 74, 0.55);
 }
 
-.reg-feature-foot {
+/* Title + buy button overlaid on the bottom of the photo card. A dark scrim
+   (transparent → navy) keeps them legible over any photo. */
+.reg-stage-foot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
+  padding: 26px 24px 22px;
+  background: linear-gradient(to top,
+    rgba(13, 30, 48, 0.82) 0%,
+    rgba(13, 30, 48, 0.5) 48%,
+    transparent 100%);
 }
 .reg-feature-title {
   margin: 0;
+  min-width: 0;       /* let a long title wrap instead of shoving the button off */
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: 38px;
-  line-height: 1.1;
-  color: var(--ink-blue);
+  font-size: 34px;
+  line-height: 1.06;
+  color: #fff;
   letter-spacing: -0.012em;
+  text-shadow: 0 2px 14px rgba(13, 30, 48, 0.55);
   animation: reg-rise 520ms cubic-bezier(.16, 1, .3, 1);
 }
 @keyframes reg-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -95,34 +122,58 @@
   flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  padding: 14px 24px;
+  gap: 7px;
+  padding: 9px 16px;
   border-radius: 999px;
   background: var(--accent);
   color: #fff;
   font-family: var(--font-ui);
   font-weight: 600;
-  font-size: 11.5px;
+  font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   text-decoration: none;
   transition: background .2s ease, transform .2s cubic-bezier(.22, 1, .36, 1), box-shadow .2s ease;
 }
-.reg-buy svg { width: 16px; height: 16px; }
+.reg-buy svg { width: 14px; height: 14px; }
 .reg-buy:hover { background: var(--accent-deep); transform: translateY(-2px); box-shadow: 0 14px 28px -10px rgba(21, 50, 74, 0.55); }
 
-/* picker list */
-.reg-list {
+/* picker list — the wrapper is the flex track that stretches to the feature's
+   height; the list fills it absolutely so its own content can't grow the
+   showcase. When the items exceed that height the list scrolls internally,
+   keeping the featured (main) area always fully in frame. */
+.reg-list-wrap {
   flex: 0 0 40%;
   min-width: 0;
+  position: relative;
+  /* Recess the scroll area into its own "well" so it reads apart from the page
+     and the white rows pop against it. */
+  background: var(--powder-deep);
+  border: 1px solid var(--rule-soft);
+  border-radius: 20px;
+  box-shadow: inset 0 2px 12px -5px rgba(21, 50, 74, 0.22);
+  overflow: hidden; /* clip the scrolling rows to the rounded panel */
+}
+.reg-list {
+  position: absolute;
+  inset: 0;
   list-style: none;
   margin: 0;
-  padding: 0;
+  /* Inset within the well; the generous right padding is the clear gap between
+     the rows and the scrollbar (and clears the active row's slide). No
+     `scrollbar-gutter: stable` — rows use the full width until the scrollbar
+     appears, then shrink slightly to sit inside it. */
+  padding: 12px 18px 12px 12px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* `safe center`: centred while the items fit, top-aligned (and fully
+     scrollable — no clipped first row) once they overflow. */
+  justify-content: safe center;
   gap: 9px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
+.reg-list::-webkit-scrollbar { width: 6px; }
 .reg-row {
   width: 100%;
   display: flex;
@@ -162,10 +213,18 @@
   min-width: 0;
   font-family: var(--font-display);
   font-size: 19px;
+  line-height: 1.2;
   color: var(--ink-blue);
-  white-space: nowrap;
+  /* up to two lines instead of a single truncated line — names never get cut off */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  /* the clamp box clips at its edge, shearing descenders (the "y" in Honeymoon)
+     when line-height is tight; pad the box down for room, pull layout back up. */
+  padding-bottom: 3px;
+  margin-bottom: -3px;
 }
 .reg-row-price {
   flex: none;
@@ -179,9 +238,19 @@
 
 /* ---------------- Responsive ---------------- */
 @media (max-width: 760px) {
-  .reg-showcase { flex-direction: column; gap: 16px; }
-  .reg-feature, .reg-list { flex: none; width: 100%; }
-  .reg-stage-photo { height: 224px; }
+  /* Stacked: the featured gift keeps its natural height on top, and the picker
+     list fills the remaining viewport and scrolls internally — so the page
+     itself doesn't scroll on phones either (.registry-inner + .reg-list keep
+     their desktop flex/absolute-scroll rules; only the axis and sizes change). */
+  .reg-showcase { flex: 1; flex-direction: column; gap: 16px; max-height: none; }
+  .reg-feature { flex: none; width: 100%; }
+  .reg-list-wrap { flex: 1 1 auto; width: 100%; min-height: 0; }
+  .reg-list { justify-content: flex-start; }
+  .reg-stage-photo { flex: none; height: 224px; min-height: 0; max-height: none; }
+  .reg-stage-foot { padding: 16px 16px 14px; }
+  .reg-feature-title { font-size: 24px; }
+  .reg-buy { padding: 8px 14px; font-size: 9.5px; }
+  .reg-price { font-size: 11px; padding: 4px 10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

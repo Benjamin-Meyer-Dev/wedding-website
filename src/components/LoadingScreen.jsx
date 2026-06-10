@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react'
 import './loading.css'
 
-export default function LoadingScreen({ onDone }) {
+export default function LoadingScreen({ onExit, onDone }) {
   const [phase, setPhase] = useState(0)
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 80)
-    const t2 = setTimeout(() => setPhase(2), 1900)
-    const t3 = setTimeout(() => onDone && onDone(), 2400)
+    // Hold the settled mark a touch longer, then begin the fade-out AND tell the
+    // app to mount the page beneath us, so the loader crossfades to reveal it.
+    const t2 = setTimeout(() => { setPhase(2); onExit && onExit() }, 2800)
+    // Unmount only once the (longer) fade has finished.
+    const t3 = setTimeout(() => onDone && onDone(), 3700)
     return () => {
       clearTimeout(t1)
       clearTimeout(t2)
       clearTimeout(t3)
     }
-  }, [onDone])
+  }, [onExit, onDone])
 
   return (
     <div className={`loading-screen phase-${phase}`}>

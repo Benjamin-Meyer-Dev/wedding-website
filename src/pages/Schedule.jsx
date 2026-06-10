@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { DoorOpen, Church, Car, Martini, Utensils, Music, Wine, Sparkles, MapPin } from 'lucide-react'
 import heroPhoto from '../assets/HomePage.jpg'
 import './schedule.css'
@@ -39,29 +39,19 @@ function Icon({ name }) {
 }
 const Pin = () => <MapPin />
 
-// True only on a wide, pointer-capable screen — where the stage is shown.
-function useStageVisible() {
-  const [on, setOn] = useState(false)
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 821px) and (hover: hover)')
-    const update = () => setOn(mq.matches)
-    update()
-    mq.addEventListener('change', update)
-    return () => mq.removeEventListener('change', update)
-  }, [])
-  return on
-}
-
 export default function Schedule() {
   const [hovered, setHovered] = useState(null)
   const [pinned, setPinned] = useState(null)
   const [heroHover, setHeroHover] = useState(false)
   const [auto, setAuto] = useState(0)
   const [displayIdx, setDisplayIdx] = useState(0) // what the stage currently shows
-  const stageVisible = useStageVisible()
+  const timelineRef = useRef(null)
 
-  // Rotation pauses whenever the guest is interacting, or off-stage (mobile).
-  const paused = hovered != null || pinned != null || heroHover || !stageVisible
+  // The active highlight auto-advances on every layout — the desktop stage AND
+  // the mobile vertical timeline, where it simply steps the lit circle for a bit
+  // of life (all the cards are already shown). Pauses while the guest is
+  // hovering/pinning a node or hovering the hero.
+  const paused = hovered != null || pinned != null || heroHover
   useEffect(() => {
     if (paused) return
     const id = setInterval(() => setAuto((a) => (a + 1) % EVENTS.length), ROTATE_MS)
@@ -69,7 +59,7 @@ export default function Schedule() {
   }, [paused])
 
   // Hover wins, then a pinned (clicked) node, then the auto-rotation.
-  const activeIdx = hovered != null ? hovered : pinned != null ? pinned : stageVisible ? auto : null
+  const activeIdx = hovered != null ? hovered : pinned != null ? pinned : auto
 
   // Fade the card out over the first half of the pulse's travel; swap at the
   // midpoint (while fully faded, so the change is hidden); then fade the new
@@ -79,6 +69,27 @@ export default function Schedule() {
     const t = setTimeout(() => setDisplayIdx(activeIdx), SWAP_AT)
     return () => clearTimeout(t)
   }, [activeIdx, displayIdx])
+
+  // Vertical comet length: the horizontal bar is driven by the linear
+  // --tl-progress fraction, but the stacked mobile cards have uneven heights, so
+  // measure the active marker's real offset and expose it as --tl-fill (px). CSS
+  // transitions the comet's height to it, so it travels to the active circle just
+  // like the horizontal one. Re-measures on reflow (resize / font + image loads).
+  useEffect(() => {
+    const el = timelineRef.current
+    if (!el) return
+    const setFill = () => {
+      const nodes = el.querySelectorAll('.tl-node')
+      if (!nodes.length) return
+      const i = Math.min(activeIdx ?? 0, nodes.length - 1)
+      const fill = nodes[i].offsetTop - nodes[0].offsetTop
+      el.style.setProperty('--tl-fill', `${Math.max(0, fill)}px`)
+    }
+    setFill()
+    const ro = new ResizeObserver(setFill)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [activeIdx])
 
   const covering = activeIdx !== displayIdx
   const shown = displayIdx != null ? EVENTS[displayIdx] : null
@@ -90,12 +101,7 @@ export default function Schedule() {
   return (
     <section className="sched">
       <header className="page-head sched-head">
-        <p className="page-eyebrow rev-fall" style={{ '--rd': '120ms' }}>
-          <span className="page-eyebrow-rule" />
-          <span>The Celebration</span>
-          <span className="page-eyebrow-rule" />
-        </p>
-        <h1 className="page-title rev" style={{ '--rd': '220ms' }}>Order of the Day</h1>
+        <h1 className="page-title rev" style={{ '--rd': '120ms' }}>Order of the Day</h1>
       </header>
 
       {/* Hovering anywhere in the hero pauses the auto-rotation. */}
@@ -161,6 +167,7 @@ export default function Schedule() {
         </div>
 
         <div
+          ref={timelineRef}
           className={`timeline${activeIdx != null ? ' has-active' : ''}`}
           style={{
             '--tl-count': EVENTS.length,

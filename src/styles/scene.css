@@ -36,7 +36,7 @@
 
 .rev      { opacity: 0; animation: sb-rise 820ms cubic-bezier(.16, 1, .3, 1) both;  animation-delay: var(--rd, 0ms); }
 .rev-fall { opacity: 0; animation: sb-fall 820ms cubic-bezier(.16, 1, .3, 1) both;  animation-delay: var(--rd, 0ms); }
-.rev-pop  { opacity: 0; animation: sb-pop 780ms cubic-bezier(.34, 1.56, .64, 1) both; animation-delay: var(--rd, 0ms); }
+.rev-pop  { opacity: 0; animation: sb-pop 780ms cubic-bezier(.16, 1, .3, 1) both; animation-delay: var(--rd, 0ms); }
 .rev-mask { animation: sb-mask 1000ms cubic-bezier(.76, 0, .24, 1) both;             animation-delay: var(--rd, 0ms); }
 .rev-grow { opacity: 0; transform-origin: left center; animation: sb-grow 900ms cubic-bezier(.76, 0, .24, 1) both; animation-delay: var(--rd, 0ms); }
 .rev-fade { opacity: 0; animation: sb-fade 760ms ease both; animation-delay: var(--rd, 0ms); } /* opacity-only — safe with hover transforms */
@@ -54,6 +54,14 @@
 .decor-sprig--tl { top: -2%; left: -2%; transform-origin: top left; rotate: -18deg; }
 .decor-sprig--br { bottom: -3%; right: -2%; rotate: 162deg; opacity: 0; }
 @keyframes decor-in { from { opacity: 0; } to { opacity: .5; } }
+
+/* Mobile: the 220px sprigs crowd a narrow viewport, so push them further off the
+   corners (and trim their size) — only an edge accent spills in, clear of content. */
+@media (max-width: 640px) {
+  .decor-sprig { width: 160px; }
+  .decor-sprig--tl { top: -2%; left: -22%; }
+  .decor-sprig--br { bottom: -2%; right: -22%; }
+}
 
 .decor-spark {
   position: absolute;

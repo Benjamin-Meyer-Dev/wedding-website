@@ -1,6 +1,14 @@
 /* Compound `.scene.rsvp` to outrank base `.scene` regardless of CSS import order. */
 .scene.rsvp {
-  display: block;       /* normal block scroll — no flex overflow quirks */
+  /* `safe center` centres the card when it fits (short declining card) but falls
+     back to flex-start when it overflows (tall accepting card) — so the top stays
+     reachable and the scene scrolls from the top. This OVERRIDES the inherited
+     `.scene { justify-content: center }`, which has no `safe` fallback and would
+     clip the card's top above the scroll origin (the mobile "can't scroll up" bug). */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: safe center;
   overflow-y: auto;            /* graceful scroll only if a guest's card is very tall */
   scrollbar-gutter: stable both-edges; /* keep header centred whether or not it scrolls */
   padding: var(--content-top) 32px 20px;
@@ -12,7 +20,8 @@
   z-index: 1;
   width: 100%;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 auto; /* horizontal centring; vertical centring is the scene's safe center */
+  flex-shrink: 0; /* keep natural height so a tall card overflows and the scene scrolls (vs shrinking to fit and clipping) */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -393,13 +402,11 @@
   background-repeat: no-repeat;
   box-shadow: 0 6px 14px -2px rgba(58, 111, 149, 0.6);
   z-index: 4;
-  animation: meal-badge-in 620ms cubic-bezier(.34, 1.56, .64, 1);
+  animation: meal-badge-in 620ms cubic-bezier(.22, 1, .36, 1);
 }
 
 @keyframes meal-badge-in {
   0%   { opacity: 0; transform: scale(0.2) rotate(-90deg); }
-  60%  { opacity: 1; transform: scale(1.25) rotate(8deg); }
-  80%  { transform: scale(0.95) rotate(-4deg); }
   100% { opacity: 1; transform: scale(1) rotate(0); }
 }
 
@@ -502,8 +509,12 @@
 
 /* ---------------- Responsive ---------------- */
 @media (max-width: 960px) {
-  .rsvp { padding: var(--content-top) 16px 24px; }
-  .rsvp-nav { display: none; } /* navigate via the dots on small screens */
+  /* Use `.scene.rsvp` (0,2,0) so this beats the base `.scene.rsvp` padding —
+     a plain `.rsvp` (0,1,0) loses and the desktop 32px padding sticks. */
+  .scene.rsvp { padding: var(--content-top) 16px 24px; }
+  /* (the arrows are moved BELOW the card on mobile — see the end-of-file block.
+     A `.rsvp-nav { display:none }` here is dead anyway: the later base
+     `.rsvp-nav { display:grid }` outranks it at equal specificity.) */
   .rsvp-list { gap: 18px; }
   .rsvp-card { padding: 28px 22px; gap: 22px; }
   .rsvp-name { font-size: clamp(26px, 7%, 36px); }
@@ -514,11 +525,13 @@
 }
 
 @media (max-width: 520px) {
-  .rsvp { padding: var(--content-top) 12px 20px; }
+  /* `.scene.rsvp` (0,2,0) to beat the base padding; drop the both-edges
+     scrollbar gutter that needlessly narrows the card on phones. */
+  .scene.rsvp { padding: var(--content-top) 12px 20px; scrollbar-gutter: auto; }
   .rsvp-card { padding: 24px 18px; gap: 18px; border-radius: 18px; }
   .rsvp-name { font-size: clamp(28px, 9%, 34px); }
-  .rsvp-choice { flex-direction: column; gap: 8px; }
-  .rsvp-pill { flex: 1 1 100%; width: 100%; padding: 13px 18px; }
+  /* (toggle is stacked in a later @media block — see below — so it lands after
+     the base .rsvp-toggle rules and actually wins at equal specificity) */
   .rsvp-extras-inner { gap: 22px; padding-top: 22px; }
   .rsvp-meals { gap: 12px; }
   .rsvp-menu-label { margin-bottom: 6px; }
@@ -768,7 +781,7 @@
   box-shadow: 0 10px 22px -10px rgba(58, 111, 149, 0.65), 0 0 18px rgba(110, 167, 201, 0.5);
   opacity: 0;
   transform: scale(.8);
-  transition: transform 460ms cubic-bezier(.34, 1.56, .64, 1), opacity 240ms ease, background 320ms ease;
+  transition: transform 460ms cubic-bezier(.22, 1, .36, 1), opacity 240ms ease, background 320ms ease;
   z-index: 0;
 }
 .rsvp-toggle--yes .rsvp-toggle-thumb { opacity: 1; transform: translateX(0) scale(1); }
@@ -800,11 +813,10 @@
 .rsvp-toggle--yes .rsvp-toggle-opt--yes { color: #fff; }
 .rsvp-toggle--no .rsvp-toggle-opt--no { color: var(--accent-bright); }
 /* the chosen side's icon pops in playfully */
-.rsvp-toggle--yes .rsvp-toggle-opt--yes svg { animation: opt-pop 560ms cubic-bezier(.34, 1.56, .64, 1); }
-.rsvp-toggle--no .rsvp-toggle-opt--no svg { animation: opt-pop 460ms cubic-bezier(.34, 1.56, .64, 1); }
+.rsvp-toggle--yes .rsvp-toggle-opt--yes svg { animation: opt-pop 560ms cubic-bezier(.22, 1, .36, 1); }
+.rsvp-toggle--no .rsvp-toggle-opt--no svg { animation: opt-pop 460ms cubic-bezier(.22, 1, .36, 1); }
 @keyframes opt-pop {
   0%   { transform: scale(.4) rotate(-14deg); }
-  55%  { transform: scale(1.35) rotate(8deg); }
   100% { transform: scale(1) rotate(0); }
 }
 
@@ -813,6 +825,32 @@
   .rsvp-card-head { flex-direction: column; align-items: stretch; gap: 12px; }
   .rsvp-card-who { align-items: center; text-align: center; }
   .rsvp-toggle { width: 100%; }
+}
+
+/* Phones: the two long labels ("Joyfully Accepts" / "Regretfully Declines")
+   can't sit side-by-side without overflowing — stack the toggle into two
+   full-width rows, with the sliding thumb running vertically instead of
+   horizontally. Must come AFTER the base .rsvp-toggle rules above so it wins at
+   equal specificity (media queries don't add specificity). */
+@media (max-width: 520px) {
+  /* Trim the card's roomy desktop padding (the base .rsvp-deck .rsvp-card 34px
+     outranks the .rsvp-card mobile rule above) so the card content — and the
+     meal tiles — get the phone's full width instead of looking skinny. */
+  .rsvp-deck .rsvp-card { padding: 22px 16px; }
+  /* A clean two-row segmented control: moderate radii instead of the desktop
+     pill (999px), which looked like an oversized lozenge once stacked. */
+  .rsvp-toggle { grid-template-columns: 1fr; border-radius: 16px; }
+  .rsvp-toggle-opt { padding: 13px 16px; border-radius: 12px; }
+  .rsvp-toggle-thumb {
+    width: auto;
+    right: 4px;
+    height: calc(50% - 4px);
+    bottom: auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 18px -10px rgba(58, 111, 149, 0.6);
+  }
+  .rsvp-toggle--yes .rsvp-toggle-thumb { transform: translateY(0) scale(1); }
+  .rsvp-toggle--no .rsvp-toggle-thumb { transform: translateY(100%) scale(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -853,4 +891,22 @@
 /* very short viewports: let the card scroll internally rather than clip */
 @media (max-height: 700px) {
   .rsvp { overflow-y: auto; }
+}
+
+/* Mobile: the prev/next arrows flank the card on desktop, but on a phone that
+   side space made the card skinny. Drop them BELOW the card instead — the
+   viewport takes the full width and the arrows wrap onto their own centered row.
+   Placed at the END of the file so these win over the base .rsvp-deck /
+   .rsvp-viewport / .rsvp-nav rules at equal specificity (media queries don't
+   add specificity, so source order decides). */
+@media (max-width: 960px) {
+  .rsvp-deck { flex-wrap: wrap; gap: 14px; }
+  .rsvp-viewport { flex: 1 1 100%; max-width: none; order: 0; }
+  .rsvp-nav { order: 1; width: 48px; height: 48px; }
+  /* Don't stretch every slide to the tallest card on mobile — let the carousel
+     follow the ACTIVE card's height, so a short (declining) card isn't centred
+     in a tall slide with big empty gaps above and below it. Inactive slides
+     collapse to 0 height but keep their 100% width, so the translateX paging
+     still lines up. */
+  .rsvp-slide[aria-hidden="true"] { height: 0; min-height: 0; padding: 0; overflow: hidden; }
 }

@@ -1,5 +1,16 @@
+/* ============================================================
+   Home — "Save the Date" hero.
+   Desktop: a framed storybook portrait beside the copy column.
+   Mobile (≤860px): the photo becomes a full-bleed backdrop and the copy
+   floats over it — names at the TOP (under the navbar) and date + countdown
+   at the BOTTOM. One scroll-free scene at every width.
+   ============================================================ */
 .home {
-  padding: 80px 32px 40px;
+  /* Centre the stage in the area BELOW the fixed navbar: the top/bottom padding
+     differ by ~the navbar height (var(--nav-top) 18 + --topbar-h 58 ≈ 76), so
+     flex-centring lands the couple in the visible band rather than biased high
+     toward the navbar. Fixed px (not --topbar-h) so there's no first-load shift. */
+  padding: 96px 32px 20px;
 }
 
 .home-stage {
@@ -15,7 +26,14 @@
 .home-figure {
   position: relative;
   flex: 0 0 auto;
-  height: min(528px, 580px);
+  /* Match the login PC frame height (its --hero-h ≈ 656px) so the framed
+     portrait reads at the same scale on both pages; the calc() guard shrinks it
+     on short viewports so it never clips under the navbar. */
+  height: min(656px, calc(100vh - 130px));
+  /* <figure> carries a default UA margin (1em 40px); zero it so the mobile
+     full-bleed photo (position:absolute; inset:0) isn't shrunk by ~80px and
+     centred, which left gaps down both sides instead of filling the screen. */
+  margin: 0;
 }
 .home-figure-glow {
   position: absolute;
@@ -33,6 +51,7 @@
   width: auto;
   max-width: 538px;
   object-fit: cover;
+  transform: translateX(-50px); /* nudge the framed couple left */
   border-radius: 220px 220px 22px 22px; /* arched top — storybook frame */
   box-shadow:
     0 48px 96px -34px rgba(21, 50, 74, 0.6),
@@ -73,6 +92,12 @@
   display: block;
   font-size: 100px;
   line-height: 0.9;
+  /* line-height < 1 makes the box shorter than the glyphs, and the rev-mask
+     reveal leaves a permanent clip-path: inset(0 0 0 0) (fill: both) that would
+     shear descenders (the j in Benjamin). Pad the clip box down and pull the
+     layout back up so spacing is unchanged. */
+  padding-bottom: 0.2em;
+  margin-bottom: -0.2em;
 }
 .home-amp {
   display: block;
@@ -129,7 +154,7 @@
 .hcd-item:not(:last-child)::after {
   content: '';
   position: absolute;
-  right: calc(30px / -2);
+  right: calc(var(--cd-gap, 30px) / -2);
   top: 14%;
   bottom: 14%;
   width: 1px;
@@ -153,14 +178,15 @@
 }
 
 /* ============================================================
-   Mobile: photo becomes a full-bleed backdrop, copy floats over it.
-   Still one scroll-free scene.
+   Mobile (≤860px): the photo becomes a full-bleed backdrop and the copy
+   floats over it — "Save the Date" + names pinned to the TOP, date +
+   countdown to the BOTTOM. Still one scroll-free scene.
    ============================================================ */
 @media (max-width: 860px) {
   .home { padding: 0; }
   .home-stage {
     flex-direction: column;
-    justify-content: flex-end;
+    align-items: stretch;
     gap: 0;
     height: 100%;
     max-width: none;
@@ -171,16 +197,21 @@
     height: auto;
     z-index: 0;
   }
+  /* The soft glow only made sense behind the framed desktop portrait. */
   .home-figure-glow { display: none; }
   .home-img {
     width: 100%;
     height: 100%;
     max-width: none;
-    object-position: center 30%;
+    object-position: 84% 30%; /* nudge the couple left of centre */
+    /* Overscan so the pointer-parallax drift (figure --d) never bares an edge:
+       scale(1.1) = 5% buffer per side, which covers the ≤16px drift at any size. */
+    transform: scale(1.1);
     border-radius: 0;
-    transform: scale(1.06);
     box-shadow: none;
   }
+  /* The copy is now centred, so darken the middle band (behind the text) and
+     ease off toward the edges where the photo shows through. */
   .home::after {
     content: '';
     position: absolute;
@@ -188,32 +219,41 @@
     z-index: 1;
     pointer-events: none;
     background: linear-gradient(180deg,
-      rgba(15, 30, 50, 0.10) 0%,
-      rgba(15, 30, 50, 0.06) 34%,
-      rgba(15, 30, 50, 0.30) 66%,
-      rgba(15, 30, 50, 0.74) 100%);
+      rgba(15, 30, 50, 0.30) 0%,
+      rgba(15, 30, 50, 0.50) 42%,
+      rgba(15, 30, 50, 0.50) 64%,
+      rgba(15, 30, 50, 0.40) 100%);
   }
   .home-copy {
-    position: relative;
     z-index: 2;
-    align-items: center;
-    text-align: center;
+    flex: 1;
     width: 100%;
-    padding: 0 32px 48px;
+    align-items: center;
+    justify-content: flex-start; /* tag + names sit at the TOP, just below the navbar */
+    text-align: center;
+    /* Clear the fixed navbar at the top — content-top already sits 16px below
+       the navbar, a middle ground between flush and the roomier +16px. Date +
+       countdown drop to the bottom via margin-top:auto on .home-date. */
+    padding: var(--content-top) 32px 18px;
   }
   .home-tag { color: var(--powder-mist); }
   .home-names { align-items: center; color: #fff; }
-  .home-amp { margin-left: 0; }
-  .home-amp > span { color: var(--accent-bright); }
-  .home-rule { align-self: center; background: linear-gradient(90deg, transparent, var(--accent-bright), transparent); }
-  .home-date { color: rgba(238, 244, 249, 0.86); }
-  .hcd-num { color: #fff; }
-  .hcd-lbl { color: rgba(238, 244, 249, 0.7); }
+  .home-name { font-size: clamp(40px, 12vw, 100px); } /* scale down so long names never overflow narrow screens */
+  .home-amp { margin: 2px 0; }
+  .home-amp > span { font-size: clamp(30px, 9.4vw, 78px); color: var(--accent-bright); }
+  .home-rule {
+    align-self: center;
+    background: linear-gradient(90deg, transparent, var(--accent-bright), transparent);
+  }
+  /* margin-top:auto drops the date + countdown to the BOTTOM, leaving the
+     tag + names + rule as a title block at the top. */
+  .home-date { color: rgba(238, 244, 249, 0.86); margin-top: auto; }
+  .home-countdown {
+    --cd-gap: clamp(12px, 4vw, 30px); /* shrink the gap on narrow screens so the row fits */
+    gap: var(--cd-gap);
+    margin-top: 10px; /* tighter date→countdown gap on mobile (base is 24px) */
+  }
   .hcd-item:not(:last-child)::after { background: rgba(255, 255, 255, 0.25); }
-}
-
-@media (max-width: 420px) {
-  .home-name { font-size: 48px; }
-  .home-amp > span { font-size: 40px; }
-  .hcd-num { font-size: 30px; }
+  .hcd-num { font-size: clamp(26px, 6.4vw, 48px); color: #fff; }
+  .hcd-lbl { color: rgba(238, 244, 249, 0.7); }
 }

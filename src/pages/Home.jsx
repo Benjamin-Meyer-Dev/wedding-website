@@ -32,12 +32,15 @@ export default function Home() {
   return (
     <section className="scene home">
       <div className="home-stage">
-        <figure className="home-figure plx" style={{ '--d': '26px' }}>
-          <span className="home-figure-glow rev-pop" style={{ '--rd': '260ms' }} />
+        <figure className="home-figure plx" style={{ '--d': '16px' }}>
+          <span className="home-figure-glow" aria-hidden="true" />
+          {/* rev-fade (opacity only), NOT rev-pop: a transform-animating reveal
+              would override the .home-img scale() overscan and let the parallax
+              drift bare the background at the edges. */}
           <img
             src={heroPhoto}
             alt="Elizabeth and Benjamin"
-            className="home-img rev-pop"
+            className="home-img rev-fade"
             style={{ '--rd': '120ms' }}
             width="1068"
             height="1600"

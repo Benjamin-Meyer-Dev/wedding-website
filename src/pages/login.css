@@ -7,6 +7,9 @@
   align-items: center;
   justify-content: center;
   gap: 64px;
+  /* Photo frame height. The form card hugs its own content and is centred
+     against this by `align-items: center` above. */
+  --hero-h: clamp(440px, min(656px, 742px), 920px);
   /* vh/vw padding so it scales with the actual viewport, not the parent box */
   padding: 24px 32px;
 }
@@ -17,8 +20,10 @@
 .login-figure {
   position: relative;
   flex: 0 1 auto;
-  height: clamp(440px, min(656px, 742px), 920px);
-  animation: page-rise 700ms cubic-bezier(.4, 0, .2, 1);
+  height: var(--hero-h);
+  /* Gentle opacity crossfade (no slide) so the photo eases in as the loading
+     screen fades out, rather than popping in through the transparent loader. */
+  animation: page-fade 900ms ease both;
 }
 .login-figure::before {
   content: '';
@@ -44,15 +49,32 @@
   z-index: -1;
   opacity: 0.4;
 }
-.login-img {
+/* The arched frame is now the clipper (fixed size = the photo's shape), so the
+   photo can slide INSIDE it without moving the frame itself. */
+.login-frame {
   display: block;
+  position: relative;
   height: 100%;
-  width: auto;
-  border-radius: 200px 200px 22px 22px; /* arched, matches the storybook scenes */
+  aspect-ratio: 1068 / 1600;
+  overflow: hidden;
+  /* Full dome: 50% horizontal on the top corners makes them meet at the centre
+     (no flat segment), and 33.4% vertical ≈ half the width (the frame's fixed
+     1068/1600 ratio), so the two curves form one continuous semicircle that
+     arcs all the way to the top. */
+  border-radius: 50% 50% 22px 22px / 33.4% 33.4% 22px 22px;
   box-shadow:
     0 48px 96px -32px rgba(21, 50, 74, 0.55),
     0 22px 44px -22px rgba(21, 50, 74, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+}
+.login-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* enlarge slightly so there's room to slide, then shift the couple LEFT
+     within the (unchanged) frame */
+  transform: scale(1.25) translateX(-32px);
 }
 
 /* ---------- Glass form card ---------- */
@@ -263,17 +285,20 @@
 .login-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
 /* ---------------- Responsive ----------------
-   Photo full-bleed background, condensed form card at bottom. Image is
-   scaled from its bottom edge to shift the subject upward in the
-   viewport. */
+   Photo full-bleed background, condensed form card pinned to the bottom.
+   NOTE: the card-to-bottom alignment must use the compound `.scene.login`
+   selector — a bare `.login { justify-content: flex-end }` is outranked by
+   base `.scene { justify-content: center }` (scene.css loads last), which
+   would leave the card centered over the couple. */
 @media (max-width: 980px) {
-  .login {
+  /* `.scene.login` (0,2,0) — beats base `.scene` so the card actually pins to
+     the bottom instead of being centered over the couple. */
+  .scene.login {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
     position: relative;
-    min-height: 100%;
     min-height: 100%;
     padding: 0 32px 40px;
     overflow: hidden;
@@ -291,12 +316,15 @@
   }
   .login-figure::before,
   .login-figure::after { display: none; }
+  /* On mobile the figure itself is the full-bleed clip, so the frame is a
+     no-op passthrough (the photo fills the figure directly). */
+  .login-frame { display: contents; }
   .login-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
-    transform: scale(1.4);
+    object-position: 84% center; /* nudge the couple left of centre */
+    transform: scale(1.5); /* bottom-anchored — a larger scale lifts the couple a bit higher */
     transform-origin: center bottom;
     border-radius: 0;
     box-shadow: none;
@@ -341,7 +369,8 @@
 }
 
 @media (max-width: 520px) {
-  .login { padding: 0 12px 16px; }
+  /* match the 980px rule's specificity (.scene.login) or this padding is outranked */
+  .scene.login { padding: 0 12px 16px; }
   .login-card {
     padding: 14px 16px;
     border-radius: 18px;

@@ -2,14 +2,28 @@
    CSS import order — scene.css loads last, so a bare `.story` (equal specificity)
    would lose and the page would inherit `.scene`'s flex-centred overflow:hidden. */
 .scene.story {
-  display: block;       /* normal block scroll — no flex overflow quirks */
+  /* Flex column with grow spacers: centred vertically (no header gap) while the
+     timeline fits; once it overflows, the spacers collapse to the navbar
+     clearance (--content-top) and a 48px bottom gap, and the page scrolls. */
+  display: flex;
+  flex-direction: column;
+  /* The ::before/::after spacers do the vertical centering. Must override the
+     inherited `.scene { justify-content: center }`, which would ALSO centre the
+     overflow when the timeline is tall — pushing its top above the scroll
+     origin where it can't be reached (the mobile "can't scroll up" bug). */
+  justify-content: flex-start;
   overflow-y: auto;
   scrollbar-gutter: stable both-edges; /* keep header centred whether or not it scrolls */
-  padding: var(--content-top) 32px 48px;
+  padding: 0 32px;
 }
+.scene.story::before,
+.scene.story::after { content: ''; flex: 1 1 0; }
+.scene.story::before { min-height: var(--content-top); }
+.scene.story::after { min-height: 48px; }
 .story::-webkit-scrollbar { width: 6px; }
 
 .story-inner {
+  flex: none;           /* keep natural height; the scene scrolls, not the inner */
   width: 100%;
   max-width: 940px;
   margin: 0 auto;
@@ -41,6 +55,34 @@
   transform: translateX(-50%);
   background: linear-gradient(180deg, var(--accent-soft) 0%, var(--accent) 50%, var(--ink-blue) 100%);
   border-radius: 2px;
+}
+
+/* Decorative gem finials cap each end of the timeline line so it begins and ends
+   with a flourish instead of a hard stop. Rotated squares (diamonds) with a halo
+   ring and an inner highlight; absolutely positioned so they don't disturb the
+   flex flow of the milestones. Top picks up the line's light end, bottom its deep end. */
+.story-timeline-cap {
+  position: absolute;
+  left: 50%;
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, var(--accent-soft), var(--accent));
+  box-shadow: 0 0 0 4px rgba(58, 111, 149, 0.12), 0 8px 18px -6px rgba(58, 111, 149, 0.55);
+  z-index: 1;
+}
+.story-timeline-cap::before {
+  content: '';
+  position: absolute;
+  inset: 3.5px;
+  border-radius: 1.5px;
+  background: rgba(255, 255, 255, 0.55);
+}
+.story-timeline-cap--top { top: 8px; transform: translate(-50%, -50%) rotate(45deg); }
+.story-timeline-cap--bottom {
+  bottom: 8px;
+  transform: translate(-50%, 50%) rotate(45deg);
+  background: linear-gradient(135deg, var(--accent-deep), var(--ink-blue));
 }
 
 .story-item {
@@ -150,6 +192,7 @@
 /* ---------------- Responsive ---------------- */
 @media (max-width: 720px) {
   .story-timeline::before { left: 18px; }
+  .story-timeline-cap { left: 18px; }
   .story-item,
   .story-item--right { grid-template-columns: 1fr; direction: ltr; gap: 12px; padding-left: 44px; }
   .story-dot { left: 18px; top: 26px; transform: translate(-50%, 0); }

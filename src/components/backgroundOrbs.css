@@ -7,7 +7,12 @@
   /* Promote the whole field to its own compositor layer so the drift
      animation never repaints the page below. */
   transform: translateZ(0);
+  /* Fade the whole orb field in on load (behind the loading screen), so the
+     decoration animates in rather than popping. */
+  opacity: 0;
+  animation: orbs-in 1500ms cubic-bezier(.16, 1, .3, 1) both;
 }
+@keyframes orbs-in { to { opacity: 1; } }
 
 .bg-orb {
   position: absolute;
@@ -29,6 +34,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .bg-orbs { animation: none; opacity: 1; } /* skip the fade-in but stay visible */
   .bg-orb { animation: none; }
 }
 

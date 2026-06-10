@@ -12,8 +12,22 @@ import {
 } from 'lucide-react'
 import './navbar.css'
 
+// Shown centered in the bar on mobile (where the full nav collapses to a burger)
+// so the guest always sees which page they're on.
+const PAGE_LABELS = {
+  home: 'Home',
+  story: 'Our Story',
+  party: 'Wedding Party',
+  schedule: 'Schedule',
+  travel: 'Travel',
+  faq: 'FAQ',
+  registry: 'Registry',
+  rsvp: 'RSVP',
+}
+
 export default function NavBar({ page, onNavigate, onSignOut }) {
   const [open, setOpen] = useState(false)
+  const [resizing, setResizing] = useState(false)
   const headerRef = useRef(null)
 
   // Publish the navbar's live height so pages can offset their content to sit a
@@ -39,14 +53,29 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
     return () => mql.removeEventListener('change', onChange)
   }, [])
 
+  // Flag the bar as resizing so its breakpoint-dependent styles (the delayed
+  // corner swap) apply instantly. setResizing(true) is idempotent — React bails
+  // on repeat calls — so a resize burst is just two renders (on, then off).
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    let t
+    const onResize = () => {
+      setResizing(true)
+      clearTimeout(t)
+      t = setTimeout(() => setResizing(false), 200)
+    }
+    window.addEventListener('resize', onResize)
+    return () => { window.removeEventListener('resize', onResize); clearTimeout(t) }
+  }, [])
+
   const handleNavigate = (target) => {
     setOpen(false)
     onNavigate?.(target)
   }
 
   return (
-    <header className={`topbar${open ? ' is-open' : ''}`} ref={headerRef}>
-      <div className="topbar-inner glass">
+    <header className={`topbar${open ? ' is-open' : ''}${resizing ? ' is-resizing' : ''}`} ref={headerRef}>
+      <div className="topbar-inner">
         <button
           type="button"
           className="topbar-monogram"
@@ -57,6 +86,8 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
           <span className="amp">&amp;</span>
           <span>B</span>
         </button>
+
+        <span className="topbar-current" aria-hidden="true">{PAGE_LABELS[page] ?? ''}</span>
 
         <nav className="topbar-nav">
           <button

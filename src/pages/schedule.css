@@ -12,19 +12,27 @@
      deeper ink. Reception uses --accent-deep/--ink-blue, so it's unaffected. */
   --accent: #4a80a5;
   position: relative;
-  min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
   height: 100%;
-  padding: var(--content-top) 32px 20px;
+  /* Flex column with grow spacers (::before/::after): the header + timeline sit
+     vertically centred (no header gap) while they fit; once the vertical
+     timeline overflows a short viewport the spacers collapse to the navbar
+     clearance (--content-top) and a 20px bottom gap, and the page scrolls. */
+  padding: 0 32px;
   animation: page-rise 460ms cubic-bezier(.4, 0, .2, 1);
 }
+.sched::before,
+.sched::after { content: ''; flex: 1 1 0; }
+.sched::before { min-height: var(--content-top); }
+.sched::after { min-height: 20px; }
 /* Phones show the vertical timeline, which can exceed a short viewport — let it
-   scroll instead of clipping. Compound selector beats base `.scene`'s overflow:
-   hidden; on desktop the content fits, so no scrollbar appears. */
-.scene.sched { overflow-y: auto; }
+   scroll instead of clipping. NOTE: this section is `<section class="sched">`
+   (no `scene` class), so the rule must target `.sched` directly — a compound
+   `.scene.sched` selector never matches and the page silently fails to scroll.
+   On desktop the content fits, so no scrollbar appears. */
+.sched { overflow-y: auto; }
 .sched::-webkit-scrollbar { width: 6px; }
 
 /* Hovering anywhere in this wrapper pauses the auto-rotation. */
@@ -280,6 +288,64 @@
 /* traveling comet/progress — horizontal layout only */
 .timeline-progress { display: none; }
 
+/* Mobile/vertical spine: draw it per-gap (each node links to the next) so it
+   stops exactly at the LAST circle. The single container-spanning
+   .timeline-line overshoots past the final marker by the height of the last
+   node's card. Scoped to the same condition as the vertical layout (i.e. NOT
+   the desktop horizontal layout, which is min-width:821 + hover). */
+@media (max-width: 820px), (hover: none) {
+  .timeline-line { display: none; }
+  .tl-node:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 21px;     /* this marker's centre: top 2px + half the 38px marker */
+    height: 100%;  /* spans down to the next marker's centre */
+    width: 2px;
+    border-radius: 2px;
+    z-index: 0;    /* behind the marker (z-index 1) */
+  }
+  .tl-node--ceremony::before  { background: var(--accent); }
+  .tl-node--reception::before { background: var(--accent-deep); }
+
+  /* Vertical comet — mirror of the horizontal one: a glowing fill travels DOWN
+     the spine to the active circle, with a pulsing head. Its length is driven by
+     --tl-fill (the active marker's measured offset, set in Schedule.jsx), since
+     the stacked cards have uneven heights and a linear fraction wouldn't line up. */
+  .timeline-progress {
+    display: block;
+    position: absolute;
+    left: 17px;
+    top: 21px;                 /* first marker centre (node top 2px + marker/2 19px) */
+    width: 4px;
+    height: var(--tl-fill, 0px);
+    border-radius: 4px;
+    background: linear-gradient(180deg, var(--accent-soft), var(--accent-bright));
+    box-shadow: 0 0 18px rgba(110, 167, 201, 0.85);
+    transition: height 450ms linear;   /* travels in a fixed time, like the comet */
+    z-index: 1;                /* above the spine (::before z0), below the markers */
+  }
+  .timeline-progress::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff 0%, var(--accent-bright) 55%, var(--accent) 100%);
+    box-shadow: 0 0 22px 6px rgba(110, 167, 201, 0.9);
+    animation: comet-pulse 1.5s ease-in-out infinite;
+  }
+  /* fill the circle just as the comet head arrives (mirror of the desktop snap) */
+  .tl-node.is-active .tl-marker {
+    transition: background .16s ease, border-color .16s ease, color .16s ease,
+                transform .24s cubic-bezier(.22, 1, .36, 1), box-shadow .28s ease;
+    transition-delay: 0.37s;
+  }
+}
+
 .tl-node {
   position: relative;
   padding: 0 0 30px 56px;
@@ -413,11 +479,11 @@
     position: relative;
     display: flex;
     width: 100%;
-    max-width: 1020px;
+    max-width: 940px;
     /* fixed (content-independent) height so the hero doesn't resize between
        cards — text just centres within it. Sized to leave room for the
        timeline + legend below it on a standard desktop screen. */
-    height: 360px;
+    height: 330px;
     margin: 0 auto 24px;
     border: 0; /* drop the glass hairline so the photo bleeds to the edge */
     border-radius: 28px;
@@ -509,14 +575,32 @@
      un-highlighting stays immediate. */
   .tl-node.is-active .tl-marker {
     transition: background .16s ease, border-color .16s ease, color .16s ease,
-                transform .24s cubic-bezier(.34, 1.4, .5, 1), box-shadow .28s ease;
+                transform .24s cubic-bezier(.22, 1, .36, 1), box-shadow .28s ease;
     transition-delay: 0.37s; /* fire just as the comet head reaches behind the circle */
   }
 }
 
+/* ----------------------------------------------------------------
+   Mobile (vertical) view: the RESTING timeline reads in a single accent —
+   markers, spine, and labels — so there's no standing colour split and the
+   two-colour legend is hidden. BUT a tapped/active circle still fills with
+   its phase's legend colour (ceremony → accent, reception → ink-blue) via the
+   base .is-active rules, so a tap reveals where you are in the day.
+   (Desktop keeps the phased colours + legend everywhere.) */
+@media (max-width: 820px) {
+  .sched-legend { display: none; }
+  .tl-node--reception::before { background: var(--accent); }
+  .tl-node--reception .tl-marker { border-color: var(--accent); color: var(--accent); }
+  .tl-node--reception .tl-time,
+  .tl-node--reception .tl-card-phase,
+  .tl-node--reception .tl-card-time { color: var(--accent); }
+}
+
 /* ---------------- Header tweaks for small phones ---------------- */
 @media (max-width: 520px) {
-  .sched { padding: 8px 16px 32px; }
+  /* Navbar clearance comes from the ::before spacer (min-height: --content-top),
+     so only the side padding needs trimming on phones. */
+  .sched { padding: 0 16px; }
   .sched-legend { gap: 12px; font-size: 10px; }
 }
 
@@ -555,7 +639,7 @@
   .stage-photo-ph svg { animation: none; }
   .stage-img.is-loaded { animation: none; opacity: 1; }
   .stage-shell { opacity: 1 !important; transform: none !important; transition: none; }
-  .timeline { transition: none; }
+  .timeline, .timeline-progress { transition: none; }
   .tl-card, .tl-marker, .tl-node, .tl-base { transition: none; }
   .sched-aura,
   .timeline-progress::after { animation: none; }

@@ -36,7 +36,10 @@ export default function BackgroundOrbs() {
               background: `radial-gradient(circle at 35% 30%, ${stop0} 0%, ${stop1} 70%)`,
               '--dx': `${o.driftX}px`,
               '--dy': `${o.driftY}px`,
-              animationDuration: `${o.duration}s`,
+              // The .bg-orb rule reads `var(--duration)` in its animation
+              // shorthand — set the custom property, not animation-duration,
+              // or the shorthand is invalid and the orbs never drift.
+              '--duration': `${o.duration}s`,
               animationDelay: `${-i * 3}s`,
             }}
           />

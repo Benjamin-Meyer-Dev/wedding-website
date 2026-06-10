@@ -23,15 +23,11 @@ export default function Story() {
     <section className="scene story" ref={ref}>
       <div className="story-inner">
         <header className="page-head story-head">
-          <p className="page-eyebrow rev-fall" style={{ '--rd': '120ms' }}>
-            <span className="page-eyebrow-rule" />
-            <span>Once Upon a Time</span>
-            <span className="page-eyebrow-rule" />
-          </p>
-          <h1 className="page-title rev" style={{ '--rd': '220ms' }}>Our Story</h1>
+          <h1 className="page-title rev" style={{ '--rd': '120ms' }}>Once Upon a Time</h1>
         </header>
 
         <div className="story-timeline">
+          <span className="story-timeline-cap story-timeline-cap--top" aria-hidden="true" />
           {STORY.map((s, i) => (
             <article
               className={`story-item${i % 2 ? ' story-item--right' : ''} rev-fade`}
@@ -52,6 +48,7 @@ export default function Story() {
               </div>
             </article>
           ))}
+          <span className="story-timeline-cap story-timeline-cap--bottom" aria-hidden="true" />
         </div>
 
         <p className="story-gallery-label rev-fade" style={{ '--rd': '300ms' }}>A Few of Our Favourites</p>

@@ -6,6 +6,12 @@
   width: min(96%, 1120px);
   z-index: 30;
   animation: topbar-in 420ms cubic-bezier(.4, 0, .2, 1);
+  /* Accent-tinted hairline (not the near-white --glass-border) so the bar stays
+     defined when it floats over white content — otherwise it's white-on-white.
+     NOTE: don't give .topbar-inner the `glass` class — global.css's `.glass`
+     loads after this file and would re-apply --glass-border, hiding this.
+     Subtle on the powder-blue canvas, clearly visible on white. PC + mobile. */
+  --topbar-border: rgba(58, 111, 149, 0.45);
 }
 
 @keyframes topbar-in {
@@ -23,13 +29,19 @@
   padding: 10px 18px;
   border-radius: 999px;
   background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  border: 1px solid var(--topbar-border);
+  /* No backdrop-filter: --glass-bg is opaque white, so the blur was never
+     visible — but its filter region ignores the border-radius (the parent's
+     transform breaks the clip) and poked grey square corners past the pill.
+     Dropping it removes that artifact and the per-frame blur cost. */
   box-shadow: var(--glass-shadow);
-  transition: border-bottom-left-radius 380ms cubic-bezier(.22, 1, .36, 1) 360ms,
-              border-bottom-right-radius 380ms cubic-bezier(.22, 1, .36, 1) 360ms,
-              border-bottom-color 260ms ease 360ms;
+  /* Closing: round the corners back DURING the drawer collapse (360ms), but
+     weighted late — ease-in + 140ms delay — so most of the rounding happens
+     once the panel is nearly gone and there's no pinched waist at the joint.
+     It lands together with the collapse, reading as one motion. */
+  transition: border-bottom-left-radius 220ms cubic-bezier(.4, 0, .7, 1) 140ms,
+              border-bottom-right-radius 220ms cubic-bezier(.4, 0, .7, 1) 140ms,
+              border-bottom-color 200ms ease 140ms;
 }
 
 .topbar-monogram {
@@ -60,6 +72,10 @@
   transform: scale(1.15) rotate(-5deg);
   color: var(--accent-deep);
 }
+
+/* Centered current-page label — mobile only; on desktop the full nav owns the
+   centre so this stays hidden. */
+.topbar-current { display: none; }
 
 .topbar-nav {
   display: flex;
@@ -157,6 +173,9 @@
 .topbar.is-open .topbar-burger span:nth-child(2) { opacity: 0; }
 .topbar.is-open .topbar-burger span:nth-child(3) { top: 19px; transform: translateX(-50%) rotate(-45deg); }
 
+/* Connected drawer: attaches flush to the bar's bottom edge; the bar's bottom
+   corners square off while it's open (snapped, never animated — see the
+   .topbar-inner transition note). */
 .topbar-drawer {
   position: absolute;
   top: calc(100% - 1px);
@@ -171,11 +190,18 @@
 .topbar.is-open .topbar-drawer {
   grid-template-rows: 1fr;
   pointer-events: auto;
-  transition: grid-template-rows 420ms cubic-bezier(.22, 1, .36, 1) 240ms;
+  /* Gentle start (vs the fast-launch ease-out used for closing): the panel
+     barely emerges during the first ~100ms, giving the corner tween below
+     time to square off before the joint is exposed. */
+  transition: grid-template-rows 400ms cubic-bezier(.45, 0, .2, 1);
 }
 .topbar-drawer-track {
   min-height: 0;
   overflow: hidden;
+  /* Match the panel's rounded bottom: this track clips for the open/close
+     height animation, and a square clip left grey shadow notches poking past
+     the menu's rounded corners. */
+  border-radius: 0 0 22px 22px;
 }
 .topbar-drawer-inner {
   display: flex;
@@ -183,21 +209,29 @@
   gap: 2px;
   padding: 6px;
   background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--topbar-border);
   border-top: 0;
   border-radius: 0 0 22px 22px;
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  box-shadow: var(--glass-shadow);
+  /* No box-shadow: the track's overflow:hidden clipped it into grey corner
+     notches, and it added no real depth. The blue border defines the panel;
+     the pill above still carries the elevation shadow. */
 }
 .topbar.is-open .topbar-inner {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   border-bottom-color: transparent;
-  transition: border-bottom-left-radius 280ms cubic-bezier(.22, 1, .36, 1),
-              border-bottom-right-radius 280ms cubic-bezier(.22, 1, .36, 1),
-              border-bottom-color 220ms ease;
+  /* Opening: square off fast-and-early (mirror of the late-weighted close) —
+     mostly done within ~80ms, while the slow-starting panel above has barely
+     any height, so the joint is never seen half-rounded. */
+  transition: border-bottom-left-radius 160ms cubic-bezier(.22, 1, .36, 1),
+              border-bottom-right-radius 160ms cubic-bezier(.22, 1, .36, 1),
+              border-bottom-color 120ms ease;
 }
+
+/* While the viewport is actively resizing, kill the (delayed) corner swap so
+   crossing the mobile breakpoint (999px pill -> 22px card) doesn't leave the
+   bottom corners lagging 360ms behind the top ones. */
+.topbar.is-resizing .topbar-inner { transition: none; }
 .topbar-drawer-link {
   position: relative;
   background: transparent;
@@ -249,7 +283,7 @@
   height: 22px;
   color: var(--accent);
   flex-shrink: 0;
-  transition: transform 360ms cubic-bezier(.34, 1.56, .64, 1),
+  transition: transform 360ms cubic-bezier(.22, 1, .36, 1),
               color 240ms ease;
 }
 .topbar-drawer-link-icon svg { width: 18px; height: 18px; }
@@ -278,12 +312,10 @@
 .topbar-drawer-link.is-active .topbar-drawer-link-icon { color: var(--accent); }
 
 .topbar-drawer-link.is-signout {
-  color: var(--text-muted);
   border-top: 1px solid var(--rule-soft);
   margin-top: 4px;
   border-radius: 0 0 12px 12px;
 }
-.topbar-drawer-link.is-signout .topbar-drawer-link-icon { color: var(--text-muted); }
 .topbar-drawer-link.is-signout:hover {
   color: var(--ink-blue);
   background: rgba(255, 255, 255, 0.5);
@@ -298,6 +330,28 @@
   .topbar-inner { padding: 4px 14px 4px 10px; grid-template-columns: 1fr auto; border-radius: 22px; }
   .topbar-monogram { font-size: 15px; padding: 2px 4px; height: auto; line-height: 1; }
   .topbar-nav { display: none; }
+  /* current page, centred between the monogram and the burger */
+  .topbar-current {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 56%;
+    pointer-events: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--accent);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: opacity 180ms ease;
+  }
+  /* fade it out while the drawer is open (the open menu shows the active item) */
+  .topbar.is-open .topbar-current { opacity: 0; }
   .topbar-signout { display: none; }
   .topbar-burger { display: block; width: 32px; height: 32px; }
   .topbar-burger span { width: 16px; }
@@ -306,8 +360,7 @@
   .topbar-burger span:nth-child(3) { top: 21px; }
   .topbar.is-open .topbar-burger span:nth-child(1) { top: 16px; transform: translateX(-50%) rotate(45deg); }
   .topbar.is-open .topbar-burger span:nth-child(3) { top: 16px; transform: translateX(-50%) rotate(-45deg); }
-  .topbar-drawer { display: grid; border-radius: 0 0 22px 22px; }
+  .topbar-drawer { display: grid; }
   .topbar-drawer-inner { padding: 4px; }
   .topbar-drawer-link { padding: 11px 16px; font-size: 12px; letter-spacing: 0.2em; }
-  .topbar.is-open .topbar-inner { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 }

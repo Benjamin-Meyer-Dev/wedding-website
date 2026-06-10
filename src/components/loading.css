@@ -6,12 +6,12 @@
   place-items: center;
   pointer-events: none;
   overflow: hidden;
-  contain: strict;
-  background:
-    radial-gradient(circle at 50% 36%, var(--powder-mist) 0%, transparent 56%),
-    radial-gradient(circle at 82% 88%, var(--powder-deep) 0%, transparent 60%),
-    var(--bg);
-  transition: opacity 560ms ease;
+  contain: layout paint style; /* perf; not `size`/`strict` now that it's see-through */
+  /* Transparent: the app's own background, drifting orbs and corner decor (z-0,
+     behind this z-100 layer) show through, so the loader shares the site's look
+     instead of a flat panel. They animate in beneath the centred mark. */
+  background: transparent;
+  transition: opacity 900ms ease; /* gentle crossfade out onto the page beneath */
 }
 .loading-screen.phase-2 { opacity: 0; }
 
@@ -23,7 +23,7 @@
   gap: 21px;
   padding: 0 24px;
   text-align: center;
-  transform: translateY(-64px); /* sit above centre */
+  /* truly centred by the screen's place-items:center (no upward offset) */
 }
 
 /* big pulsing aura behind the monogram */

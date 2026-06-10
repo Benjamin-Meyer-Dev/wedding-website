@@ -41,14 +41,16 @@ export default function Login() {
 
   return (
     <section className="scene login">
-      <figure className="login-figure plx" style={{ '--d': '24px' }}>
-        <img
-          src={heroPhoto}
-          alt="Elizabeth and Benjamin"
-          className="login-img"
-          width="1068"
-          height="1600"
-        />
+      <figure className="login-figure">
+        <span className="login-frame">
+          <img
+            src={heroPhoto}
+            alt="Elizabeth and Benjamin"
+            className="login-img"
+            width="1068"
+            height="1600"
+          />
+        </span>
       </figure>
 
       <article className="login-card glass">

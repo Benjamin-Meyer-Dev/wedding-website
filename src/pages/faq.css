@@ -1,13 +1,29 @@
 /* Compound `.scene.faq` to outrank base `.scene` regardless of CSS import order. */
 .scene.faq {
-  display: block;       /* normal block scroll — no flex overflow quirks */
+  /* Flex column with two grow spacers (::before/::after): when the cards fit
+     the viewport the spacers split the slack and the deck sits vertically
+     centred with no header gap; once the cards overflow, the spacers collapse
+     to their min-heights — navbar clearance (--content-top) on top, 32px below
+     — and the page scrolls. So the standard gap only appears when scrolling. */
+  display: flex;
+  flex-direction: column;
+  /* The ::before/::after spacers do the vertical centering. Must override the
+     inherited `.scene { justify-content: center }`, which would ALSO centre the
+     overflow when the deck is tall — pushing its top above the scroll origin
+     where it can't be reached (the mobile "can't scroll up" bug). */
+  justify-content: flex-start;
   overflow-y: auto;
   scrollbar-gutter: stable both-edges; /* keep header centred whether or not it scrolls */
-  padding: var(--content-top) 32px 32px;
+  padding: 0 32px;
 }
+.scene.faq::before,
+.scene.faq::after { content: ''; flex: 1 1 0; }
+.scene.faq::before { min-height: var(--content-top); }
+.scene.faq::after { min-height: 32px; }
 .faq::-webkit-scrollbar { width: 6px; }
 
 .faq-inner {
+  flex: none;           /* keep natural height; the scene scrolls, not the inner */
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
@@ -44,7 +60,12 @@
   -webkit-tap-highlight-color: transparent;
   transition: transform .4s cubic-bezier(.22, 1, .36, 1);
 }
-.faq-card:hover { transform: translateY(-6px); }
+/* Pointer-only affordances — gated behind `hover: hover` so the :hover state
+   can't "stick" after a tap on touch devices, which would leave the card lifted
+   and the icon stuck blue after you flip it back. */
+@media (hover: hover) {
+  .faq-card:hover { transform: translateY(-6px); }
+}
 .faq-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 20px; }
 
 .faq-card-inner {
@@ -52,7 +73,7 @@
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  transition: transform .62s cubic-bezier(.34, 1.35, .5, 1);
+  transition: transform .62s cubic-bezier(.22, 1, .36, 1);
 }
 .faq-card.is-flipped .faq-card-inner { transform: rotateY(180deg); }
 
@@ -100,10 +121,12 @@
   color: var(--accent);
   font-family: var(--font-display);
   font-weight: 400;
-  transition: transform .4s cubic-bezier(.34, 1.56, .64, 1), background .3s ease, color .3s ease;
+  transition: transform .4s cubic-bezier(.22, 1, .36, 1), background .3s ease, color .3s ease;
 }
 .faq-num svg { width: 32px; height: 32px; }
-.faq-card:hover .faq-num { transform: scale(1.08) rotate(-4deg); background: var(--accent); color: #fff; }
+@media (hover: hover) {
+  .faq-card:hover .faq-num { transform: scale(1.08) rotate(-4deg); background: var(--accent); color: #fff; }
+}
 .faq-q {
   font-family: var(--font-display);
   font-weight: 400;

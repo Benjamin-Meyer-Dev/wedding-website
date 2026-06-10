@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check as IconCheck, X as IconX, ChevronLeft, ChevronRight } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useHousehold } from '../lib/HouseholdContext.jsx'
@@ -85,6 +85,7 @@ export default function Rsvp() {
   const [savedAt, setSavedAt] = useState(null)
   const [active, setActive] = useState(0)        // which guest the carousel is showing
   const [previewMeal, setPreviewMeal] = useState(null) // meal whose description is shown
+  const swipeRef = useRef(null) // touch start {x, y} for swipe-to-change-card
 
   useEffect(() => {
     if (householdLoading || !householdId || members.length === 0) return
@@ -208,17 +209,31 @@ export default function Rsvp() {
   const safeActive = Math.min(active, total - 1)
   const go = (delta) => { setPreviewMeal(null); setActive((a) => Math.max(0, Math.min(total - 1, Math.min(a, total - 1) + delta))) }
 
+  // Touch swipe (mobile): a clear horizontal drag flips to the prev/next guest,
+  // mirroring the arrows. We never preventDefault, so a vertical drag still
+  // scrolls the page; we only act on touch-end when the move is decidedly
+  // horizontal and past a small threshold (so taps on buttons aren't swipes).
+  const onTouchStart = (e) => {
+    if (total <= 1) return
+    const t = e.touches[0]
+    swipeRef.current = { x: t.clientX, y: t.clientY }
+  }
+  const onTouchEnd = (e) => {
+    const start = swipeRef.current
+    swipeRef.current = null
+    if (!start || total <= 1) return
+    const t = e.changedTouches[0]
+    const dx = t.clientX - start.x
+    const dy = t.clientY - start.y
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) go(dx < 0 ? 1 : -1)
+  }
+
   return (
     <section className="scene rsvp">
       <div className="rsvp-inner">
         <header className="rsvp-head">
-          <p className="page-eyebrow rev-fall" style={{ '--rd': '150ms' }}>
-            <span className="page-eyebrow-rule" />
-            <span>RSVP</span>
-            <span className="page-eyebrow-rule" />
-          </p>
-          <h1 className="page-title rev" style={{ '--rd': '250ms' }}>Will you join us?</h1>
-          <p className="rsvp-sub rev" style={{ '--rd': '440ms' }}>Kindly respond by April 1, 2027.</p>
+          <h1 className="page-title rev" style={{ '--rd': '150ms' }}>Will you join us?</h1>
+          <p className="rsvp-sub rev" style={{ '--rd': '300ms' }}>Kindly respond by April 1, 2027.</p>
         </header>
 
         <div className="rsvp-deck">
@@ -228,7 +243,7 @@ export default function Rsvp() {
             </button>
           )}
 
-          <div className="rsvp-viewport">
+          <div className="rsvp-viewport" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
             <div className="rsvp-track" style={{ transform: `translateX(-${safeActive * 100}%)` }}>
               {orderedMembers.map((mm, i) => {
                 const d = drafts[mm.user_id] ?? emptyDraft()

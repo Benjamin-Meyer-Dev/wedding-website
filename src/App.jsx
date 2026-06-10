@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import NavBar from './components/NavBar.jsx'
 import Home from './pages/Home.jsx'
 import Story from './pages/Story.jsx'
@@ -14,6 +14,7 @@ import BackgroundOrbs from './components/BackgroundOrbs.jsx'
 import SceneDecor from './components/SceneDecor.jsx'
 import { supabase } from './lib/supabase'
 import { HouseholdProvider } from './lib/HouseholdContext.jsx'
+import useParallax from './lib/useParallax.js'
 import './styles/app.css'
 
 const COVER_MS = 560
@@ -25,6 +26,10 @@ const reduceMotion = () =>
 export default function App() {
   const [session, setSession] = useState(null)
   const [authReady, setAuthReady] = useState(false)
+  // introExiting: the loader has started fading out — render the app/login
+  //   BEHIND it so the loader crossfades to reveal it (smooth handoff).
+  // introDone: the loader has fully faded — unmount it.
+  const [introExiting, setIntroExiting] = useState(false)
   const [introDone, setIntroDone] = useState(false)
   const [page, setPage] = useState('home')
 
@@ -33,6 +38,9 @@ export default function App() {
   const [pending, setPending] = useState(null)
 
   const appRef = useRef(null)
+
+  // Pointer parallax: writes --px/--py onto the app root for .plx layers.
+  useParallax(appRef)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -64,8 +72,16 @@ export default function App() {
     setPhase('cover')
   }
 
+  // Stable callbacks so the loader's timers don't reset when introExiting flips.
+  const handleIntroExit = useCallback(() => setIntroExiting(true), [])
+  const handleIntroDone = useCallback(() => setIntroDone(true), [])
+
+  // Show the app/login as soon as the loader begins exiting, so it sits beneath
+  // the fading loader and is revealed by the crossfade.
+  const showApp = introExiting || introDone
+
   const intro = !introDone ? (
-    <LoadingScreen onDone={() => setIntroDone(true)} />
+    <LoadingScreen onExit={handleIntroExit} onDone={handleIntroDone} />
   ) : null
 
   const curtain = phase !== 'idle' ? (
@@ -81,6 +97,7 @@ export default function App() {
     return (
       <div className="app" ref={appRef}>
         <BackgroundOrbs />
+        <SceneDecor />
         {intro}
       </div>
     )
@@ -91,7 +108,8 @@ export default function App() {
       <div className="app" ref={appRef}>
         <BackgroundOrbs />
         <SceneDecor />
-        <Login />
+        {/* Render once the loader starts fading so it crossfades to the login. */}
+        {showApp && <Login />}
         {intro}
       </div>
     )
@@ -105,21 +123,26 @@ export default function App() {
       <div className={`app app--page-${page}`} ref={appRef}>
         <BackgroundOrbs />
         <SceneDecor />
-        <NavBar
-          page={activePage}
-          onNavigate={navigate}
-          onSignOut={() => supabase.auth.signOut()}
-        />
-        <main className="main">
-          {page === 'home' && <Home />}
-          {page === 'story' && <Story />}
-          {page === 'party' && <WeddingParty />}
-          {page === 'schedule' && <Schedule />}
-          {page === 'travel' && <Travel />}
-          {page === 'faq' && <Faq />}
-          {page === 'registry' && <Registry />}
-          {page === 'rsvp' && <Rsvp />}
-        </main>
+        {/* Render once the loader starts fading so it crossfades to the page. */}
+        {showApp && (
+          <>
+            <NavBar
+              page={activePage}
+              onNavigate={navigate}
+              onSignOut={() => supabase.auth.signOut()}
+            />
+            <main className="main">
+              {page === 'home' && <Home />}
+              {page === 'story' && <Story />}
+              {page === 'party' && <WeddingParty />}
+              {page === 'schedule' && <Schedule />}
+              {page === 'travel' && <Travel />}
+              {page === 'faq' && <Faq />}
+              {page === 'registry' && <Registry />}
+              {page === 'rsvp' && <Rsvp />}
+            </main>
+          </>
+        )}
         {curtain}
         {intro}
       </div>

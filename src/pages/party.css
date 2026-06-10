@@ -1,13 +1,27 @@
 /* Compound `.scene.party` to outrank base `.scene` regardless of CSS import order. */
 .scene.party {
-  display: block;       /* normal block scroll — no flex overflow quirks */
+  /* Flex column with grow spacers: centred vertically (no header gap) while the
+     two sides fit; once they overflow, the spacers collapse to the navbar
+     clearance (--content-top) and a 48px bottom gap, and the page scrolls. */
+  display: flex;
+  flex-direction: column;
+  /* The ::before/::after spacers do the vertical centering. Must override the
+     inherited `.scene { justify-content: center }`, which would ALSO centre the
+     overflow when the sides are tall — pushing their top above the scroll origin
+     where it can't be reached (the mobile "can't scroll up" bug). */
+  justify-content: flex-start;
   overflow-y: auto;
   scrollbar-gutter: stable both-edges; /* keep header centred whether or not it scrolls */
-  padding: var(--content-top) 32px 48px;
+  padding: 0 32px;
 }
+.scene.party::before,
+.scene.party::after { content: ''; flex: 1 1 0; }
+.scene.party::before { min-height: var(--content-top); }
+.scene.party::after { min-height: 48px; }
 .party::-webkit-scrollbar { width: 6px; }
 
 .party-inner {
+  flex: none;           /* keep natural height; the scene scrolls, not the inner */
   width: 100%;
   max-width: 1140px;
   margin: 0 auto;

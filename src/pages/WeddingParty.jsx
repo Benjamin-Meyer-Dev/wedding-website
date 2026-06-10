@@ -70,12 +70,7 @@ export default function WeddingParty() {
     <section className="scene party">
       <div className="party-inner">
         <header className="page-head party-head">
-          <p className="page-eyebrow rev-fall" style={{ '--rd': '120ms' }}>
-            <span className="page-eyebrow-rule" />
-            <span>By Our Sides</span>
-            <span className="page-eyebrow-rule" />
-          </p>
-          <h1 className="page-title rev" style={{ '--rd': '220ms' }}>The Wedding Party</h1>
+          <h1 className="page-title rev" style={{ '--rd': '120ms' }}>By Our Sides</h1>
         </header>
 
         <div className="party-sides">

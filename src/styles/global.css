@@ -47,9 +47,9 @@
   /* Fixed-navbar geometry → page content offset. --topbar-h is measured live by
      NavBar (its rendered height, re-measured on resize and when the web font
      loads); --nav-top mirrors the navbar's fixed top inset per breakpoint. Pages
-     begin their content exactly 30px below the navbar's bottom edge. */
+     begin their content 16px below the navbar's bottom edge. */
   --nav-top: 18px;
-  --content-top: calc(var(--nav-top) + var(--topbar-h, 58px) + 30px);
+  --content-top: calc(var(--nav-top) + var(--topbar-h, 58px) + 16px);
 }
 
 /* Mobile navbar sits higher (see .topbar @media); keep --nav-top in sync. */

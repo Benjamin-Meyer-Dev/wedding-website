@@ -20,30 +20,27 @@ function Icon({ name }) {
 }
 
 export default function Faq() {
-  const [flipped, setFlipped] = useState({})
-  const toggle = (i) => setFlipped((f) => ({ ...f, [i]: !f[i] }))
+  // Only one card may be flipped at a time — track its index (null = none).
+  // Flipping a different card flips the current one back.
+  const [flipped, setFlipped] = useState(null)
+  const toggle = (i) => setFlipped((cur) => (cur === i ? null : i))
 
   return (
     <section className="scene faq">
       <div className="faq-inner">
         <header className="page-head faq-head">
-          <p className="page-eyebrow rev-fall" style={{ '--rd': '120ms' }}>
-            <span className="page-eyebrow-rule" />
-            <span>You’ve Got Questions</span>
-            <span className="page-eyebrow-rule" />
-          </p>
-          <h1 className="page-title rev" style={{ '--rd': '220ms' }}>Flip for Answers</h1>
+          <h1 className="page-title rev" style={{ '--rd': '120ms' }}>Flip for Answers</h1>
         </header>
 
         <ul className="faq-grid">
           {FAQS.map((f, i) => (
             <li className="faq-cell rev-fade" style={{ '--rd': `${340 + i * 80}ms` }} key={i}>
               <div
-                className={`faq-card${flipped[i] ? ' is-flipped' : ''}`}
+                className={`faq-card${flipped === i ? ' is-flipped' : ''}`}
                 role="button"
                 tabIndex={0}
-                aria-pressed={!!flipped[i]}
-                aria-label={`${flipped[i] ? 'Hide answer' : 'Reveal answer'} for ${f.q}`}
+                aria-pressed={flipped === i}
+                aria-label={`${flipped === i ? 'Hide answer' : 'Reveal answer'} for ${f.q}`}
                 onClick={() => toggle(i)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(i) }
