@@ -198,14 +198,19 @@ export default function Registry() {
                       aria-pressed={i === active}
                       onClick={() => setActive(i)}
                     >
-                      <span className="reg-row-icon" aria-hidden="true">
-                        <RowIcon />
+                      {/* badge sits on the static wrapper, NOT the chip: the
+                          chip zooms/tilts on hover and anything inside it
+                          drifts with the transform */}
+                      <span className="reg-row-iconwrap" aria-hidden="true">
+                        <span className="reg-row-icon"><RowIcon /></span>
                         {st === 'mine' && <span className="reg-row-done reg-row-done--mine"><Heart /></span>}
                         {st === 'other' && <span className="reg-row-done"><Check /></span>}
                       </span>
                       <span className="reg-row-text">
                         <span className="reg-row-name">{item.title}</span>
-                        <span className="reg-row-price">
+                        {/* keyed on state: marking/undoing remounts the span,
+                            replaying the price-swap entrance both directions */}
+                        <span className="reg-row-price" key={st ?? 'price'}>
                           {st === 'mine' ? (item.fund ? 'You contributed' : 'Purchased by you') : st === 'other' ? 'Purchased' : item.price}
                         </span>
                       </span>
