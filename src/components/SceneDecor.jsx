@@ -1,7 +1,5 @@
 // Shared storybook decoration: drifting magnolia sprigs in the corners and a
-// field of faint sparkles. Everything is a parallax layer (.plx) at a different
-// depth, so the scene gains foreground/background separation as the pointer
-// moves. Purely decorative.
+// field of faint sparkles. Purely decorative.
 
 // A magnolia branch in the same minimal line-art style as before: a gently
 // curved branch, one open bloom (broad petals around the magnolia's signature

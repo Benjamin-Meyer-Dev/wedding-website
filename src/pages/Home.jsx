@@ -32,7 +32,7 @@ export default function Home() {
   return (
     <section className="scene home">
       <div className="home-stage">
-        <figure className="home-figure plx" style={{ '--d': '16px' }}>
+        <figure className="home-figure">
           <span className="home-figure-glow" aria-hidden="true" />
           {/* The frame clips; the img pans inside it via its own transform.
               rev-fade (opacity only), NOT rev-pop: a transform-animating reveal
@@ -58,7 +58,7 @@ export default function Home() {
           <div className="home-head">
             <h1 className="home-names">
               <span className="home-name rev-mask" style={{ '--rd': '320ms' }}>Elizabeth</span>
-              <span className="home-amp plx" style={{ '--d': '-18px' }}>
+              <span className="home-amp">
                 <span className="rev-pop" style={{ '--rd': '660ms' }}>&amp;</span>
               </span>
               <span className="home-name rev-mask" style={{ '--rd': '480ms' }}>Benjamin</span>

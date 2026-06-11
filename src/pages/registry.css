@@ -15,7 +15,7 @@
 
 .registry-inner {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1240px;
   margin: 0 auto;
   flex: 1;            /* fill the scene height so the showcase can size to fit */
   min-height: 0;      /* allow the showcase (and its list) to shrink/scroll */
@@ -37,7 +37,7 @@
 .reg-showcase {
   flex: 1;            /* fill the available height so the card + list show more rows */
   min-height: 0;
-  max-height: 560px;  /* but don't let the hero card grow unbounded on tall screens */
+  max-height: 680px;  /* but don't let the hero card grow unbounded on tall screens */
   display: flex;
   gap: 48px;
   width: 100%;
@@ -79,6 +79,8 @@
   top: 16px;
   right: 16px;
   background: #fff;
+  /* keep the pill visible even when the photo behind it is white too */
+  border: 1px solid var(--rule);
   color: var(--ink-blue);
   font-family: var(--font-ui);
   font-weight: 600;
@@ -112,7 +114,7 @@
   min-width: 0;       /* let a long title wrap instead of shoving the button off */
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: 34px;
+  font-size: 38px;
   line-height: 1.06;
   color: var(--ink-blue); /* on the white footer band */
   letter-spacing: -0.012em;
@@ -125,13 +127,13 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 9px 16px;
+  padding: 10px 18px;
   border-radius: 999px;
   background: var(--accent);
   color: #fff;
   font-family: var(--font-ui);
   font-weight: 600;
-  font-size: 10px;
+  font-size: 10.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   text-decoration: none;
@@ -185,7 +187,7 @@
   /* `safe center`: centred while the items fit, top-aligned (and fully
      scrollable — no clipped first row) once they overflow. */
   justify-content: safe center;
-  gap: 9px;
+  gap: 10px;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -195,7 +197,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 16px;
+  padding: 16px 18px;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 15px;
@@ -205,6 +207,9 @@
   -webkit-tap-highlight-color: transparent;
 }
 .reg-row:hover { background: var(--powder-mist); }
+/* the chip shares the row's hover colour — go white with an accent border
+   so it doesn't vanish */
+.reg-row:hover .reg-row-icon { background: #fff; border-color: var(--rule); }
 .reg-row.is-active {
   background: var(--glass-bg);
   border-color: var(--accent);
@@ -212,21 +217,23 @@
   box-shadow: 0 14px 28px -18px rgba(58, 111, 149, 0.45);
 }
 .reg-row-icon {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   flex: none;
   display: grid;
   place-items: center;
   border-radius: 12px;
   background: var(--powder-mist);
+  /* transparent at rest so the hover border doesn't shift layout */
+  border: 1px solid transparent;
   color: var(--accent);
   /* this transform leg is the hover-OFF: a long easeOutQuad settle. `ease`
      front-loads ~85% of the return into the first 200ms, which reads as a
      snap; easeOutQuad spreads the motion evenly and decelerates into rest. */
-  transition: background .25s ease, color .25s ease,
+  transition: background .25s ease, color .25s ease, border-color .25s ease,
               transform .6s cubic-bezier(.25, .46, .45, .94);
 }
-.reg-row-icon svg { width: 22px; height: 22px; }
+.reg-row-icon svg { width: 24px; height: 24px; }
 /* pointer-only: the row's icon chip tilts awake under the cursor */
 @media (hover: hover) {
   .reg-row:hover .reg-row-icon {
@@ -251,7 +258,7 @@
   flex: 1;
   min-width: 0;
   font-family: var(--font-display);
-  font-size: 19px;
+  font-size: 21px;
   line-height: 1.2;
   color: var(--ink-blue);
   /* up to two lines instead of a single truncated line — names never get cut off */
@@ -276,7 +283,7 @@
   transform: translateY(-1.5px);
   font-family: var(--font-ui);
   font-weight: 600;
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: 0.03em;
   color: var(--accent-deep);
   font-variant-numeric: lining-nums tabular-nums;
@@ -285,13 +292,16 @@
 /* ---------------- Responsive ---------------- */
 @media (max-width: 1200px) {
   /* Stacked: the featured gift keeps its natural height on top, and the picker
-     list fills the remaining viewport and scrolls internally — so the page
-     itself doesn't scroll on phones either (.registry-inner + .reg-list keep
-     their desktop flex/absolute-scroll rules; only the axis and sizes change). */
-  .reg-showcase { flex: 1; flex-direction: column; gap: 16px; max-height: none; }
+     list sizes to its rows — the list goes static (it's absolute on desktop)
+     so the well hugs its content instead of stretching into a huge empty
+     panel on tall screens (.registry-inner's safe-center soaks up the spare
+     height). When space runs short the well shrinks and becomes the scroll
+     container, so the page itself still doesn't scroll on phones. */
+  .reg-showcase { flex: 0 1 auto; min-height: 0; flex-direction: column; gap: 16px; max-height: none; }
   .reg-feature { flex: none; width: 100%; }
-  .reg-list-wrap { flex: 1 1 auto; width: 100%; min-height: 0; }
-  .reg-list { justify-content: flex-start; }
+  .reg-list-wrap { flex: 0 1 auto; width: 100%; min-height: 140px; overflow-y: auto; }
+  .reg-list-wrap::-webkit-scrollbar { width: 6px; }
+  .reg-list { position: static; justify-content: flex-start; }
   .reg-stage-photo { flex: none; height: 224px; min-height: 0; max-height: none; }
   .reg-stage-foot { padding: 10px 14px; }
   .reg-feature-title { font-size: 24px; }
@@ -305,4 +315,25 @@
   .reg-row-icon svg { width: 19px; height: 19px; }
   .reg-row-name { font-size: 17px; }
   .reg-row-price { font-size: 11px; }
+  /* "Gifts & Good Wishes" always on ONE line: scale with the viewport
+     (~9.5vw keeps ~7% spare at any phone width) instead of wrapping. */
+  .registry-head .page-title {
+    font-size: clamp(26px, 9.5vw, 56px);
+    white-space: nowrap;
+  }
+}
+
+/* Tall skinny screens have vertical room to spare — scale the stacked view
+   up so it doesn't read miniature (mirrors the bigger desktop sizing). */
+@media (max-width: 1200px) and (min-height: 1000px) {
+  .reg-stage-photo { height: 320px; }
+  .reg-feature-title { font-size: 30px; }
+  .reg-stage-foot { padding: 14px 18px; }
+  .reg-buy { padding: 10px 18px; font-size: 10.5px; }
+  .reg-list { gap: 12px; }
+  .reg-row { padding: 16px 16px; gap: 14px; }
+  .reg-row-icon { width: 48px; height: 48px; }
+  .reg-row-icon svg { width: 24px; height: 24px; }
+  .reg-row-name { font-size: 21px; }
+  .reg-row-price { font-size: 13px; }
 }

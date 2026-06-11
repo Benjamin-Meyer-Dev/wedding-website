@@ -1,7 +1,7 @@
 /* ============================================================
    Storybook scene system
-   Full-screen scenes, pointer parallax, entrance reveals, and the
-   curtain-wipe page transition. Imported globally.
+   Full-screen scenes, entrance reveals, and the curtain-wipe
+   page transition. Imported globally.
    ============================================================ */
 
 /* ---- A scene fills the viewport and never scrolls ---- */
@@ -13,17 +13,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* ---- Pointer parallax ----
-   The app root carries --px/--py (set by useParallax, range -1..1).
-   .plx layers drift by their own --d depth. Never put a reveal animation
-   on the same element as .plx (both drive transform). */
-.plx {
-  transform: translate3d(calc(var(--px, 0) * var(--d, 12px)),
-                         calc(var(--py, 0) * var(--d, 12px)), 0);
-  transition: transform 240ms cubic-bezier(.22, 1, .36, 1);
-  will-change: transform;
 }
 
 /* ---- Entrance reveals (replay every time a scene mounts) ---- */

@@ -14,7 +14,6 @@ import BackgroundOrbs from './components/BackgroundOrbs.jsx'
 import SceneDecor from './components/SceneDecor.jsx'
 import { supabase } from './lib/supabase'
 import { HouseholdProvider } from './lib/HouseholdContext.jsx'
-import useParallax from './lib/useParallax.js'
 import './styles/app.css'
 
 const COVER_MS = 560
@@ -40,13 +39,9 @@ export default function App() {
   const [phase, setPhase] = useState('idle')
   const [pending, setPending] = useState(null)
 
-  const appRef = useRef(null)
   // The auth listener is registered once; read the live gate through a ref.
   const gateRef = useRef(gate)
   useEffect(() => { gateRef.current = gate }, [gate])
-
-  // Pointer parallax: writes --px/--py onto the app root for .plx layers.
-  useParallax(appRef)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -121,7 +116,7 @@ export default function App() {
 
   if (!authReady) {
     return (
-      <div className="app" ref={appRef}>
+      <div className="app">
         <BackgroundOrbs />
         <SceneDecor />
         {intro}
@@ -131,7 +126,7 @@ export default function App() {
 
   if (gate === 'login') {
     return (
-      <div className="app" ref={appRef}>
+      <div className="app">
         <BackgroundOrbs />
         <SceneDecor />
         {/* Render once the loader starts fading so it crossfades to the login. */}
@@ -146,7 +141,7 @@ export default function App() {
 
   return (
     <HouseholdProvider>
-      <div className={`app app--page-${page}`} ref={appRef}>
+      <div className={`app app--page-${page}`}>
         <BackgroundOrbs />
         <SceneDecor />
         {/* Render once the loader starts fading so it crossfades to the page. */}

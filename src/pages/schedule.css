@@ -32,7 +32,10 @@
    (no `scene` class), so the rule must target `.sched` directly — a compound
    `.scene.sched` selector never matches and the page silently fails to scroll.
    On desktop the content fits, so no scrollbar appears. */
-.sched { overflow-y: auto; }
+/* overflow-x hidden, not the default auto: with overflow-y set, a visible
+   overflow-x computes to auto, and the .sched-aura (124% of the hero's width)
+   would otherwise create a horizontal scrollbar on narrow screens. */
+.sched { overflow-y: auto; overflow-x: hidden; }
 .sched::-webkit-scrollbar { width: 6px; }
 
 /* Hovering anywhere in this wrapper pauses the auto-rotation. */

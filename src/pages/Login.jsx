@@ -64,9 +64,7 @@ export default function Login() {
           <span>{alert.text}</span>
         </div>
       )}
-      {/* plx with the same depth as the homepage figure: the pointer parallax
-          offset matches at the moment of the sign-in transition. */}
-      <figure className="login-figure plx" style={{ '--d': '16px' }}>
+      <figure className="login-figure">
         <span className="login-frame">
           <img
             src={heroPhoto}

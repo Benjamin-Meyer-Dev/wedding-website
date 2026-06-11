@@ -24,7 +24,27 @@
       "PowerShell(node --version; @\\(\"$env:ProgramFiles\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe\", \"${env:ProgramFiles\\(x86\\)}\\\\Microsoft\\\\Edge\\\\Application\\\\msedge.exe\", \"$env:ProgramFiles\\\\Microsoft\\\\Edge\\\\Application\\\\msedge.exe\"\\) | Where-Object { Test-Path $_ })",
       "PowerShell(node \"C:\\\\Users\\\\BenMe\\\\AppData\\\\Local\\\\Temp\\\\reg-hover-test\\\\cdp-test.mjs\")",
       "PowerShell(git *)",
-      "PowerShell(Remove-Item *)"
+      "PowerShell(Remove-Item *)",
+      "PowerShell(Remove-Item \"c:\\\\Users\\\\Ben\\\\Documents\\\\Coding\\\\wedding-website\\\\src\\\\lib\\\\useParallax.js\" -Confirm:$false)",
+      "PowerShell(Get-Command chromium-cli -ErrorAction SilentlyContinue)",
+      "PowerShell($paths = @\\(\"$env:ProgramFiles\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe\", \"${env:ProgramFiles\\(x86\\)}\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe\", \"$env:ProgramFiles\\\\Microsoft\\\\Edge\\\\Application\\\\msedge.exe\", \"${env:ProgramFiles\\(x86\\)}\\\\Microsoft\\\\Edge\\\\Application\\\\msedge.exe\"\\); $paths | Where-Object { Test-Path $_ })",
+      "PowerShell($out = \"$env:TEMP\\\\login-shots\"; New-Item -ItemType Directory -Force $out | Out-Null; & \"C:\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe\" --headless --disable-gpu --hide-scrollbars --window-size=1023,454 --virtual-time-budget=8000 --screenshot=\"$out\\\\short-wide.png\" \"http://localhost:5174/wedding-website/\" | Out-Null; Test-Path \"$out\\\\short-wide.png\")",
+      "PowerShell(& \"C:\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe\" --headless --disable-gpu --hide-scrollbars --window-size=1064,1742 --virtual-time-budget=8000 --screenshot=\"$env:TEMP\\\\login-shots\\\\tall-skinny.png\" \"http://localhost:5174/wedding-website/\" | Out-Null)",
+      "PowerShell($c = \"C:\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe\"; $u = \"http://localhost:5174/wedding-website/\"; $o = \"$env:TEMP\\\\login-shots\"; & $c --headless --disable-gpu --hide-scrollbars --window-size=2546,1266 --virtual-time-budget=8000 --screenshot=\"$o\\\\big.png\" $u | Out-Null; & $c --headless --disable-gpu --hide-scrollbars --window-size=1300,800 --virtual-time-budget=8000 --screenshot=\"$o\\\\mid.png\" $u | Out-Null; & $c --headless --disable-gpu --hide-scrollbars --window-size=800,700 --virtual-time-budget=8000 --screenshot=\"$o\\\\skinny.png\" $u | Out-Null)",
+      "PowerShell($c = \"C:\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe\"; $u = \"http://localhost:5174/wedding-website/\"; $o = \"$env:TEMP\\\\login-shots\"; & $c --headless --disable-gpu --hide-scrollbars --window-size=800,700 --virtual-time-budget=8000 --screenshot=\"$o\\\\skinny2.png\" $u | Out-Null; & $c --headless --disable-gpu --hide-scrollbars --window-size=390,844 --virtual-time-budget=8000 --screenshot=\"$o\\\\phone.png\" $u | Out-Null)",
+      "PowerShell($c = \"C:\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe\"; & $c --headless --disable-gpu --hide-scrollbars --window-size=390,2000 --virtual-time-budget=8000 --screenshot=\"$env:TEMP\\\\login-shots\\\\phone-tall.png\" \"http://localhost:5174/wedding-website/\" | Out-Null)",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $bmp = [System.Drawing.Bitmap]::FromFile\\(\"$env:TEMP\\\\login-shots\\\\phone-tall.png\"\\); $x = [int]\\($bmp.Width/2\\); $top = -1; $bot = -1; for \\($y = 0; $y -lt $bmp.Height; $y++\\) { $p = $bmp.GetPixel\\($x, $y\\); $lum = \\($p.R + $p.G + $p.B\\) / 3; if \\($lum -lt 150\\) { if \\($top -lt 0\\) { $top = $y }; $bot = $y } }; \"width=$\\($bmp.Width\\) height=$\\($bmp.Height\\) darkTop=$top darkBottom=$bot archHeight=$\\($bot-$top\\)\"; $bmp.Dispose\\(\\))",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $bmp = [System.Drawing.Bitmap]::FromFile\\(\"$env:TEMP\\\\login-shots\\\\phone-tall.png\"\\); $x = [int]\\($bmp.Width/2\\); $runs = @\\(\\); $start = -1; for \\($y = 0; $y -lt $bmp.Height; $y++\\) { $p = $bmp.GetPixel\\($x, $y\\); $lum = \\($p.R + $p.G + $p.B\\) / 3; $dark = $lum -lt 190; if \\($dark -and $start -lt 0\\) { $start = $y }; if \\(-not $dark -and $start -ge 0\\) { if \\(\\($y - $start\\) -gt 4\\) { $runs += \"{0}-{1} \\(h={2}\\)\" -f $start, \\($y-1\\), \\($y-$start\\) }; $start = -1 } }; if \\($start -ge 0\\) { $runs += \"$start-end\" }; $runs -join \"`n\"; $bmp.Dispose\\(\\))",
+      "PowerShell(npm i --no-save puppeteer-core)",
+      "PowerShell(node \"$env:TEMP\\\\login-shots\\\\measure.mjs\" 390x844)",
+      "PowerShell(Move-Item \"$env:TEMP\\\\login-shots\\\\measure.mjs\" \".\\\\measure.tmp.mjs\" -Force; node .\\\\measure.tmp.mjs 390x844)",
+      "PowerShell(node .\\\\measure.tmp.mjs 800x700)",
+      "PowerShell(node .\\\\measure.tmp.mjs 390x700)",
+      "PowerShell(Remove-Item .\\\\measure.tmp.mjs -Confirm:$false)",
+      "PowerShell(npm uninstall --no-save puppeteer-core)",
+      "PowerShell(node .\\\\measure.tmp.mjs 395x677 \"$env:TEMP\\\\login-shots\\\\mobile-fit.png\"; node .\\\\measure.tmp.mjs 390x844)",
+      "PowerShell(node .\\\\shot.tmp.mjs 1064x1742 \"$env:TEMP\\\\login-shots\\\\tall2.png\"; node .\\\\shot.tmp.mjs 390x844 \"$env:TEMP\\\\login-shots\\\\phone2.png\")",
+      "PowerShell(Remove-Item .\\\\shot.tmp.mjs -Confirm:$false)"
     ]
   }
 }

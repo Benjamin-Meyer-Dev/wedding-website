@@ -19,17 +19,18 @@
   justify-content: center;
   gap: 48px; /* matches the login page's photo-to-card gap */
   width: 100%;
-  max-width: 1180px;
+  max-width: 1280px; /* room for the full-size 940px portrait beside the copy */
 }
 
 /* ---------- Portrait (a drifting parallax layer) ---------- */
 .home-figure {
   position: relative;
   flex: 0 0 auto;
-  /* Match the login PC frame height (its --hero-h ≈ 656px) so the framed
-     portrait reads at the same scale on both pages; the calc() guard shrinks it
-     on short viewports so it never clips under the navbar. */
-  height: min(656px, calc(100vh - 130px));
+  /* Match the login PC frame: grows with the viewport (to 940px), shrinks on
+     short viewports so it never clips under the navbar, and is width-capped
+     so the photo always fits beside the 540px copy column + 48px gap + 64px
+     scene padding (photo width = height * 1068/1600, hence the 1.5). */
+  height: min(940px, calc(100vh - 130px), calc((100vw - 652px) * 1.5));
   /* <figure> carries a default UA margin (1em 40px); zero it so the mobile
      full-bleed photo (position:absolute; inset:0) isn't shrunk by ~80px and
      centred, which left gaps down both sides instead of filling the screen. */
@@ -53,7 +54,10 @@
   aspect-ratio: 1068 / 1600;
   overflow: hidden;
   transform: translateX(-50px); /* nudge the whole framed portrait left */
-  border-radius: 220px 220px 22px 22px; /* arched top — storybook frame */
+  /* Full dome, proportional so it holds at any frame size (mirrors
+     .login-frame): 50% horizontal radii meet at the centre, 33.4% vertical
+     ≈ half the width at the frame's fixed 1068/1600 aspect. */
+  border-radius: 50% 50% 22px 22px / 33.4% 33.4% 22px 22px;
   box-shadow:
     0 48px 96px -34px rgba(21, 50, 74, 0.6),
     0 18px 40px -22px rgba(21, 50, 74, 0.42),
