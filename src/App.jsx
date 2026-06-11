@@ -10,6 +10,7 @@ import Travel from './pages/Travel.jsx'
 import Faq from './pages/Faq.jsx'
 import Registry from './pages/Registry.jsx'
 import LoadingScreen from './components/LoadingScreen.jsx'
+import EmailLinkPrompt from './components/EmailLinkPrompt.jsx'
 import BackgroundOrbs from './components/BackgroundOrbs.jsx'
 import SceneDecor from './components/SceneDecor.jsx'
 import { supabase } from './lib/supabase'
@@ -162,6 +163,8 @@ export default function App() {
               {page === 'registry' && <Registry />}
               {page === 'rsvp' && <Rsvp />}
             </main>
+            {/* one-time "email me the site link" offer; renders nothing once answered */}
+            <EmailLinkPrompt />
           </>
         )}
         {curtain}

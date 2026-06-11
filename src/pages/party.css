@@ -234,6 +234,10 @@
   font-size: 13px;
   line-height: 1.5;
   color: var(--text-soft);
+  /* reserve two lines: the her/his columns are separate grids, so their
+     1fr rows can't equalize across the aisle — a 1-line blurb card must
+     match a 2-line one. Keep blurbs ≤ 2 lines or the mismatch returns. */
+  min-height: 3em;
 }
 
 /* ---------------- Responsive ---------------- */

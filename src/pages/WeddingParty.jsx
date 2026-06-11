@@ -10,12 +10,12 @@ const HER_SIDE = {
   key: 'her',
   label: 'Her Side',
   people: [
-    { role: 'Maid of Honor', name: 'Charlotte Hayes', blurb: 'Elizabeth’s sister and lifelong partner in mischief, her first call for everything.', photo: '', lead: true, BadgeIcon: Flower2 },
-    { role: 'Bridesmaid', name: 'Ava Thompson', blurb: 'College roommate turned forever friend, and the world’s most enthusiastic dancer.', photo: '' },
-    { role: 'Bridesmaid', name: 'Mia Romano', blurb: 'Brunch ringleader and keeper of two decades of inside jokes.', photo: '' },
-    { role: 'Bridesmaid', name: 'Grace Patel', blurb: 'Calm in every storm and the group’s unofficial photographer.', photo: '' },
-    { role: 'Bridesmaid', name: 'Hannah Cole', blurb: 'Cousin, confidante, and always first to start the singalong.', photo: '' },
-    { role: 'Flower Girl', name: 'Sophie Hayes', blurb: 'Elizabeth’s niece, ready to scatter petals with great ceremony.', photo: '', BadgeIcon: Flower },
+    { role: 'Maid of Honor', name: 'Emily Box', blurb: 'Elizabeth’s lifelong partner in mischief and her first call for everything.', photo: '', lead: true, BadgeIcon: Flower2 },
+    { role: 'Bridesmaid', name: 'Cassidy Shortt', blurb: 'Forever friend and the world’s most enthusiastic dancer.', photo: '' },
+    { role: 'Bridesmaid', name: 'Evelyn Ysselstein', blurb: 'Calm in every storm and the group’s unofficial photographer.', photo: '' },
+    { role: 'Bridesmaid', name: 'Melissa Hannus', blurb: 'Brunch ringleader and keeper of years of inside jokes.', photo: '' },
+    { role: 'Bridesmaid', name: 'Sara Williams', blurb: 'Confidante and always first to start the singalong.', photo: '' },
+    { role: 'Flower Girl', name: 'Kathleen Box', blurb: 'Ready to scatter petals with great ceremony.', photo: '', BadgeIcon: Flower },
   ],
 }
 
@@ -23,12 +23,12 @@ const HIS_SIDE = {
   key: 'his',
   label: 'His Side',
   people: [
-    { role: 'Best Man', name: 'James Carter', blurb: 'Benjamin’s brother and the steadiest hand in any room, speech at the ready.', photo: '', lead: true, BadgeIcon: Crown },
-    { role: 'Groomsman', name: 'Daniel Walsh', blurb: 'Childhood neighbor and partner on every questionable road trip.', photo: '' },
-    { role: 'Groomsman', name: 'Ethan Brooks', blurb: 'Teammate since little league and the loudest cheer in any crowd.', photo: '' },
-    { role: 'Groomsman', name: 'Noah Foster', blurb: 'College roommate, grill master, and keeper of the playlist.', photo: '' },
-    { role: 'Groomsman', name: 'Liam Park', blurb: 'The friend who shows up early and stays to stack the chairs.', photo: '' },
-    { role: 'Ring Bearer', name: 'Oliver Carter', blurb: 'Benjamin’s nephew, entrusted with the most important delivery of the day.', photo: '', BadgeIcon: Gem },
+    { role: 'Best Man', name: 'Colin Bakker', blurb: 'The steadiest hand in any room, speech at the ready.', photo: '', lead: true, BadgeIcon: Crown },
+    { role: 'Groomsman', name: 'Connor Caddigan', blurb: 'Partner on every questionable road trip.', photo: '' },
+    { role: 'Groomsman', name: 'Holden Ryder', blurb: 'The loudest cheer in any crowd.', photo: '' },
+    { role: 'Groomsman', name: 'Joshua Meyer', blurb: 'Grill master and keeper of the playlist.', photo: '' },
+    { role: 'Groomsman', name: 'Todd Box', blurb: 'Shows up early and stays to stack the chairs.', photo: '' },
+    { role: 'Ring Bearer', name: 'Timothy Box', blurb: 'Entrusted with the most important delivery of the day.', photo: '', BadgeIcon: Gem },
   ],
 }
 

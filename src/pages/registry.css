@@ -92,6 +92,30 @@
   box-shadow: 0 8px 20px -8px rgba(21, 50, 74, 0.55);
 }
 
+/* purchase-status pill on the featured photo, opposite the price pill.
+   Plain white = bought by another guest; accent = bought by YOU. */
+.reg-flag {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid var(--rule);
+  color: var(--text-soft);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  padding: 5px 12px;
+  border-radius: 999px;
+  box-shadow: 0 8px 20px -8px rgba(21, 50, 74, 0.55);
+  animation: reg-rise 520ms cubic-bezier(.16, 1, .3, 1);
+}
+.reg-flag svg { width: 13px; height: 13px; }
+.reg-flag--mine { background: var(--accent); border-color: var(--accent); color: #fff; }
+
 /* Solid white footer band holding the title + buy button — flush with the
    card's edges (the card's overflow:hidden rounds its bottom corners), so
    the accent button always stands out on a constant background. */
@@ -102,12 +126,18 @@
   bottom: 0;
   z-index: 2;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
   padding: 14px 18px;
   background: #fff;
   border-top: 1px solid var(--rule-soft);
+}
+.reg-stage-foot-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 .reg-feature-title {
   margin: 0;
@@ -154,6 +184,75 @@
     transform: translateX(3px);
     transition: transform .22s cubic-bezier(.22, 1, .36, 1);
   }
+}
+
+/* ---------------- Self-reported purchase ribbon ---------------- */
+/* Full-width strip at the foot of the featured card: the strip ITSELF is the
+   toggle (tap to mark purchased, tap again to undo). Buying happens on the
+   store's site (the Buy button is only a link), so guests use this to tell us
+   what they bought. The three faces stack in one grid cell and crossfade,
+   while the accent ::before fill sweeps in from the left on mark and recedes
+   on undo — driven by transitions on the state classes (not remounts), so
+   both directions animate. */
+.reg-ribbon {
+  position: relative;
+  display: grid;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: var(--powder-mist);
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .3s ease, transform .2s cubic-bezier(.22, 1, .36, 1);
+}
+.reg-ribbon:hover:not(.is-mine):not(:disabled) { background: rgba(58, 111, 149, 0.16); }
+.reg-ribbon:active:not(:disabled) { transform: scale(.99); }
+.reg-ribbon.is-other { background: var(--powder-deep); cursor: default; }
+/* the accent fill that sweeps across when YOU mark the gift */
+.reg-ribbon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform .5s cubic-bezier(.22, 1, .36, 1);
+}
+.reg-ribbon.is-mine::before { transform: scaleX(1); }
+
+.reg-ribbon-face {
+  grid-area: 1 / 1;           /* all faces share the cell; tallest sets height */
+  position: relative;         /* paints above the ::before fill */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 14px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 12.5px;
+  line-height: 1.35;
+  opacity: 0;
+  transform: translateY(5px);
+  pointer-events: none;
+  transition: opacity .28s ease, transform .45s cubic-bezier(.22, 1, .36, 1);
+}
+.reg-ribbon-face svg { width: 15px; height: 15px; flex: none; }
+.reg-ribbon-face--open { color: var(--accent-deep); }
+.reg-ribbon-face--mine { color: #fff; }
+.reg-ribbon-face--other { color: var(--text-soft); }
+.reg-ribbon:not(.is-mine):not(.is-other) .reg-ribbon-face--open { opacity: 1; transform: none; }
+.reg-ribbon.is-mine .reg-ribbon-face--mine { opacity: 1; transform: none; }
+.reg-ribbon.is-other .reg-ribbon-face--other { opacity: 1; transform: none; }
+/* the heart pops in just behind the sweeping fill */
+.reg-ribbon.is-mine .reg-ribbon-face--mine svg {
+  animation: heart-in 480ms cubic-bezier(.22, 1, .36, 1) 140ms both;
+}
+@keyframes heart-in {
+  from { opacity: 0; transform: scale(.4); }
+  to   { opacity: 1; transform: none; }
 }
 
 /* picker list — the wrapper is the flex track that stretches to the feature's
@@ -217,6 +316,7 @@
   box-shadow: 0 14px 28px -18px rgba(58, 111, 149, 0.45);
 }
 .reg-row-icon {
+  position: relative; /* anchors the purchased check badge */
   width: 48px;
   height: 48px;
   flex: none;
@@ -276,6 +376,37 @@
   padding: 3px 0;
   margin: -3px 0;
 }
+/* purchased: a small badge on the icon chip; the name softens but stays
+   readable (no strikethrough — it's a gift list, not a chore list).
+   Muted check = another guest bought it; accent heart = you did. */
+.reg-row-done {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--text-muted);
+  color: #fff;
+  border: 2px solid #fff;
+}
+.reg-row-done svg { width: 10px; height: 10px; }
+.reg-row-done--mine { background: var(--accent); }
+/* badge pops in when a purchase lands (yours, or another guest's via realtime) */
+.reg-row-done { animation: badge-in 300ms cubic-bezier(.22, 1, .36, 1); }
+@keyframes badge-in {
+  from { opacity: 0; transform: scale(.5); }
+  to   { opacity: 1; transform: none; }
+}
+/* another guest's purchase fades back (smoothly); your own stays bright */
+.reg-row-name { transition: opacity .3s ease; }
+.reg-row.is-done .reg-row-name { opacity: 0.6; }
+.reg-row.is-done .reg-row-price { color: var(--text-muted); }
+.reg-row.is-mine .reg-row-name { opacity: 1; }
+.reg-row.is-mine .reg-row-price { color: var(--accent-deep); }
+
 .reg-row-price {
   flex: none;
   /* sitting on the name's baseline, the smaller price reads optically low —
@@ -302,11 +433,17 @@
   .reg-list-wrap { flex: 0 1 auto; width: 100%; min-height: 140px; overflow-y: auto; }
   .reg-list-wrap::-webkit-scrollbar { width: 6px; }
   .reg-list { position: static; justify-content: flex-start; }
-  .reg-stage-photo { flex: none; height: 224px; min-height: 0; max-height: none; }
+  /* taller than before: the footer band now also holds the claim row, so the
+     extra height keeps a similar amount of photo visible above it */
+  .reg-stage-photo { flex: none; height: 268px; min-height: 0; max-height: none; }
   .reg-stage-foot { padding: 10px 14px; }
   .reg-feature-title { font-size: 24px; }
   .reg-buy { padding: 8px 14px; font-size: 9.5px; }
   .reg-price { font-size: 11px; padding: 4px 10px; }
+  .reg-flag { font-size: 11px; padding: 4px 10px; top: 12px; left: 12px; }
+  /* purchase ribbon: slimmer on phones */
+  .reg-ribbon-face { font-size: 11.5px; padding: 10px 12px; gap: 7px; }
+  .reg-ribbon-face svg { width: 13px; height: 13px; }
   /* tighter row metrics so longer names ("Honeymoon Fund") keep whole words */
   .scene.registry { padding-left: 18px; padding-right: 18px; }
   .reg-row { padding: 12px 12px; gap: 10px; }
@@ -326,7 +463,7 @@
 /* Tall skinny screens have vertical room to spare — scale the stacked view
    up so it doesn't read miniature (mirrors the bigger desktop sizing). */
 @media (max-width: 1200px) and (min-height: 1000px) {
-  .reg-stage-photo { height: 320px; }
+  .reg-stage-photo { height: 364px; }
   .reg-feature-title { font-size: 30px; }
   .reg-stage-foot { padding: 14px 18px; }
   .reg-buy { padding: 10px 18px; font-size: 10.5px; }
