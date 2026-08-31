@@ -59,11 +59,22 @@ export default function App() {
   // The auth listener is registered once; read the live gate through a ref.
   const gateRef = useRef(gate)
   useEffect(() => { gateRef.current = gate }, [gate])
+  // False until getSession() has reported the initial auth state. auth-js
+  // recovers a stored session during initialize() and announces it as
+  // SIGNED_IN — indistinguishable from a real sign-in, and it lands BEFORE
+  // getSession() resolves. Without this flag every refresh looked like a fresh
+  // sign-in and swept the curtain across the loading screen.
+  const authSettledRef = useRef(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
+      const initialGate = data.session ? 'app' : 'login'
       setSession(data.session)
-      setGate(data.session ? 'app' : 'login')
+      // Both refs are written synchronously: the auth listener can fire before
+      // the effect that mirrors `gate` into gateRef has had a chance to run.
+      gateRef.current = initialGate
+      authSettledRef.current = true
+      setGate(initialGate)
       setAuthReady(true)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
@@ -74,13 +85,16 @@ export default function App() {
         setPage('home')
         setPhase('idle')
         setPending(null)
+        gateRef.current = 'login'
         setGate('login')
       }
       // Fresh sign-in from the login gate: instead of an instant tree swap,
       // sweep the curtain over the login; the cover-end handler flips the
       // gate to the app underneath it, then the curtain reveals the homepage.
-      // (gateRef guards against SIGNED_IN re-fires while already in the app.)
-      if (event === 'SIGNED_IN' && gateRef.current === 'login') {
+      // (gateRef guards against SIGNED_IN re-fires while already in the app;
+      // authSettledRef against the restore-a-stored-session SIGNED_IN that
+      // arrives on every page load before the initial gate is known.)
+      if (event === 'SIGNED_IN' && authSettledRef.current && gateRef.current === 'login') {
         setPending(ENTER_APP)
         setPhase('cover')
       }

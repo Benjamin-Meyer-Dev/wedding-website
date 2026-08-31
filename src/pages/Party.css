@@ -124,6 +124,7 @@
 }
 
 .party-person {
+  position: relative;  /* containing block for the two shadow layers below */
   display: grid;
   grid-template-columns: 74px 1fr;
   gap: 16px;
@@ -133,32 +134,56 @@
   background: var(--party-card, var(--glass-bg));
   border: 1px solid var(--party-card-border, var(--glass-border));
   border-radius: 18px;
-  box-shadow: var(--glass-shadow);
   text-align: left;
-  transition: transform 240ms cubic-bezier(.22, 1, .36, 1), box-shadow 240ms ease;
+  /* Only `transform` animates on the element itself; the blurred shadows moved
+     onto the ::before/::after layers. Gentler curve than the site's usual
+     snappy .22/1/.36/1 — on a 3px lift that one reads as a flick. */
+  transition: transform 280ms cubic-bezier(.33, 1, .68, 1);
 }
+/* The rest and hover shadows are pre-painted on two stacked layers that just
+   cross-fade. Transitioning `box-shadow` re-rasterises a 44-60px blur on all
+   twelve cards every frame, which is what made the desktop hover feel rough;
+   opacity on a ready-made layer is compositor-only. Both layers are fully
+   transparent, and an outer box-shadow is clipped to outside its own border
+   box, so neither one paints over the card or its content. */
+.party-person::before,
+.party-person::after {
+  content: '';
+  position: absolute;
+  /* An absolutely positioned child is laid out against the PADDING box, so
+     -1px pushes each layer back out to the border box and the shadow starts
+     at the card's real outer edge. */
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  transition: opacity 280ms ease;
+}
+.party-person::before { box-shadow: var(--glass-shadow); }
+.party-person::after { box-shadow: 0 24px 44px -22px rgba(21, 50, 74, 0.42); opacity: 0; }
+
 /* pointer-only: on touch, a tap would otherwise stick the card in its
    lifted hover state until the next tap (the cards aren't clickable) */
 @media (hover: hover) {
-  .party-person:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 24px 44px -22px rgba(21, 50, 74, 0.42);
-  }
+  .party-person:hover { transform: translateY(-3px); }
+  .party-person:hover::before { opacity: 0; }
+  .party-person:hover::after { opacity: 1; }
 }
 
 /* lead = Maid of Honor / Best Man: same size, EXTRA ACCENTS only */
 .party-person--lead {
   border: 1.5px solid var(--accent);
-  box-shadow:
-    0 24px 50px -26px rgba(var(--party-glow-rgb), 0.5),
-    0 0 0 4px rgba(var(--party-glow-rgb), 0.14);
+  /* Hard-edged ring only — no blur radius, so this one is cheap to repaint and
+     stays on the element, which also keeps its geometry exact. */
+  box-shadow: 0 0 0 4px rgba(var(--party-glow-rgb), 0.14);
+  transition: transform 280ms cubic-bezier(.33, 1, .68, 1), box-shadow 280ms ease;
 }
+/* 1.5px border here, so the layers need to reach that much further out */
+.party-person--lead::before,
+.party-person--lead::after { inset: -1.5px; }
+.party-person--lead::before { box-shadow: 0 24px 50px -26px rgba(var(--party-glow-rgb), 0.5); }
+.party-person--lead::after { box-shadow: 0 32px 58px -26px rgba(var(--party-glow-rgb), 0.55); }
 @media (hover: hover) {
-  .party-person--lead:hover {
-    box-shadow:
-      0 32px 58px -26px rgba(var(--party-glow-rgb), 0.55),
-      0 0 0 4px rgba(var(--party-glow-rgb), 0.2);
-  }
+  .party-person--lead:hover { box-shadow: 0 0 0 4px rgba(var(--party-glow-rgb), 0.2); }
 }
 
 /* ---------------- Photo (uniform circle) ---------------- */

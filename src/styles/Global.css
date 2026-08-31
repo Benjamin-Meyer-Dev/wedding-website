@@ -64,6 +64,14 @@ img {
   user-select: none;
 }
 html, body, #root { height: 100%; }
+/* iOS rubber-band. `.app` is exactly `height: 100%`, so a drag past the end
+   lifted the whole document and opened a strip beneath it showing the flat
+   `--bg` — a hard line against the app's tinted gradient. Safari 16+ honours
+   this and simply doesn't bounce; the scenes carry `overscroll-behavior-y:
+   contain` so an inner scroller reaching its end can't chain the gesture up
+   here either. Side effect worth knowing: this also disables Android Chrome's
+   pull-to-refresh, which suits a full-screen app that scrolls internally. */
+html { overscroll-behavior: none; }
 /* No scrollbar-gutter on <html>: the root never scrolls (.app is height:100%
    overflow:hidden), so reserving a root gutter just paints an empty strip to
    the right of each scene's own scrollbar. Scroll pages reserve their own
@@ -71,7 +79,21 @@ html, body, #root { height: 100%; }
    jump because the viewport never gains a scrollbar. */
 body {
   margin: 0;
-  background: var(--bg);
+  /* The ambient gradient lives here rather than on `.app` because a background
+     set on <body> paints the whole CANVAS, and `fixed` anchors it to the
+     viewport instead of the box. So anything that still exposes area outside
+     `.app` — a residual bounce, or Safari collapsing its URL bar so the visual
+     viewport grows taller than `100%` — continues the same gradient rather than
+     stepping to a flat colour. The longhands must follow the shorthand, which
+     would otherwise reset them. Where Safari ignores `fixed` this degrades to
+     today's flat `--bg`: no worse than before. */
+  background:
+    radial-gradient(circle at 20% 8%, var(--powder-mist) 0%, transparent 55%),
+    radial-gradient(circle at 88% 92%, var(--powder-deep) 0%, transparent 60%),
+    var(--bg);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  overscroll-behavior: none;
   color: var(--text);
   font-family: var(--font-ui);
   font-weight: 400;

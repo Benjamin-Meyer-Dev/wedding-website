@@ -10,6 +10,9 @@
   height: 100%;
   width: 100%;
   overflow: hidden;
+  /* Scenes that opt into `overflow-y: auto` must not hand a leftover gesture up
+     to the document — that chained bounce is what exposed the seam. */
+  overscroll-behavior-y: contain;
   display: flex;
   align-items: center;
   justify-content: center;

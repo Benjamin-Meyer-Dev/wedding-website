@@ -2,10 +2,8 @@
   position: relative;
   height: 100%;
   overflow: hidden; /* storybook: each page is one full-screen, scroll-free scene */
-  background:
-    radial-gradient(circle at 20% 8%, var(--powder-mist) 0%, transparent 55%),
-    radial-gradient(circle at 88% 92%, var(--powder-deep) 0%, transparent 60%),
-    var(--powder);
+  /* Ambient gradient moved to <body> (see Global.css): painted on the canvas it
+     also covers anything iOS exposes below this box, so there is no seam. */
 }
 
 .main {
