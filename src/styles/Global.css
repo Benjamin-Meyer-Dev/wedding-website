@@ -79,20 +79,12 @@ html { overscroll-behavior: none; }
    jump because the viewport never gains a scrollbar. */
 body {
   margin: 0;
-  /* The ambient gradient lives here rather than on `.app` because a background
-     set on <body> paints the whole CANVAS, and `fixed` anchors it to the
-     viewport instead of the box. So anything that still exposes area outside
-     `.app` — a residual bounce, or Safari collapsing its URL bar so the visual
-     viewport grows taller than `100%` — continues the same gradient rather than
-     stepping to a flat colour. The longhands must follow the shorthand, which
-     would otherwise reset them. Where Safari ignores `fixed` this degrades to
-     today's flat `--bg`: no worse than before. */
-  background:
-    radial-gradient(circle at 20% 8%, var(--powder-mist) 0%, transparent 55%),
-    radial-gradient(circle at 88% 92%, var(--powder-deep) 0%, transparent 60%),
-    var(--bg);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  /* Flat colour, and deliberately NOT `background-attachment: fixed`. Anchoring
+     the canvas to the viewport stops it compositing cheaply, and with the orb
+     field animating on top of it that cost lands on every animation on the
+     site. The seam this was meant to hide is handled by `overscroll-behavior`
+     instead — see the note on <html> above. */
+  background: var(--bg);
   overscroll-behavior: none;
   color: var(--text);
   font-family: var(--font-ui);

@@ -2,8 +2,13 @@
   position: relative;
   height: 100%;
   overflow: hidden; /* storybook: each page is one full-screen, scroll-free scene */
-  /* Ambient gradient moved to <body> (see Global.css): painted on the canvas it
-     also covers anything iOS exposes below this box, so there is no seam. */
+  /* Keep this here and opaque: it gives the compositor a solid layer for the
+     orbs, cards and curtain to blend against. Moving it to the <body> canvas
+     cost the site every smooth animation it had. */
+  background:
+    radial-gradient(circle at 20% 8%, var(--powder-mist) 0%, transparent 55%),
+    radial-gradient(circle at 88% 92%, var(--powder-deep) 0%, transparent 60%),
+    var(--powder);
 }
 
 .main {
