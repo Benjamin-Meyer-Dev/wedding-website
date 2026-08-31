@@ -51,7 +51,11 @@
       "Bash(sed -i \"s|'\\\\./backgroundOrbs\\\\.css'|'./BackgroundOrbs.css'|\" src/components/BackgroundOrbs.jsx)",
       "Bash(sed -i \"s|'\\\\./loading\\\\.css'|'./Loading.css'|\" src/components/LoadingScreen.jsx)",
       "WebFetch(domain:supabase.com)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(awk '/^ *)",
+      "Bash(git mv *)",
+      "Bash(sed -i \"s|'\\\\.\\\\./lib/supabase'|'../lib/Supabase'|; s|'\\\\./emailprompt\\\\.css'|'./EmailPrompt.css'|\" src/components/EmailLinkPrompt.jsx)",
+      "Bash(git add *)"
     ]
   }
 }

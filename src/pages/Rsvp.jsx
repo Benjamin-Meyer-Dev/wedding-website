@@ -105,6 +105,13 @@ export default function Rsvp() {
     return () => ro.disconnect()
   }, [safeActiveIdx, members.length, rsvpsLoading, householdLoading])
 
+  // On a guest change, glide the scene back to the top: on mobile the user may
+  // be scrolled deep into a tall accepting card when they page, and the next
+  // guest's name + accept/decline toggle live at the top of the new card.
+  useEffect(() => {
+    viewportRef.current?.closest('.scene')?.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [safeActiveIdx])
+
   useEffect(() => {
     if (householdLoading || !householdId || members.length === 0) return
     let cancelled = false
@@ -255,10 +262,18 @@ export default function Rsvp() {
         </header>
 
         <div className="rsvp-deck">
+          {/* Desktop-only paging: the wrapper has no box (display: contents) so
+              the arrows flank the viewport. On mobile this is hidden — the
+              in-card arrows inside each .rsvp-card-head take over. */}
           {total > 1 && (
-            <button type="button" className="rsvp-nav" onClick={() => go(-1)} disabled={safeActive === 0} aria-label="Previous guest">
-              <ChevronLeft />
-            </button>
+            <div className="rsvp-pager">
+              <button type="button" className="rsvp-nav rsvp-nav--prev" onClick={() => go(-1)} disabled={safeActive === 0} aria-label="Previous guest">
+                <ChevronLeft />
+              </button>
+              <button type="button" className="rsvp-nav rsvp-nav--next" onClick={() => go(1)} disabled={safeActive === total - 1} aria-label="Next guest">
+                <ChevronRight />
+              </button>
+            </div>
           )}
 
           <div className="rsvp-viewport" ref={viewportRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
@@ -271,6 +286,14 @@ export default function Rsvp() {
                   <div className="rsvp-slide" key={mm.user_id} inert={!isActive ? '' : undefined} aria-hidden={!isActive}>
                     <div className={`rsvp-card${att ? ' is-answered' : ''}`}>
                       <div className="rsvp-card-head">
+                        {/* mobile-only paging: the arrows live inside the card,
+                            flanking the name (desktop hides these and uses the
+                            deck-level arrows beside the card instead) */}
+                        {total > 1 && (
+                          <button type="button" className="rsvp-nav rsvp-nav--card" onClick={() => go(-1)} disabled={safeActive === 0} aria-label="Previous guest">
+                            <ChevronLeft />
+                          </button>
+                        )}
                         <div className="rsvp-card-who">
                           {total > 1 && <span className="rsvp-count">Guest {i + 1} of {total}</span>}
                           <h2 className="rsvp-name">{mm.first_name}</h2>
@@ -297,6 +320,11 @@ export default function Rsvp() {
                             <IconX /> Regretfully Declines
                           </button>
                         </div>
+                        {total > 1 && (
+                          <button type="button" className="rsvp-nav rsvp-nav--card" onClick={() => go(1)} disabled={safeActive === total - 1} aria-label="Next guest">
+                            <ChevronRight />
+                          </button>
+                        )}
                       </div>
 
                       <div className={`rsvp-extras${att === 'yes' ? ' is-open' : ''}`} inert={att !== 'yes' ? '' : undefined}>
@@ -348,12 +376,6 @@ export default function Rsvp() {
               })}
             </div>
           </div>
-
-          {total > 1 && (
-            <button type="button" className="rsvp-nav" onClick={() => go(1)} disabled={safeActive === total - 1} aria-label="Next guest">
-              <ChevronRight />
-            </button>
-          )}
         </div>
 
         {total > 1 && (

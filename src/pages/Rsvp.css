@@ -514,8 +514,8 @@
   /* Use `.scene.rsvp` (0,2,0) so this beats the base `.scene.rsvp` padding —
      a plain `.rsvp` (0,1,0) loses and the desktop 32px padding sticks. */
   .scene.rsvp { padding: var(--content-top) 16px 24px; }
-  /* (the arrows are moved BELOW the card on mobile — see the end-of-file block.
-     A `.rsvp-nav { display:none }` here is dead anyway: the later base
+  /* (the arrows move INSIDE the card head on mobile — see the end-of-file
+     block. A `.rsvp-nav { display:none }` here is dead anyway: the later base
      `.rsvp-nav { display:grid }` outranks it at equal specificity.) */
   .rsvp-list { gap: 18px; }
   .rsvp-card { padding: 28px 22px; gap: 22px; }
@@ -628,6 +628,16 @@
   width: 100%;
 }
 
+/* The pager wrapper has no box on desktop (display: contents): the arrows
+   participate directly in the deck's flex row and flank the viewport via
+   explicit orders (prev 1 | viewport 2 | next 3). On mobile the whole pager is
+   hidden and the in-card arrows take over — see the end-of-file block. */
+.rsvp-pager { display: contents; }
+.rsvp-nav--prev { order: 1; }
+.rsvp-nav--next { order: 3; }
+/* in-card arrows (inside each .rsvp-card-head) are mobile-only */
+.rsvp-nav.rsvp-nav--card { display: none; }
+
 .rsvp-nav {
   flex: none;
   width: 54px;
@@ -639,6 +649,7 @@
   display: grid;
   place-items: center;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent; /* kill the blue press-flash on mobile */
   /* no backdrop-filter: bg is opaque, the blur only cost frame time */
   box-shadow: var(--glass-shadow);
   transition: transform 200ms cubic-bezier(.22, 1, .36, 1), background 200ms ease, color 200ms ease, opacity 200ms ease;
@@ -654,6 +665,7 @@
   flex: 1 1 960px;
   min-width: 0;
   max-width: 1000px;
+  order: 2; /* between the pager's prev/next arrows on desktop */
   overflow: hidden;
   /* Height is pinned to the ACTIVE slide by Rsvp.jsx (height:auto can't
      animate) and transitions in step with the horizontal glide below, so
@@ -736,7 +748,9 @@
   height: 100px;
   background: linear-gradient(180deg, rgba(21, 50, 74, 0) 58%, rgba(21, 50, 74, 0.2) 100%);
 }
-.rsvp-deck .rsvp-meal-text { padding: 8px 11px; gap: 3px; align-items: flex-start; justify-content: center; }
+/* top-aligned on desktop: 1fr rows stretch tiles to the tallest, so centered
+   text would float mid-card on shorter descriptions */
+.rsvp-deck .rsvp-meal-text { padding: 8px 11px; gap: 3px; align-items: flex-start; justify-content: flex-start; }
 .rsvp-deck .rsvp-meal-lbl { font-size: 17px; }
 /* the description lives on every tile (no hover needed — works on touch) and
    is never clamped — tiles grow to fit, and the flex row keeps them equal */
@@ -831,11 +845,20 @@
   100% { transform: scale(1) rotate(0); }
 }
 
-/* stack name over a full-width toggle on narrow cards */
+/* Narrow cards: grid head — row 1 is ‹ name ›, row 2 a full-width toggle.
+   The arrows are placed explicitly (auto-flow would drop the trailing arrow
+   onto its own row after the spanning toggle). */
 @media (max-width: 700px) {
-  .rsvp-card-head { flex-direction: column; align-items: stretch; gap: 12px; }
-  .rsvp-card-who { align-items: center; text-align: center; }
-  .rsvp-toggle { width: 100%; }
+  .rsvp-card-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+  }
+  .rsvp-card-who { grid-row: 1; grid-column: 2; align-items: center; text-align: center; }
+  .rsvp-card-head .rsvp-nav--card:first-child { grid-row: 1; grid-column: 1; }
+  .rsvp-card-head .rsvp-nav--card:last-child { grid-row: 1; grid-column: 3; }
+  .rsvp-toggle { grid-row: 2; grid-column: 1 / -1; width: 100%; }
 }
 
 /* Phones: the two long labels ("Joyfully Accepts" / "Regretfully Declines")
@@ -875,6 +898,7 @@
   border: 1px solid var(--rule);
   background: transparent;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transition: width 260ms cubic-bezier(.22, 1, .36, 1), background 220ms ease, border-color 220ms ease,
               transform 200ms cubic-bezier(.22, 1, .36, 1);
 }
@@ -905,16 +929,27 @@
   .rsvp { overflow-y: auto; }
 }
 
-/* Mobile: the prev/next arrows flank the card on desktop, but on a phone that
-   side space made the card skinny. Drop them BELOW the card instead — the
-   viewport takes the full width and the arrows wrap onto their own centered row.
+/* Mobile: the deck-level arrows flanking the card made it skinny, so they're
+   hidden entirely and the IN-CARD arrows (inside each .rsvp-card-head, beside
+   the guest's name) take over. The guest-change scroll-to-top in Rsvp.jsx
+   brings the head — and with it the arrows — back into view after each switch.
    Placed at the END of the file so these win over the base .rsvp-deck /
    .rsvp-viewport / .rsvp-nav rules at equal specificity (media queries don't
    add specificity, so source order decides). */
 @media (max-width: 1200px) {
-  .rsvp-deck { flex-wrap: wrap; gap: 14px; }
-  .rsvp-viewport { flex: 1 1 100%; max-width: none; order: 0; }
-  .rsvp-nav { order: 1; width: 48px; height: 48px; }
+  .rsvp-deck { gap: 14px; }
+  .rsvp-viewport { flex: 1 1 100%; max-width: none; }
+  .rsvp-pager { display: none; }
+  /* ghost styling: the glass bg reads as a plain circle on the white card */
+  .rsvp-nav.rsvp-nav--card {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border-color: var(--rule-soft);
+    box-shadow: none;
+  }
+  .rsvp-nav.rsvp-nav--card svg { width: 20px; height: 20px; }
   /* Mobile/narrow: one card per row — picture on the left, title +
      description on the right. Fixed height keeps every card identical and
      fits the full 3-line description without clamping. */
@@ -945,4 +980,11 @@
   /* display:block beats the standalone-page 2-line clamp (same media width,
      lower specificity) — the full description always shows */
   .rsvp-deck .rsvp-meal-desc { display: block; overflow: visible; font-size: 11.5px; line-height: 1.4; }
+}
+
+/* The one-row card head (tablets) gains the two in-card arrows — tighten the
+   base 28px gap so name + toggle + arrows fit. min-width-scoped so it can't
+   clobber the ≤700px grid head's 12px gap. */
+@media (min-width: 701px) and (max-width: 1200px) {
+  .rsvp-card-head { gap: 16px; }
 }
