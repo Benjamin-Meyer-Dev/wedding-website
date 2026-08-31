@@ -14,12 +14,21 @@ function diffToParts(target) {
   return { days, hrs, min, sec }
 }
 
-export default function Home() {
+// The countdown owns its own state so the once-a-second tick re-renders these
+// four numbers instead of the whole hero (photo, names, rules and all).
+function Countdown() {
   const [t, setT] = useState(() => diffToParts(WEDDING_DATE))
 
   useEffect(() => {
-    const id = setInterval(() => setT(diffToParts(WEDDING_DATE)), 1000)
-    return () => clearInterval(id)
+    // Skip the tick while the tab is backgrounded — nothing is on screen to
+    // update — and resync the moment it comes back.
+    const tick = () => { if (!document.hidden) setT(diffToParts(WEDDING_DATE)) }
+    const id = setInterval(tick, 1000)
+    document.addEventListener('visibilitychange', tick)
+    return () => {
+      clearInterval(id)
+      document.removeEventListener('visibilitychange', tick)
+    }
   }, [])
 
   const units = [
@@ -29,6 +38,19 @@ export default function Home() {
     { n: String(t.sec).padStart(2, '0'), l: 'Sec' },
   ]
 
+  return (
+    <div className="home-countdown" aria-label="Time until the wedding">
+      {units.map((u, i) => (
+        <div className="hcd-item rev-pop" style={{ '--rd': `${980 + i * 90}ms` }} key={u.l}>
+          <span className="hcd-num">{u.n}</span>
+          <span className="hcd-lbl">{u.l}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export default function Home() {
   return (
     <section className="scene home">
       <div className="home-stage">
@@ -45,6 +67,7 @@ export default function Home() {
               style={{ '--rd': '120ms' }}
               width="1068"
               height="1600"
+              fetchpriority="high"
               decoding="async"
               draggable={false}
             />
@@ -70,14 +93,7 @@ export default function Home() {
           <div className="home-foot">
             <p className="home-date rev" style={{ '--rd': '900ms' }}>Saturday &middot; 29 May 2027 &middot; 2:00 PM</p>
 
-            <div className="home-countdown" aria-label="Time until the wedding">
-              {units.map((u, i) => (
-                <div className="hcd-item rev-pop" style={{ '--rd': `${980 + i * 90}ms` }} key={u.l}>
-                  <span className="hcd-num">{u.n}</span>
-                  <span className="hcd-lbl">{u.l}</span>
-                </div>
-              ))}
-            </div>
+            <Countdown />
           </div>
         </div>
       </div>

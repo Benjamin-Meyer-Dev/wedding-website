@@ -277,7 +277,6 @@
               background 380ms cubic-bezier(.22, 1, .36, 1),
               box-shadow 420ms cubic-bezier(.22, 1, .36, 1),
               transform 360ms cubic-bezier(.22, 1, .36, 1);
-  will-change: transform;
 }
 .rsvp-meal-tile:active { transform: scale(0.985); }
 
@@ -797,11 +796,23 @@
    clearly distinct from both the yes and no states. */
 .rsvp-toggle--none {
   border-color: var(--accent-soft);
+}
+/* The halo is a ring on a pseudo-element that fades in and out, not an animated
+   box-shadow on the toggle itself: there is one of these per unanswered guest,
+   and a growing shadow spread repaints every one of them on every frame. */
+.rsvp-toggle--none::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: inherit;
+  border: 5px solid rgba(110, 167, 201, 0.22);
+  pointer-events: none;
+  opacity: 0;
   animation: toggle-await 2.8s ease-in-out infinite;
 }
 @keyframes toggle-await {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(110, 167, 201, 0); }
-  50%      { box-shadow: 0 0 0 5px rgba(110, 167, 201, 0.22); }
+  0%, 100% { opacity: 0; }
+  50%      { opacity: 1; }
 }
 .rsvp-toggle-opt {
   position: relative;

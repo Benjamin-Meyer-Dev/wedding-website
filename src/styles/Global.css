@@ -139,6 +139,27 @@ input, textarea, [contenteditable] {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ---------- Reduced motion ----------
+   Guests who ask their OS for less motion keep the site's look but lose the
+   ambient loops (drifting orbs, twinkling sparkles, breathing auras, pulsing
+   comet heads) and get instant entrances. Every animation still RUNS, for 1ms
+   and once, so anything that fades or masks itself in still lands on its
+   finished frame — it just doesn't move. This is also the cheapest the site can
+   run: with the infinite loops gone, nothing animates at all once a page has
+   settled. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* The one exception: the sparkle twinkle has no fill mode, so after its 1ms
+     run the sparkles would settle back to their invisible base state. Give them
+     a resting brightness instead. */
+  .decor-spark { opacity: .55; }
+}
+
 /* Lighter entrance for glass cards — opacity only, no transform. Moving
    an element with backdrop-filter recomputes the blur every frame, which
    is the main source of entrance jank. Pure opacity is compositor-only. */

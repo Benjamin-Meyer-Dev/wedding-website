@@ -1,5 +1,6 @@
-/* Registered so it animates as a real number — lets us transition the comet's
-   position at a fixed duration regardless of how many circles it spans. */
+/* Registered so it is typed as a real number (and defaults to 0): the comet's
+   fill and head read it inside a transform, and the transform is what carries
+   the fixed-duration travel, however many circles it spans. */
 @property --tl-progress {
   syntax: '<number>';
   inherits: true;
@@ -221,8 +222,6 @@
   width: 100%;
   max-width: 640px;
   margin: 0 auto;
-  /* fixed 450ms for the comet to reach its target — any distance, same time */
-  transition: --tl-progress 450ms linear;
 }
 
 /* The spine. Light (afternoon) -> deep ink (night). */
@@ -240,8 +239,13 @@
   transform-origin: top center;
   animation: tl-draw-v 900ms cubic-bezier(.22, 1, .36, 1) 120ms both;
 }
-/* traveling comet/progress — horizontal layout only */
-.timeline-progress {
+/* The travelling comet, in two pieces so both can move on the compositor:
+   .timeline-progress is the fill (scaled) and .timeline-head the glowing head
+   (translated). Scaling/translating a fixed-size element is compositor-only,
+   whereas the old width/height transition relaid out and repainted the glowing
+   bar on every one of the 450ms of travel. */
+.timeline-progress,
+.timeline-head {
   display: none;
   /* the circles pop in late (tl-pop, staggered) and the spine draws over ~1s;
      without this the pulsing head sits exposed on the bare first circle from
@@ -279,25 +283,29 @@
     left: 17px;
     top: 21px;                 /* first marker centre (node top 2px + marker/2 19px) */
     width: 4px;
-    height: var(--tl-fill, 0px);
+    /* Full-length spine, revealed by scaleY — --tl-total is the first-to-last
+       marker distance and --tl-frac how far along it the active marker sits,
+       both measured in Schedule.jsx (the stacked cards have uneven heights, so
+       a linear fraction of the node count wouldn't line up). */
+    height: var(--tl-total, 0px);
+    transform-origin: top center;
+    transform: scaleY(var(--tl-frac, 0));
+    transition: transform 450ms linear;   /* travels in a fixed time, like the comet */
     border-radius: 4px;
     background: linear-gradient(180deg, var(--accent-soft), var(--accent-bright));
     box-shadow: 0 0 18px rgba(110, 167, 201, 0.85);
-    transition: height 450ms linear;   /* travels in a fixed time, like the comet */
     z-index: 1;                /* above the spine (::before z0), below the markers */
   }
-  .timeline-progress::after {
-    content: '';
+  .timeline-head {
+    display: block;
     position: absolute;
-    bottom: -7px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #fff 0%, var(--accent-bright) 55%, var(--accent) 100%);
-    box-shadow: 0 0 22px 6px rgba(110, 167, 201, 0.9);
-    animation: comet-pulse 1.5s ease-in-out infinite;
+    left: 19px;                /* the spine's centre (left 17px + 4px/2) */
+    top: 21px;
+    width: 0;
+    height: 0;
+    transform: translateY(var(--tl-fill, 0px));
+    transition: transform 450ms linear;
+    z-index: 1;
   }
   /* fill the circle just as the comet head arrives (mirror of the desktop snap) */
   .tl-node.is-active .tl-marker {
@@ -479,30 +487,29 @@
 
   /* the comet — a glowing fill that travels along the line to the
      active node, with a bright leading head */
-  .timeline-progress {
+  /* Both pieces span the full first-to-last-marker distance: the fill scales
+     across it and the (zero-size) head translates along it, so the percentage
+     transform resolves against exactly that span. */
+  .timeline-progress,
+  .timeline-head {
     display: block;
     position: absolute;
     left: calc(50% / var(--tl-count));
+    width: calc(100% - 100% / var(--tl-count));
     top: calc(var(--tl-pad-top) + var(--marker) / 2 - 1.5px);
+    transition: transform 450ms linear;
+  }
+  .timeline-progress {
     height: 4px;
-    width: calc(var(--tl-progress) * (100% - 100% / var(--tl-count)));
+    transform-origin: left center;
+    transform: scaleX(var(--tl-progress));
     border-radius: 4px;
     background: linear-gradient(90deg, var(--accent-soft), var(--accent-bright));
     box-shadow: 0 0 18px rgba(110, 167, 201, 0.85);
-    /* width follows the animated --tl-progress (transitioned on .timeline) */
   }
-  .timeline-progress::after {
-    content: '';
-    position: absolute;
-    right: -7px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #fff 0%, var(--accent-bright) 55%, var(--accent) 100%);
-    box-shadow: 0 0 22px 6px rgba(110, 167, 201, 0.9);
-    animation: comet-pulse 1.5s ease-in-out infinite;
+  .timeline-head {
+    height: 0;
+    transform: translateX(calc(var(--tl-progress) * 100%));
   }
 
   .tl-node {
@@ -563,6 +570,32 @@
   .sched-legend { gap: 12px; font-size: 10px; }
 }
 
+/* The comet's head: a bright dot with a halo that breathes via transform and
+   opacity. Pulsing the dot's own box-shadow (the previous approach) repainted
+   a 30px blur radius every frame, for as long as the page stayed open. */
+.timeline-head::after,
+.timeline-head::before {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+}
+.timeline-head::after {
+  left: -8px;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  background: radial-gradient(circle, #fff 0%, var(--accent-bright) 55%, var(--accent) 100%);
+  box-shadow: 0 0 22px 6px rgba(110, 167, 201, 0.9);
+}
+.timeline-head::before {
+  left: -20px;
+  top: -20px;
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, rgba(110, 167, 201, 0.9) 0%, rgba(110, 167, 201, 0.5) 45%, rgba(110, 167, 201, 0) 70%);
+  animation: comet-pulse 1.5s ease-in-out infinite;
+}
+
 /* ---------------- Animations ---------------- */
 @keyframes comet-in {
   from { opacity: 0; }
@@ -579,6 +612,6 @@
 @keyframes tl-draw-v { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 @keyframes tl-draw-h { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes comet-pulse {
-  0%, 100% { box-shadow: 0 0 18px 4px rgba(110, 167, 201, 0.8); }
-  50%      { box-shadow: 0 0 30px 9px rgba(110, 167, 201, 1); }
+  0%, 100% { transform: scale(0.82); opacity: 0.75; }
+  50%      { transform: scale(1.18); opacity: 1; }
 }

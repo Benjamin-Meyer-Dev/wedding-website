@@ -31,6 +31,10 @@ const PAGE_LABELS = {
 export default function NavBar({ page, onNavigate, onSignOut }) {
   const [open, setOpen] = useState(false)
   const [resizing, setResizing] = useState(false)
+  // True while the drawer is open AND for the length of its close animation, so
+  // the page stays frozen until the panel has fully settled (see the scroll
+  // lock below). The open transition is 400ms, the close 360ms.
+  const [locked, setLocked] = useState(false)
   const headerRef = useRef(null)
 
   // Publish the navbar's live height so pages can offset their content to sit a
@@ -70,6 +74,41 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
     window.addEventListener('resize', onResize)
     return () => { window.removeEventListener('resize', onResize); clearTimeout(t) }
   }, [])
+
+  useEffect(() => {
+    if (open) { setLocked(true); return }
+    if (!locked) return
+    const t = setTimeout(() => setLocked(false), 420)
+    return () => clearTimeout(t)
+  }, [open, locked])
+
+  // Freeze scrolling (desktop wheel, touch drag, and the scrolling keys) while
+  // the drawer is open or animating. Done with cancelled events rather than
+  // `overflow: hidden` because every page scrolls in its own container, and
+  // toggling overflow on them would clip decor and fight the scrollbar gutters.
+  useEffect(() => {
+    if (!locked || typeof window === 'undefined') return
+    const SCROLL_KEYS = new Set([
+      'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+      'PageUp', 'PageDown', 'Home', 'End', ' ', 'Spacebar',
+    ])
+    const block = (e) => { if (e.cancelable) e.preventDefault() }
+    const blockKeys = (e) => {
+      if (!SCROLL_KEYS.has(e.key)) return
+      // Leave typing and button/link activation (space, enter) alone.
+      const t = e.target
+      if (t?.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A'].includes(t?.tagName)) return
+      e.preventDefault()
+    }
+    window.addEventListener('wheel', block, { passive: false })
+    window.addEventListener('touchmove', block, { passive: false })
+    window.addEventListener('keydown', blockKeys)
+    return () => {
+      window.removeEventListener('wheel', block)
+      window.removeEventListener('touchmove', block)
+      window.removeEventListener('keydown', blockKeys)
+    }
+  }, [locked])
 
   const handleNavigate = (target) => {
     setOpen(false)

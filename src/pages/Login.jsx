@@ -72,6 +72,7 @@ export default function Login() {
             className="login-img"
             width="1068"
             height="1600"
+            fetchpriority="high"
             decoding="async"
             draggable={false}
           />

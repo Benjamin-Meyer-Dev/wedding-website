@@ -63,20 +63,41 @@ export default function Schedule() {
 
   // Preload every card photo once so a rotated-to image is already decoded and
   // shows immediately — no placeholder flash or fade when the stage swaps.
+  // Fetched one at a time, each in an idle slot: kicking off all eight at once
+  // put ~600KB of decode work up against the page's entrance animation, and the
+  // stage only needs the next photo 8s later anyway.
   useEffect(() => {
-    EVENTS.forEach((ev) => {
-      if (ev.photo) {
-        const img = new Image()
-        img.src = ev.photo
-      }
-    })
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200))
+    const cancelIdle = window.cancelIdleCallback || clearTimeout
+    let handle = null
+    let cancelled = false
+    let i = 0
+    const next = () => {
+      if (cancelled || i >= EVENTS.length) return
+      const ev = EVENTS[i++]
+      if (!ev.photo) return next()
+      const img = new Image()
+      img.onload = img.onerror = () => { handle = idle(next) }
+      img.src = ev.photo
+    }
+    handle = idle(next)
+    return () => { cancelled = true; if (handle != null) cancelIdle(handle) }
+  }, [])
+
+  const [hidden, setHidden] = useState(() => document.hidden)
+  useEffect(() => {
+    const onVis = () => setHidden(document.hidden)
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
   }, [])
 
   useEffect(() => {
-    if (paused) return
+    // A backgrounded tab shouldn't keep swapping stage photos and restarting
+    // the comet — nobody is watching, and the work still costs battery.
+    if (paused || hidden) return
     const id = setInterval(() => setAuto((a) => (a + 1) % EVENTS.length), ROTATE_MS)
     return () => clearInterval(id)
-  }, [paused])
+  }, [paused, hidden])
 
   // Hover wins, then a pinned (clicked) node, then the auto-rotation.
   const activeIdx = hovered != null ? hovered : pinned != null ? pinned : auto
@@ -90,25 +111,48 @@ export default function Schedule() {
     return () => clearTimeout(t)
   }, [activeIdx, displayIdx])
 
-  // Vertical comet length: the horizontal bar is driven by the linear
+  // Vertical comet geometry: the horizontal bar is driven by the linear
   // --tl-progress fraction, but the stacked mobile cards have uneven heights, so
-  // measure the active marker's real offset and expose it as --tl-fill (px). CSS
-  // transitions the comet's height to it, so it travels to the active circle just
-  // like the horizontal one. Re-measures on reflow (resize / font + image loads).
+  // measure the markers' real offsets. --tl-fill (px) positions the head and
+  // --tl-frac (0..1 of --tl-total) scales the fill; CSS transitions both, so the
+  // comet travels to the active circle just like the horizontal one.
+  // The observer is set up once and reads the live index through a ref —
+  // re-subscribing a ResizeObserver on every rotation forced an extra layout
+  // pass each time. Re-measures on reflow (resize / font + image loads).
+  const activeRef = useRef(0)
+  activeRef.current = activeIdx ?? 0
   useEffect(() => {
     const el = timelineRef.current
     if (!el) return
-    const setFill = () => {
+    const measure = () => {
       const nodes = el.querySelectorAll('.tl-node')
       if (!nodes.length) return
-      const i = Math.min(activeIdx ?? 0, nodes.length - 1)
-      const fill = nodes[i].offsetTop - nodes[0].offsetTop
-      el.style.setProperty('--tl-fill', `${Math.max(0, fill)}px`)
+      const i = Math.min(activeRef.current, nodes.length - 1)
+      const top = nodes[0].offsetTop
+      const fill = Math.max(0, nodes[i].offsetTop - top)
+      const total = Math.max(1, nodes[nodes.length - 1].offsetTop - top)
+      el.style.setProperty('--tl-total', `${total}px`)
+      el.style.setProperty('--tl-fill', `${fill}px`)
+      el.style.setProperty('--tl-frac', `${fill / total}`)
     }
-    setFill()
-    const ro = new ResizeObserver(setFill)
+    measure()
+    const ro = new ResizeObserver(measure)
     ro.observe(el)
     return () => ro.disconnect()
+  }, [])
+  // Re-position on every change of the active node (cheap: reads offsets that
+  // the browser already has, no observer churn).
+  useEffect(() => {
+    const el = timelineRef.current
+    if (!el) return
+    const nodes = el.querySelectorAll('.tl-node')
+    if (!nodes.length) return
+    const i = Math.min(activeIdx ?? 0, nodes.length - 1)
+    const top = nodes[0].offsetTop
+    const fill = Math.max(0, nodes[i].offsetTop - top)
+    const total = Math.max(1, nodes[nodes.length - 1].offsetTop - top)
+    el.style.setProperty('--tl-fill', `${fill}px`)
+    el.style.setProperty('--tl-frac', `${fill / total}`)
   }, [activeIdx])
 
   const covering = activeIdx !== displayIdx
@@ -191,6 +235,7 @@ export default function Schedule() {
         >
           <span className="timeline-line" aria-hidden="true" />
           <span className="timeline-progress" aria-hidden="true" />
+          <span className="timeline-head" aria-hidden="true" />
 
           {EVENTS.map((ev, idx) => (
             <article

@@ -78,18 +78,31 @@
 }
 
 /* Iris/portal: a tinted disc expands from the centre to cover the screen,
-   then contracts away to reveal the new scene from the edges inward. */
+   then contracts away to reveal the new scene from the edges inward.
+   It is a real disc that SCALES, not an animated clip-path circle(): every
+   frame of a growing clip-path repaints the full-screen gradient underneath it
+   (Safari and Firefox never composite clip-path), while a transform runs
+   entirely on the compositor. 164vmax always exceeds the viewport diagonal, so
+   scale(1) covers the screen; it is also what the old clip-path circle(82%)
+   resolved to on a square viewport, so the sweep keeps its pace. The gradient
+   stops sit further out than the old viewport-sized ones to compensate for
+   riding on a disc this large. */
 .curtain-iris {
   position: absolute;
-  inset: 0;
-  clip-path: circle(0% at 50% 50%);
+  top: 50%;
+  left: 50%;
+  width: 164vmax;
+  height: 164vmax;
+  border-radius: 50%;
   background:
-    radial-gradient(120% 120% at 50% 50%, var(--accent) 0%, var(--accent-deep) 46%, var(--ink-blue) 100%);
+    radial-gradient(circle at 50% 50%, var(--accent) 0%, var(--accent-deep) 56%, var(--ink-blue) 100%);
+  transform: translate(-50%, -50%) scale(0);
+  will-change: transform;
 }
 .curtain--cover .curtain-iris  { animation: iris-cover 560ms cubic-bezier(.66, 0, .34, 1) forwards; }
-.curtain--reveal .curtain-iris { clip-path: circle(82% at 50% 50%); animation: iris-reveal 620ms cubic-bezier(.66, 0, .34, 1) forwards; }
-@keyframes iris-cover  { from { clip-path: circle(0% at 50% 50%); } to { clip-path: circle(82% at 50% 50%); } }
-@keyframes iris-reveal { from { clip-path: circle(82% at 50% 50%); } to { clip-path: circle(0% at 50% 50%); } }
+.curtain--reveal .curtain-iris { transform: translate(-50%, -50%) scale(1); animation: iris-reveal 620ms cubic-bezier(.66, 0, .34, 1) forwards; }
+@keyframes iris-cover  { from { transform: translate(-50%, -50%) scale(0); } to { transform: translate(-50%, -50%) scale(1); } }
+@keyframes iris-reveal { from { transform: translate(-50%, -50%) scale(1); } to { transform: translate(-50%, -50%) scale(0); } }
 
 .curtain-mono {
   position: absolute;

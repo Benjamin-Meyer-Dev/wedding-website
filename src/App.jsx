@@ -1,14 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react'
 import NavBar from './components/NavBar.jsx'
 import Home from './pages/Home.jsx'
-import Story from './pages/Story.jsx'
-import WeddingParty from './pages/WeddingParty.jsx'
 import Login from './pages/Login.jsx'
-import Rsvp from './pages/Rsvp.jsx'
-import Schedule from './pages/Schedule.jsx'
-import Travel from './pages/Travel.jsx'
-import Faq from './pages/Faq.jsx'
-import Registry from './pages/Registry.jsx'
 import LoadingScreen from './components/LoadingScreen.jsx'
 import EmailLinkPrompt from './components/EmailLinkPrompt.jsx'
 import BackgroundOrbs from './components/BackgroundOrbs.jsx'
@@ -17,11 +10,34 @@ import { supabase } from './lib/Supabase'
 import { HouseholdProvider } from './lib/HouseholdContext.jsx'
 import './styles/App.css'
 
+// Everything past the first screen loads as its own chunk. The login and the
+// homepage are what a guest actually waits for, so they stay in the initial
+// bundle; the rest is fetched in the background once the intro has played (see
+// the prefetch effect below), and in the worst case a navigation has the
+// curtain's 560ms cover to finish the fetch behind.
+const LOADERS = {
+  story: () => import('./pages/Story.jsx'),
+  party: () => import('./pages/WeddingParty.jsx'),
+  schedule: () => import('./pages/Schedule.jsx'),
+  travel: () => import('./pages/Travel.jsx'),
+  faq: () => import('./pages/Faq.jsx'),
+  registry: () => import('./pages/Registry.jsx'),
+  rsvp: () => import('./pages/Rsvp.jsx'),
+}
+const PAGES = Object.fromEntries(
+  Object.entries(LOADERS).map(([name, load]) => [name, lazy(load)]),
+)
+
 const COVER_MS = 560
 const REVEAL_MS = 620
 // Sentinel `pending` target: the curtain is covering the LOGIN, and at the
 // midpoint it swaps the auth gate to the app instead of switching pages.
 const ENTER_APP = '__enter-app__'
+
+function LazyPage({ name }) {
+  const Page = PAGES[name]
+  return Page ? <Page /> : null
+}
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -90,6 +106,9 @@ export default function App() {
 
   const navigate = (target) => {
     if (target === page || phase !== 'idle') return
+    // Ask for the chunk at click time as well as on idle: on a cold cache the
+    // curtain's 560ms cover then doubles as the loading window.
+    if (LOADERS[target]) LOADERS[target]().catch(() => {})
     setPending(target)
     setPhase('cover')
   }
@@ -97,6 +116,27 @@ export default function App() {
   // Stable callbacks so the loader's timers don't reset when introExiting flips.
   const handleIntroExit = useCallback(() => setIntroExiting(true), [])
   const handleIntroDone = useCallback(() => setIntroDone(true), [])
+
+  // Warm every page chunk once the guest is in and the entrance has settled, so
+  // navigation never actually waits on a network round trip. Idle-scheduled and
+  // one at a time: the fetches must not compete with the page that is on screen.
+  useEffect(() => {
+    if (gate !== 'app' || !introExiting) return
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 300))
+    const cancelIdle = window.cancelIdleCallback || clearTimeout
+    const loaders = Object.values(LOADERS)
+    let handle = null
+    let cancelled = false
+    let i = 0
+    const next = () => {
+      if (cancelled || i >= loaders.length) return
+      Promise.resolve(loaders[i++]()).catch(() => {}).then(() => {
+        if (!cancelled) handle = idle(next)
+      })
+    }
+    handle = idle(next)
+    return () => { cancelled = true; if (handle != null) cancelIdle(handle) }
+  }, [gate, introExiting])
 
   // Show the app/login as soon as the loader begins exiting, so it sits beneath
   // the fading loader and is revealed by the crossfade.
@@ -154,14 +194,12 @@ export default function App() {
               onSignOut={() => supabase.auth.signOut()}
             />
             <main className="main">
-              {page === 'home' && <Home />}
-              {page === 'story' && <Story />}
-              {page === 'party' && <WeddingParty />}
-              {page === 'schedule' && <Schedule />}
-              {page === 'travel' && <Travel />}
-              {page === 'faq' && <Faq />}
-              {page === 'registry' && <Registry />}
-              {page === 'rsvp' && <Rsvp />}
+              {/* No fallback UI: a chunk that isn't ready yet simply leaves the
+                  scene empty for a frame or two behind the curtain, which is
+                  quieter than a spinner flashing in and out. */}
+              <Suspense fallback={null}>
+                {page === 'home' ? <Home /> : <LazyPage name={page} />}
+              </Suspense>
             </main>
             {/* one-time "email me the site link" offer; renders nothing once answered */}
             <EmailLinkPrompt />

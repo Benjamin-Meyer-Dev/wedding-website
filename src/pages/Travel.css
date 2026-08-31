@@ -97,11 +97,14 @@
   height: 100%;
   border: 0;
   opacity: 0;
-  filter: saturate(0.92);
-  transition: opacity 600ms ease, filter 380ms ease;
+  /* A static tint only. Transitioning `filter` on an iframe re-filters the whole
+     embedded map surface on every frame of the hover — by far the most
+     expensive thing this page did — and the 0.92 -> 1 shift was barely
+     visible. The card's lift still carries the hover. */
+  filter: saturate(0.94);
+  transition: opacity 600ms ease;
 }
 .tv-map iframe.is-loaded { opacity: 1; }
-.tv-venue:hover .tv-map iframe.is-loaded { filter: saturate(1); }
 
 /* periodic light sheen across the map — swept via transform (compositor-only)
    rather than background-position, which repainted the whole map every frame.
@@ -111,8 +114,11 @@
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.26) 50%, transparent 60%);
-  mix-blend-mode: screen;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.32) 50%, transparent 60%);
+  /* No mix-blend-mode: blending forces the compositor to read back the map
+     iframe's own layer on every frame of the sweep. Plain alpha over the map
+     reads the same (the stripe is white either way) and stays a pure
+     compositor transform. */
   transform: translateX(110%);
   will-change: transform;
   animation: tv-sheen 6.5s ease-in-out infinite;
@@ -240,10 +246,24 @@
   height: calc(40% - 50px);
   min-height: 22px;
   border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+/* The dashes travel by transform rather than by animating background-position,
+   which repainted the strip on every frame. The inner run is one dash period
+   (12px) taller than the track and slides up by exactly that period, so the
+   loop is seamless. */
+.travel-route-line::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: calc(100% + 12px);
   background: repeating-linear-gradient(to bottom, var(--accent) 0 5px, transparent 5px 12px);
   animation: route-flow 1.1s linear infinite;
 }
-@keyframes route-flow { to { background-position: 0 12px; } }
+@keyframes route-flow { to { transform: translateY(-12px); } }
 /* The connector badge is a button: filled accent + a "Directions" cue + a
    persistent pulse make it obvious it's meant to be tapped (church → reception). */
 .travel-route-badge {
@@ -260,13 +280,25 @@
   cursor: pointer;
   text-decoration: none;
   transition: transform 220ms cubic-bezier(.22, 1, .36, 1), background 200ms ease, box-shadow 220ms ease;
+  position: relative;
+}
+/* The "tap me" pulse: a ring that scales and fades out. Animating the badge's
+   own box-shadow spread instead repainted the badge and its 28px drop shadow
+   every frame, forever. */
+.travel-route-badge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 5px rgba(110, 167, 201, 0.5);
+  pointer-events: none;
   animation: badge-pulse 2.6s ease-out infinite;
 }
 .travel-route-badge:hover { transform: scale(1.08); background: var(--accent-deep); box-shadow: 0 20px 36px -14px rgba(58, 111, 149, 0.8); }
 .travel-route-badge:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @keyframes badge-pulse {
-  0%        { box-shadow: 0 14px 28px -14px rgba(58, 111, 149, 0.7), 0 0 0 0 rgba(110, 167, 201, 0.55); }
-  70%, 100% { box-shadow: 0 14px 28px -14px rgba(58, 111, 149, 0.7), 0 0 0 18px rgba(110, 167, 201, 0); }
+  0%        { transform: scale(1); opacity: 0.95; }
+  70%, 100% { transform: scale(1.3); opacity: 0; }
 }
 .travel-route-badge svg { width: 22px; height: 22px; }
 /* pointer-only: the badge's icons (car + arrow) bob gently while hovered */
@@ -325,6 +357,17 @@
     height: 2px;
     min-height: 0;
     min-width: 24px;
-    background: repeating-linear-gradient(to right, var(--accent) 0 5px, transparent 5px 12px);
   }
+  /* The connector lies on its side here, so the dash run and its travel do too:
+     one period wider than the track, sliding left by exactly that period. */
+  .travel-route-line::before {
+    top: 0;
+    bottom: 0;
+    right: auto;
+    height: auto;
+    width: calc(100% + 12px);
+    background: repeating-linear-gradient(to right, var(--accent) 0 5px, transparent 5px 12px);
+    animation-name: route-flow-h;
+  }
+  @keyframes route-flow-h { to { transform: translateX(-12px); } }
 }
