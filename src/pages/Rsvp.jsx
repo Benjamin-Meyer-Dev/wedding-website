@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check as IconCheck, X as IconX, ChevronLeft, ChevronRight } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../lib/Supabase'
 import { useHousehold } from '../lib/HouseholdContext.jsx'
 import chickenImg from '../assets/Chicken.jpg'
 import beefImg from '../assets/Beef.jpg'
 import fishImg from '../assets/Fish.jpg'
 import vegetarianImg from '../assets/Vegetarian.jpg'
 import veganImg from '../assets/Vegan.jpg'
-import './rsvp.css'
+import './Rsvp.css'
 
 // Drop real photos into /public/meals/ (e.g. chicken.jpg) and set the path
 // in `image:` below. Until then, each tile shows a tinted placeholder.

@@ -34,7 +34,7 @@
 }
 .party-head { text-align: center; }
 /* The .party-sides gap separates header and content, so drop the extra
-   .page-head bottom margin (compound selector to outrank app.css's .page-head). */
+   .page-head bottom margin (compound selector to outrank App.css's .page-head). */
 .page-head.party-head { margin-bottom: 0; }
 
 /* ---------------- His & Hers split ---------------- */
@@ -221,11 +221,13 @@
 .party-name {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 400;
+  /* Playfair is a high-contrast serif — at 20px its hairlines read as washed
+     out at weight 400, so the names carry 600 (already in the font link). */
+  font-weight: 600;
   font-size: 20px;
   line-height: 1.05;
   color: var(--ink-blue);
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 .party-blurb {
   margin: 2px 0 0;

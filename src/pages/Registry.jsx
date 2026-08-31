@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Plane, CookingPot, Cake, BedDouble, Wine, Coffee, ArrowRight } from 'lucide-react'
-import honeymoonPhoto from '../assets/honeymoon.jpg'
-import './registry.css'
+import honeymoonPhoto from '../assets/Honeymoon.jpg'
+import './Registry.css'
 
 // Rough items. For each: set `price`, a real `link` (Buy Now destination), and
 // optionally an `image` URL (product photo) — until then a themed panel shows.

@@ -1,5 +1,5 @@
 import { Crown, Flower, Flower2, Gem, User } from 'lucide-react'
-import './party.css'
+import './Party.css'
 
 // Two sides of the aisle. Every person gets the same card; the lead (Maid of
 // Honor / Best Man) is marked `lead: true` and picks up extra accents only —
@@ -10,12 +10,12 @@ const HER_SIDE = {
   key: 'her',
   label: 'Her Side',
   people: [
-    { role: 'Maid of Honor', name: 'Charlotte Hayes', blurb: 'Elizabeth’s sister and lifelong partner in mischief, her first call for everything.', photo: '', lead: true, BadgeIcon: Flower2 },
-    { role: 'Bridesmaid', name: 'Ava Thompson', blurb: 'College roommate turned forever friend, and the world’s most enthusiastic dancer.', photo: '' },
-    { role: 'Bridesmaid', name: 'Mia Romano', blurb: 'Brunch ringleader and keeper of two decades of inside jokes.', photo: '' },
-    { role: 'Bridesmaid', name: 'Grace Patel', blurb: 'Calm in every storm and the group’s unofficial photographer.', photo: '' },
-    { role: 'Bridesmaid', name: 'Hannah Cole', blurb: 'Cousin, confidante, and always first to start the singalong.', photo: '' },
-    { role: 'Flower Girl', name: 'Sophie Hayes', blurb: 'Elizabeth’s niece, ready to scatter petals with great ceremony.', photo: '', BadgeIcon: Flower },
+    { role: 'Maid of Honor', name: 'Emily', blurb: 'Part sister, part best friend, part 24/7 hotline.', photo: '', lead: true, BadgeIcon: Flower2 },
+    { role: 'Bridesmaid', name: 'Melissa', blurb: 'Loyal friend, adventure partner, and only slightly obsessed with her dog.', photo: '' },
+    { role: 'Bridesmaid', name: 'Cassidy', blurb: 'The reason my bookshelf is full and my coffee budget is empty.', photo: '' },
+    { role: 'Bridesmaid', name: 'Sara', blurb: 'Childhood bestie and trusted recipient of every insignificant life update.', photo: '' },
+    { role: 'Bridesmaid', name: 'Evelyn', blurb: 'Sunset swims, paddle board partner, and a lifelong battle over who finishes the book first.', photo: '' },
+    { role: 'Flower Girl', name: 'Kathleen Box', blurb: 'Elizabeth’s niece, ready to scatter petals with great ceremony.', photo: '', BadgeIcon: Flower },
   ],
 }
 
@@ -23,12 +23,12 @@ const HIS_SIDE = {
   key: 'his',
   label: 'His Side',
   people: [
-    { role: 'Best Man', name: 'James Carter', blurb: 'Benjamin’s brother and the steadiest hand in any room, speech at the ready.', photo: '', lead: true, BadgeIcon: Crown },
-    { role: 'Groomsman', name: 'Daniel Walsh', blurb: 'Childhood neighbor and partner on every questionable road trip.', photo: '' },
-    { role: 'Groomsman', name: 'Ethan Brooks', blurb: 'Teammate since little league and the loudest cheer in any crowd.', photo: '' },
-    { role: 'Groomsman', name: 'Noah Foster', blurb: 'College roommate, grill master, and keeper of the playlist.', photo: '' },
-    { role: 'Groomsman', name: 'Liam Park', blurb: 'The friend who shows up early and stays to stack the chairs.', photo: '' },
-    { role: 'Ring Bearer', name: 'Oliver Carter', blurb: 'Benjamin’s nephew, entrusted with the most important delivery of the day.', photo: '', BadgeIcon: Gem },
+    { role: 'Best Man', name: 'Colin', blurb: 'High school friend, climbing accomplice, and firm believer that studying for math tests was optional.', photo: '', lead: true, BadgeIcon: Crown },
+    { role: 'Groomsman', name: 'Josh', blurb: 'The brother who went to the Yukon to study moss and came back knowing how to cook Spam.', photo: '' },
+    { role: 'Groomsman', name: 'Todd', blurb: 'Part inherited brother, part handyman, part outdoorsman, and somehow responsible for two kids.', photo: '' },
+    { role: 'Groomsman', name: 'Connor', blurb: 'High school friend, former Big Red pilot, and victim of a golf swing that has never met a fairway it couldn’t avoid.', photo: '' },
+    { role: 'Groomsman', name: 'Holden', blurb: 'Ben’s personal breaking-news service, fantasy football consultant, and occasional financial advisor specializing in unnecessary gambling.', photo: '' },
+    { role: 'Ring Bearer', name: 'Timothy Box', blurb: 'Benjamin’s nephew, entrusted with the most important delivery of the day.', photo: '', BadgeIcon: Gem },
   ],
 }
 

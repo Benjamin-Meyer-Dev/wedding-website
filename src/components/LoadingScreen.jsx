@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import './loading.css'
+import './Loading.css'
 
 export default function LoadingScreen({ onExit, onDone }) {
   const [phase, setPhase] = useState(0)

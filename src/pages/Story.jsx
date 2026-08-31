@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { Camera } from 'lucide-react'
-import './story.css'
+import './Story.css'
 
 // Each milestone has a `photo` slot. Add a URL to show a real photo; until then
 // a themed tile stands in. Add as many milestones as you like.

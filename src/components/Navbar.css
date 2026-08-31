@@ -9,7 +9,7 @@
   /* Grey hairline (--text-soft tinted; not the near-white --glass-border) so
      the bar stays defined when it floats over white content — otherwise it's
      white-on-white.
-     NOTE: don't give .topbar-inner the `glass` class — global.css's `.glass`
+     NOTE: don't give .topbar-inner the `glass` class — Global.css's `.glass`
      loads after this file and would re-apply --glass-border, hiding this.
      Subtle on the powder-blue canvas, clearly visible on white. PC + mobile. */
   --topbar-border: rgba(74, 81, 97, 0.45);

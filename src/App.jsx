@@ -12,9 +12,9 @@ import Registry from './pages/Registry.jsx'
 import LoadingScreen from './components/LoadingScreen.jsx'
 import BackgroundOrbs from './components/BackgroundOrbs.jsx'
 import SceneDecor from './components/SceneDecor.jsx'
-import { supabase } from './lib/supabase'
+import { supabase } from './lib/Supabase'
 import { HouseholdProvider } from './lib/HouseholdContext.jsx'
-import './styles/app.css'
+import './styles/App.css'
 
 const COVER_MS = 560
 const REVEAL_MS = 620

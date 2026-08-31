@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Eye, EyeOff, CircleAlert } from 'lucide-react'
 import heroPhoto from '../assets/HomePage.jpg'
-import { supabase } from '../lib/supabase'
-import './login.css'
+import { supabase } from '../lib/Supabase'
+import './Login.css'
 
 const USERNAME_DOMAIN = 'wedding.local'
 

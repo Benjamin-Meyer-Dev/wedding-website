@@ -10,7 +10,7 @@ import {
   Mail as IconRsvp,
   LogOut as IconSignOut,
 } from 'lucide-react'
-import './navbar.css'
+import './Navbar.css'
 
 // Shown centered in the bar on mobile (where the full nav collapses to a burger)
 // so the guest always sees which page they're on.

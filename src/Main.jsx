@@ -2,8 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import heroPhoto from './assets/HomePage.jpg'
-import './styles/global.css'
-import './styles/scene.css'
+import './styles/Global.css'
+import './styles/Scene.css'
 
 // Warm the hero photo (login + home) while the loading screen plays, so the
 // crossfade to the page doesn't stall on a ~700KB image decode mid-animation.

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Clock as IconClock, MapPin as IconPin, Car as IconCar, Navigation as IconNav } from 'lucide-react'
-import './travel.css'
+import './Travel.css'
 
 // The two venues for the day. The `address` drives the embedded Google map.
 const VENUES = [

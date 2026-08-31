@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Shirt, Martini, Baby, Car, Gift, Clock } from 'lucide-react'
-import './faq.css'
+import './Faq.css'
 
 // Answers are kept short so they read cleanly on the flip side of each card.
 const FAQS = [

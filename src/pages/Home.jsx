@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import heroPhoto from '../assets/HomePage.jpg'
-import './home.css'
+import './Home.css'
 
 const WEDDING_DATE = new Date('2027-05-29T14:00:00-04:00') // Sat May 29, 2027
 

@@ -1,4 +1,4 @@
-import './backgroundOrbs.css'
+import './BackgroundOrbs.css'
 
 // A handful of soft, blurred gradient orbs scattered behind everything.
 // Hand-placed (not random) so the composition reads as deliberate — the
