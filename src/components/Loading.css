@@ -44,7 +44,7 @@
   opacity: 0;
   will-change: transform, opacity;
   animation:
-    lm-aura 1100ms cubic-bezier(.16, 1, .3, 1) 120ms forwards,
+    lm-aura 1100ms cubic-bezier(.25, .9, .35, 1) 120ms forwards,
     lm-breathe 4s ease-in-out 1200ms infinite;
 }
 @keyframes lm-aura { to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
@@ -62,7 +62,7 @@
   text-transform: uppercase;
   color: var(--accent);
   opacity: 0;
-  animation: lm-fade-up 700ms cubic-bezier(.16, 1, .3, 1) 80ms both;
+  animation: lm-fade-up 700ms cubic-bezier(.25, .9, .35, 1) 80ms both;
 }
 
 .lm-names {
@@ -82,7 +82,7 @@
 .lm-names span {
   display: inline-block;
   opacity: 0;
-  animation: lm-letter 950ms cubic-bezier(.16, 1, .3, 1) both;
+  animation: lm-letter 950ms cubic-bezier(.25, .9, .35, 1) both;
 }
 .lm-names span:nth-child(1) { animation-delay: 220ms; }
 .lm-names .lm-amp           { animation-delay: 470ms; }
@@ -110,7 +110,7 @@
   text-transform: uppercase;
   color: var(--text-soft);
   opacity: 0;
-  animation: lm-fade-up 700ms cubic-bezier(.16, 1, .3, 1) 640ms both;
+  animation: lm-fade-up 700ms cubic-bezier(.25, .9, .35, 1) 640ms both;
 }
 
 .lm-rule {
@@ -120,7 +120,7 @@
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
   opacity: 0;
   transform: scaleX(0);
-  animation: lm-rule-draw 820ms cubic-bezier(.16, 1, .3, 1) 720ms forwards;
+  animation: lm-rule-draw 820ms cubic-bezier(.25, .9, .35, 1) 720ms forwards;
 }
 @keyframes lm-rule-draw { 0% { transform: scaleX(0); opacity: 0; } 100% { transform: scaleX(1); opacity: 0.85; } }
 

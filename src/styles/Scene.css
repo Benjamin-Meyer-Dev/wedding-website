@@ -26,12 +26,12 @@
 @keyframes sb-grow { from { opacity: 0; transform: scaleX(0); } to { opacity: 1; transform: scaleX(1); } }
 @keyframes sb-fade { from { opacity: 0; } to { opacity: 1; } }
 
-.rev      { opacity: 0; animation: sb-rise 820ms cubic-bezier(.16, 1, .3, 1) both;  animation-delay: var(--rd, 0ms); }
-.rev-fall { opacity: 0; animation: sb-fall 820ms cubic-bezier(.16, 1, .3, 1) both;  animation-delay: var(--rd, 0ms); }
-.rev-pop  { opacity: 0; animation: sb-pop 780ms cubic-bezier(.16, 1, .3, 1) both; animation-delay: var(--rd, 0ms); }
-.rev-mask { animation: sb-mask 1000ms cubic-bezier(.76, 0, .24, 1) both;             animation-delay: var(--rd, 0ms); }
-.rev-grow { opacity: 0; transform-origin: left center; animation: sb-grow 900ms cubic-bezier(.76, 0, .24, 1) both; animation-delay: var(--rd, 0ms); }
-.rev-fade { opacity: 0; animation: sb-fade 760ms ease both; animation-delay: var(--rd, 0ms); } /* opacity-only — safe with hover transforms */
+.rev      { opacity: 0; animation: sb-rise 480ms cubic-bezier(.25, .9, .35, 1) both;  animation-delay: var(--rd, 0ms); }
+.rev-fall { opacity: 0; animation: sb-fall 480ms cubic-bezier(.25, .9, .35, 1) both;  animation-delay: var(--rd, 0ms); }
+.rev-pop  { opacity: 0; animation: sb-pop 460ms cubic-bezier(.25, .9, .35, 1) both; animation-delay: var(--rd, 0ms); }
+.rev-mask { animation: sb-mask 600ms cubic-bezier(.76, 0, .24, 1) both;             animation-delay: var(--rd, 0ms); }
+.rev-grow { opacity: 0; transform-origin: left center; animation: sb-grow 540ms cubic-bezier(.76, 0, .24, 1) both; animation-delay: var(--rd, 0ms); }
+.rev-fade { opacity: 0; animation: sb-fade 460ms ease both; animation-delay: var(--rd, 0ms); } /* opacity-only — safe with hover transforms */
 
 /* ---- Decoration: sprigs + sparkles ---- */
 .decor { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
@@ -40,7 +40,7 @@
   width: 220px;
   color: var(--accent-soft);
   opacity: 0;
-  animation: decor-in 1200ms cubic-bezier(.16, 1, .3, 1) 200ms both;
+  animation: decor-in 720ms cubic-bezier(.25, .9, .35, 1) 130ms both;
 }
 .decor-sprig svg { width: 100%; height: 100%; display: block; }
 .decor-sprig--tl { top: -2%; left: -2%; transform-origin: top left; rotate: -18deg; }
@@ -102,8 +102,8 @@
   transform: translate(-50%, -50%) scale(0);
   will-change: transform;
 }
-.curtain--cover .curtain-iris  { animation: iris-cover 560ms cubic-bezier(.66, 0, .34, 1) forwards; }
-.curtain--reveal .curtain-iris { transform: translate(-50%, -50%) scale(1); animation: iris-reveal 620ms cubic-bezier(.66, 0, .34, 1) forwards; }
+.curtain--cover .curtain-iris  { animation: iris-cover 380ms cubic-bezier(.66, 0, .34, 1) forwards; }
+.curtain--reveal .curtain-iris { transform: translate(-50%, -50%) scale(1); animation: iris-reveal 420ms cubic-bezier(.66, 0, .34, 1) forwards; }
 @keyframes iris-cover  { from { transform: translate(-50%, -50%) scale(0); } to { transform: translate(-50%, -50%) scale(1); } }
 @keyframes iris-reveal { from { transform: translate(-50%, -50%) scale(1); } to { transform: translate(-50%, -50%) scale(0); } }
 
@@ -133,9 +133,9 @@
   opacity: 0;
   background: linear-gradient(90deg, transparent, var(--accent-bright), transparent);
 }
-.curtain--cover .curtain-mono       { animation: mono-in 360ms cubic-bezier(.16, 1, .3, 1) 200ms both; }
-.curtain--cover .curtain-mono::after { animation: mono-line 380ms cubic-bezier(.16, 1, .3, 1) 320ms both; }
-.curtain--reveal .curtain-mono      { opacity: 1; animation: mono-out 300ms ease both; }
+.curtain--cover .curtain-mono       { animation: mono-in 240ms cubic-bezier(.25, .9, .35, 1) 130ms both; }
+.curtain--cover .curtain-mono::after { animation: mono-line 260ms cubic-bezier(.25, .9, .35, 1) 210ms both; }
+.curtain--reveal .curtain-mono      { opacity: 1; animation: mono-out 200ms ease both; }
 @keyframes mono-in   { from { opacity: 0; } to { opacity: 1; } }
 @keyframes mono-line { from { opacity: 0; } to { opacity: 1; } }
 @keyframes mono-out  { to { opacity: 0; } }

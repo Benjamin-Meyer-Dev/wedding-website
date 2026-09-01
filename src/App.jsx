@@ -14,7 +14,7 @@ import './styles/App.css'
 // homepage are what a guest actually waits for, so they stay in the initial
 // bundle; the rest is fetched in the background once the intro has played (see
 // the prefetch effect below), and in the worst case a navigation has the
-// curtain's 560ms cover to finish the fetch behind.
+// curtain's 380ms cover to finish the fetch behind.
 const LOADERS = {
   story: () => import('./pages/Story.jsx'),
   party: () => import('./pages/WeddingParty.jsx'),
@@ -28,8 +28,31 @@ const PAGES = Object.fromEntries(
   Object.entries(LOADERS).map(([name, load]) => [name, lazy(load)]),
 )
 
-const COVER_MS = 560
-const REVEAL_MS = 620
+// ---- Which scene a refresh lands on ----
+// There is no router here (one full-screen scene at a time, swapped behind the
+// curtain), so `page` is plain state and a reload would always drop the guest
+// back on the homepage. Persist it per TAB in sessionStorage: reloading — or
+// restoring the tab — returns you to the scene you were on, while opening the
+// site fresh in a new tab still starts at the homepage, which is the right
+// first impression for a guest arriving from the emailed link.
+// The stored value is validated against the known page names, so a stale key
+// left by a renamed page can't render an empty scene.
+const PAGE_KEY = 'eb:page'
+const PAGE_NAMES = ['home', ...Object.keys(LOADERS)]
+
+function readStoredPage() {
+  try {
+    const saved = sessionStorage.getItem(PAGE_KEY)
+    return PAGE_NAMES.includes(saved) ? saved : 'home'
+  } catch {
+    return 'home' // storage blocked (private mode / cookies off) — not fatal
+  }
+}
+const writeStoredPage = (page) => { try { sessionStorage.setItem(PAGE_KEY, page) } catch {} }
+const clearStoredPage = () => { try { sessionStorage.removeItem(PAGE_KEY) } catch {} }
+
+const COVER_MS = 380
+const REVEAL_MS = 420
 // Sentinel `pending` target: the curtain is covering the LOGIN, and at the
 // midpoint it swaps the auth gate to the app instead of switching pages.
 const ENTER_APP = '__enter-app__'
@@ -47,7 +70,7 @@ export default function App() {
   // introDone: the loader has fully faded — unmount it.
   const [introExiting, setIntroExiting] = useState(false)
   const [introDone, setIntroDone] = useState(false)
-  const [page, setPage] = useState('home')
+  const [page, setPage] = useState(readStoredPage)
   // What the auth gate shows. Deliberately lags `session` on sign-in so the
   // curtain can sweep over the login BEFORE the app swaps in beneath it.
   const [gate, setGate] = useState('login')
@@ -82,6 +105,9 @@ export default function App() {
       // The app stays mounted across sign-out/sign-in, so `page` would persist
       // — reset it so the next login always lands on the homepage.
       if (event === 'SIGNED_OUT') {
+        // Drop the remembered scene too, so the next sign-in starts at the
+        // homepage rather than resuming the previous guest's last page.
+        clearStoredPage()
         setPage('home')
         setPhase('idle')
         setPending(null)
@@ -118,10 +144,22 @@ export default function App() {
     }
   }, [phase, pending])
 
+  // Remember the current scene so a refresh comes back to it.
+  useEffect(() => { writeStoredPage(page) }, [page])
+
+  // A restored page is a lazy chunk that nothing has asked for yet, and the
+  // idle prefetch below only starts once the entrance has settled — which would
+  // leave the scene blank for a beat behind the lifting curtain. Request it on
+  // mount instead: it has the whole loading screen to arrive in. Mount-only;
+  // later navigations fetch their own chunk in navigate().
+  useEffect(() => {
+    if (LOADERS[page]) LOADERS[page]().catch(() => {})
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   const navigate = (target) => {
     if (target === page || phase !== 'idle') return
     // Ask for the chunk at click time as well as on idle: on a cold cache the
-    // curtain's 560ms cover then doubles as the loading window.
+    // curtain's 380ms cover then doubles as the loading window.
     if (LOADERS[target]) LOADERS[target]().catch(() => {})
     setPending(target)
     setPhase('cover')

@@ -23,9 +23,26 @@
   position: relative;
   flex: 0 1 auto;
   height: var(--hero-h);
-  /* Gentle opacity crossfade (no slide) so the photo eases in as the loading
-     screen fades out, rather than popping in through the transparent loader. */
-  animation: page-fade 900ms ease both;
+  /* The photo rises INTO place rather than just fading up. The reveal has to
+     live here on the figure, not on .login-img: the image carries the crop's
+     own `scale(1.15) translate(...)`, and a transform animation on it would
+     overwrite that pan/zoom (same reason home.css reveals its photo with
+     rev-fade). The figure has no transform of its own, so it is free to move,
+     and the ::before/::after corner squares ride along with it.
+     Duration matches the .rev* entrance system so the photo lands with the
+     card beside it instead of still fading 400ms after everything settled. */
+  animation: login-photo-in 560ms cubic-bezier(.25, .9, .35, 1) both;
+}
+/* Translate ONLY — deliberately no scale(). Scaling the figure also scales the
+   cropped photo inside it, so the compositor rasterises the arch at the
+   animated scale and then re-rasterises it natively when the layer is torn
+   down at the end; that re-raster reads as the picture snapping sideways on
+   the final frame. A pure translate reuses one texture for every frame and
+   lands exactly on the layout position, so there is no horizontal movement to
+   snap back from. */
+@keyframes login-photo-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: none; }
 }
 .login-figure::before {
   content: '';
@@ -228,7 +245,7 @@
   z-index: 2;
   perspective: 280px;
   transition: color 200ms ease, background 200ms ease, opacity 220ms ease,
-              transform 200ms cubic-bezier(.22, 1, .36, 1);
+              transform 200ms cubic-bezier(.33, 1, .68, 1);
   -webkit-tap-highlight-color: transparent;
 }
 .field-toggle.is-visible { opacity: 1; pointer-events: auto; }
@@ -275,7 +292,7 @@
   font-size: 12.5px;
   letter-spacing: 0.04em;
   /* translateX(-50%) centring lives in the keyframes (animations own transform) */
-  animation: login-alert-in 360ms cubic-bezier(.22, 1, .36, 1) both;
+  animation: login-alert-in 360ms cubic-bezier(.33, 1, .68, 1) both;
 }
 .login-alert svg { width: 16px; height: 16px; flex: none; }
 .login-alert--out { animation: login-alert-out 280ms ease both; }
@@ -352,6 +369,16 @@
     padding: 14px 16px 12px;
     overflow-y: auto;
     overflow-x: hidden;
+    /* Reserve the gutter on both edges, as every other scrolling scene does
+       (faq, party, registry, rsvp, story). Without it this column was the one
+       scroller whose scrollbar could come and go: the entrance transforms
+       (the figure's translateY, the .rev* offsets) count toward SCROLLABLE
+       OVERFLOW, so on a tall narrow window the column is briefly taller than
+       the viewport, takes a 15px scrollbar, then drops it on the frame the
+       last transform resolves. Because the column is centred, losing those
+       15px snapped everything 7.5px to the right. Reserved on both edges the
+       width never changes, scrolling or not. */
+    scrollbar-gutter: stable both-edges;
   }
 
   /* The arch flexes to fill ALL the height between the head band and the

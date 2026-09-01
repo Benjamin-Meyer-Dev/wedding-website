@@ -36,13 +36,20 @@
      transform breaks the clip) and poked grey square corners past the pill.
      Dropping it removes that artifact and the per-frame blur cost. */
   box-shadow: var(--glass-shadow);
-  /* Closing: round the corners back DURING the drawer collapse (360ms), but
-     weighted late — ease-in + 140ms delay — so most of the rounding happens
-     once the panel is nearly gone and there's no pinched waist at the joint.
-     It lands together with the collapse, reading as one motion. */
-  transition: border-bottom-left-radius 220ms cubic-bezier(.4, 0, .7, 1) 140ms,
-              border-bottom-right-radius 220ms cubic-bezier(.4, 0, .7, 1) 140ms,
-              border-bottom-color 200ms ease 140ms;
+  /* Closing: round the corners back DURING the drawer collapse, still weighted
+     late so there's no pinched waist at the joint — but with the lateness in
+     the CURVE rather than a delay. A `140ms delay + ease-in` held the corners
+     perfectly square and then started them from a dead stop, and that
+     stop-then-go onset is what made the rounding look like it lumped in.
+     Running the full 360ms on a curve that is almost flat at the start reaches
+     the same place with no discontinuity: both control points sit at y=0/y=1,
+     so it eases into motion AND eases to a halt. It is still only ~1.9px of the
+     22px radius at 140ms (the panel is 77% collapsed by then) and ~5px at
+     200ms, so the joint is never seen half-rounded, and it lands on 360ms with
+     the collapse exactly as before. */
+  transition: border-bottom-left-radius 360ms cubic-bezier(.95, 0, .5, 1),
+              border-bottom-right-radius 360ms cubic-bezier(.95, 0, .5, 1),
+              border-bottom-color 360ms cubic-bezier(.95, 0, .5, 1);
 }
 
 .topbar-monogram {
@@ -153,7 +160,7 @@
 .topbar-signout svg {
   width: 16px;
   height: 16px;
-  transition: transform 200ms cubic-bezier(.22, 1, .36, 1);
+  transition: transform 200ms cubic-bezier(.33, 1, .68, 1);
 }
 /* pointer-only: the door icon nudges toward the exit */
 @media (hover: hover) {
@@ -200,15 +207,17 @@
   display: none;
   grid-template-rows: 0fr;
   pointer-events: none;
-  transition: grid-template-rows 360ms cubic-bezier(.22, 1, .36, 1);
+  transition: grid-template-rows 360ms cubic-bezier(.33, 1, .68, 1);
 }
 .topbar.is-open .topbar-drawer {
   grid-template-rows: 1fr;
   pointer-events: auto;
-  /* Gentle start (vs the fast-launch ease-out used for closing): the panel
-     barely emerges during the first ~100ms, giving the corner tween below
-     time to square off before the joint is exposed. */
-  transition: grid-template-rows 400ms cubic-bezier(.45, 0, .2, 1);
+  /* Same 360ms as the close, so the menu takes exactly as long to open as it
+     does to shut. Only the CURVE differs: a gentle start (vs the fast-launch
+     ease-out used for closing) means the panel barely emerges during the first
+     ~100ms, still giving the corner tween below time to square off before the
+     joint is exposed. */
+  transition: grid-template-rows 360ms cubic-bezier(.45, 0, .2, 1);
 }
 .topbar-drawer-track {
   min-height: 0;
@@ -238,12 +247,12 @@
   /* Opening: square off fast-and-early (mirror of the late-weighted close) —
      mostly done within ~80ms, while the slow-starting panel above has barely
      any height, so the joint is never seen half-rounded. */
-  transition: border-bottom-left-radius 160ms cubic-bezier(.22, 1, .36, 1),
-              border-bottom-right-radius 160ms cubic-bezier(.22, 1, .36, 1),
+  transition: border-bottom-left-radius 160ms cubic-bezier(.33, 1, .68, 1),
+              border-bottom-right-radius 160ms cubic-bezier(.33, 1, .68, 1),
               border-bottom-color 120ms ease;
 }
 
-/* While the viewport is actively resizing, kill the (delayed) corner swap so
+/* While the viewport is actively resizing, kill the 360ms corner swap so
    crossing the mobile breakpoint (999px pill -> 22px card) doesn't leave the
    bottom corners lagging 360ms behind the top ones. */
 .topbar.is-resizing .topbar-inner { transition: none; }
@@ -265,8 +274,8 @@
   align-items: center;
   gap: 14px;
   overflow: hidden;
-  transition: color 260ms cubic-bezier(.22, 1, .36, 1),
-              background 260ms cubic-bezier(.22, 1, .36, 1);
+  transition: color 260ms cubic-bezier(.33, 1, .68, 1),
+              background 260ms cubic-bezier(.33, 1, .68, 1);
 }
 
 /* Accent bar that slides in from the left on hover/active */
@@ -281,7 +290,7 @@
   border-radius: 999px;
   transform: translateY(-50%);
   opacity: 0;
-  transition: height 320ms cubic-bezier(.22, 1, .36, 1),
+  transition: height 320ms cubic-bezier(.33, 1, .68, 1),
               opacity 220ms ease;
 }
 .topbar-drawer-link:hover::before,
@@ -298,14 +307,14 @@
   height: 22px;
   color: var(--accent);
   flex-shrink: 0;
-  transition: transform 360ms cubic-bezier(.22, 1, .36, 1),
+  transition: transform 360ms cubic-bezier(.33, 1, .68, 1),
               color 240ms ease;
 }
 .topbar-drawer-link-icon svg { width: 18px; height: 18px; }
 
 .topbar-drawer-link-lbl {
   display: inline-block;
-  transition: transform 320ms cubic-bezier(.22, 1, .36, 1);
+  transition: transform 320ms cubic-bezier(.33, 1, .68, 1);
 }
 
 .topbar-drawer-link:hover {

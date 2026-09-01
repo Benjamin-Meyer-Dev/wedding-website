@@ -41,7 +41,7 @@ function Countdown() {
   return (
     <div className="home-countdown" aria-label="Time until the wedding">
       {units.map((u, i) => (
-        <div className="hcd-item rev-pop" style={{ '--rd': `${980 + i * 90}ms` }} key={u.l}>
+        <div className="hcd-item rev-pop" style={{ '--rd': `${590 + i * 50}ms` }} key={u.l}>
           <span className="hcd-num">{u.n}</span>
           <span className="hcd-lbl">{u.l}</span>
         </div>
@@ -64,7 +64,7 @@ export default function Home() {
               src={heroPhoto}
               alt="Elizabeth and Benjamin"
               className="home-img rev-fade"
-              style={{ '--rd': '120ms' }}
+              style={{ '--rd': '70ms' }}
               width="1068"
               height="1600"
               fetchpriority="high"
@@ -80,18 +80,18 @@ export default function Home() {
               copy floats directly over the full-bleed photo. */}
           <div className="home-head">
             <h1 className="home-names">
-              <span className="home-name rev-mask" style={{ '--rd': '320ms' }}>Elizabeth</span>
+              <span className="home-name rev-mask" style={{ '--rd': '190ms' }}>Elizabeth</span>
               <span className="home-amp">
-                <span className="rev-pop" style={{ '--rd': '660ms' }}>&amp;</span>
+                <span className="rev-pop" style={{ '--rd': '400ms' }}>&amp;</span>
               </span>
-              <span className="home-name rev-mask" style={{ '--rd': '480ms' }}>Benjamin</span>
+              <span className="home-name rev-mask" style={{ '--rd': '290ms' }}>Benjamin</span>
             </h1>
 
-            <span className="home-rule rev-grow" style={{ '--rd': '820ms' }} />
+            <span className="home-rule rev-grow" style={{ '--rd': '490ms' }} />
           </div>
 
           <div className="home-foot">
-            <p className="home-date rev" style={{ '--rd': '900ms' }}>Saturday &middot; 29 May 2027 &middot; 2:00 PM</p>
+            <p className="home-date rev" style={{ '--rd': '540ms' }}>Saturday &middot; 29 May 2027 &middot; 2:00 PM</p>
 
             <Countdown />
           </div>

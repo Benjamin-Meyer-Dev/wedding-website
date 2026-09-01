@@ -47,7 +47,8 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 1040px;
+  /* Was 1040px, leaving ~800px of a 1920px screen unused. */
+  max-width: 1520px;
 }
 
 /* Cinematic aura behind the stage — colour follows the active phase. */
@@ -55,7 +56,7 @@
   position: absolute;
   top: -6%;
   left: 50%;
-  width: min(124%, 1180px);
+  width: min(124%, 1700px); /* track the wider stage so the aura still frames it */
   height: 496px;
   transform: translateX(-50%);
   z-index: -1;
@@ -220,7 +221,8 @@
   --tl-progress: 0;
   position: relative;
   width: 100%;
-  max-width: 640px;
+  /* Vertical (narrow) timeline: 640px left ~350px of a 1000px column empty. */
+  max-width: 720px;
   margin: 0 auto;
 }
 
@@ -237,7 +239,7 @@
     var(--accent) 45%,
     var(--ink-blue) 100%);
   transform-origin: top center;
-  animation: tl-draw-v 900ms cubic-bezier(.22, 1, .36, 1) 120ms both;
+  animation: tl-draw-v 900ms cubic-bezier(.33, 1, .68, 1) 120ms both;
 }
 /* The travelling comet, in two pieces so both can move on the compositor:
    .timeline-progress is the fill (scaled) and .timeline-head the glowing head
@@ -310,7 +312,7 @@
   /* fill the circle just as the comet head arrives (mirror of the desktop snap) */
   .tl-node.is-active .tl-marker {
     transition: background .16s ease, border-color .16s ease, color .16s ease,
-                transform .24s cubic-bezier(.22, 1, .36, 1), box-shadow .28s ease;
+                transform .24s cubic-bezier(.33, 1, .68, 1), box-shadow .28s ease;
     transition-delay: 0.37s;
   }
 }
@@ -322,7 +324,7 @@
   outline: none;
   /* kill the mobile tap flash — a big translucent blue box over the card */
   -webkit-tap-highlight-color: transparent;
-  animation: tl-pop 620ms cubic-bezier(.22, 1, .36, 1) backwards;
+  animation: tl-pop 620ms cubic-bezier(.33, 1, .68, 1) backwards;
   animation-delay: calc(var(--i) * 80ms + 220ms);
 }
 .tl-node:last-child { padding-bottom: 0; }
@@ -347,7 +349,7 @@
   color: var(--accent);
   box-shadow: 0 6px 16px -8px rgba(21, 50, 74, 0.5);
   z-index: 1;
-  transition: transform .5s cubic-bezier(.22, 1, .36, 1),
+  transition: transform .5s cubic-bezier(.33, 1, .68, 1),
               box-shadow .5s ease,
               background .5s ease,
               border-color .5s ease,
@@ -449,7 +451,11 @@
     position: relative;
     display: flex;
     width: 100%;
-    max-width: 940px;
+    /* Wider hero. Height stays 330px: it is deliberately fixed so the card
+       doesn't resize between events, and raising it would crowd the timeline
+       and legend on a 900px-tall screen. The extra width goes to the photo —
+       .stage-desc is capped at 36ch, so the copy measure is unaffected. */
+    max-width: 1300px;
     /* fixed (content-independent) height so the hero doesn't resize between
        cards — text just centres within it. Sized to leave room for the
        timeline + legend below it on a standard desktop screen. */
@@ -458,12 +464,14 @@
     border: 0; /* drop the glass hairline so the photo bleeds to the edge */
     border-radius: 28px;
     overflow: hidden;
-    animation: stage-in 620ms cubic-bezier(.22, 1, .36, 1) 60ms both;
+    animation: stage-in 620ms cubic-bezier(.33, 1, .68, 1) 60ms both;
   }
 
   .timeline {
     --tl-pad-top: 20px;
-    max-width: 1020px;
+    /* Wider spine spreads the nodes further apart (justify-content:
+       space-between), which is the whole point of the horizontal timeline. */
+    max-width: 1500px;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -478,7 +486,7 @@
     width: auto;
     height: 2px;
     transform-origin: left center;
-    animation: tl-draw-h 1000ms cubic-bezier(.22, 1, .36, 1) 120ms both;
+    animation: tl-draw-h 1000ms cubic-bezier(.33, 1, .68, 1) 120ms both;
     background: linear-gradient(90deg,
       var(--accent-soft) 0%,
       var(--accent) 45%,
@@ -541,7 +549,7 @@
      un-highlighting stays immediate. */
   .tl-node.is-active .tl-marker {
     transition: background .16s ease, border-color .16s ease, color .16s ease,
-                transform .24s cubic-bezier(.22, 1, .36, 1), box-shadow .28s ease;
+                transform .24s cubic-bezier(.33, 1, .68, 1), box-shadow .28s ease;
     transition-delay: 0.37s; /* fire just as the comet head reaches behind the circle */
   }
 }

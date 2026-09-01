@@ -23,7 +23,7 @@ export default function Story() {
     <section className="scene story" ref={ref}>
       <div className="story-inner">
         <header className="page-head story-head">
-          <h1 className="page-title rev" style={{ '--rd': '120ms' }}>Once Upon a Time</h1>
+          <h1 className="page-title rev" style={{ '--rd': '70ms' }}>Once Upon a Time</h1>
         </header>
 
         <div className="story-timeline">
@@ -31,7 +31,7 @@ export default function Story() {
           {STORY.map((s, i) => (
             <article
               className={`story-item${i % 2 ? ' story-item--right' : ''} rev-fade`}
-              style={{ '--rd': `${300 + i * 90}ms` }}
+              style={{ '--rd': `${180 + i * 50}ms` }}
               key={i}
             >
               <figure
@@ -51,13 +51,13 @@ export default function Story() {
           <span className="story-timeline-cap story-timeline-cap--bottom" aria-hidden="true" />
         </div>
 
-        <p className="story-gallery-label rev-fade" style={{ '--rd': '300ms' }}>A Few of Our Favourites</p>
+        <p className="story-gallery-label rev-fade" style={{ '--rd': '180ms' }}>A Few of Our Favourites</p>
         <div className="story-gallery">
           {GALLERY.map((src, i) => (
             <span
               key={i}
               className={`story-gallery-cell tone-${i % 3} rev-fade`}
-              style={{ ...(src ? { backgroundImage: `url(${src})` } : {}), '--rd': `${360 + i * 60}ms` }}
+              style={{ ...(src ? { backgroundImage: `url(${src})` } : {}), '--rd': `${220 + i * 40}ms` }}
             >
               {!src && <Camera aria-hidden="true" />}
             </span>

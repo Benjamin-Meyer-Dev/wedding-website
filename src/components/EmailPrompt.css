@@ -23,7 +23,7 @@
   pointer-events: none; /* no taps during the goodbye */
 }
 .elp-overlay--out .elp-card {
-  animation: elp-sink 300ms cubic-bezier(.22, 1, .36, 1) both;
+  animation: elp-sink 300ms cubic-bezier(.33, 1, .68, 1) both;
 }
 @keyframes elp-fade-out {
   from { opacity: 1; }
@@ -45,9 +45,9 @@
      (height:auto can't animate), so the card glides when the form swaps to
      the short "Sent!" note instead of snapping. */
   overflow: hidden;
-  transition: height 480ms cubic-bezier(.22, 1, .36, 1),
-              width 480ms cubic-bezier(.22, 1, .36, 1);
-  animation: elp-rise 420ms cubic-bezier(.22, 1, .36, 1);
+  transition: height 480ms cubic-bezier(.33, 1, .68, 1),
+              width 480ms cubic-bezier(.33, 1, .68, 1);
+  animation: elp-rise 420ms cubic-bezier(.33, 1, .68, 1);
 }
 /* the short "Sent!" note needs far less room — the card narrows to match */
 .elp-card--sent { width: min(280px, 100%); }
@@ -171,7 +171,7 @@
   gap: 10px;
   padding: 18px 0 14px;
   color: var(--accent-deep);
-  animation: elp-rise 360ms cubic-bezier(.22, 1, .36, 1);
+  animation: elp-rise 360ms cubic-bezier(.33, 1, .68, 1);
 }
 .elp-sent svg { width: 28px; height: 28px; }
 .elp-sent p {

@@ -29,12 +29,12 @@ export default function Faq() {
     <section className="scene faq">
       <div className="faq-inner">
         <header className="page-head faq-head">
-          <h1 className="page-title rev" style={{ '--rd': '120ms' }}>Flip for Answers</h1>
+          <h1 className="page-title rev" style={{ '--rd': '70ms' }}>Flip for Answers</h1>
         </header>
 
         <ul className="faq-grid">
           {FAQS.map((f, i) => (
-            <li className="faq-cell rev-fade" style={{ '--rd': `${340 + i * 80}ms` }} key={i}>
+            <li className="faq-cell rev-fade" style={{ '--rd': `${200 + i * 50}ms` }} key={i}>
               <div
                 className={`faq-card${flipped === i ? ' is-flipped' : ''}`}
                 role="button"

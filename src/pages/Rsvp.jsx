@@ -257,8 +257,8 @@ export default function Rsvp() {
     <section className="scene rsvp">
       <div className="rsvp-inner">
         <header className="rsvp-head">
-          <h1 className="page-title rev" style={{ '--rd': '150ms' }}>Will you join us?</h1>
-          <p className="rsvp-sub rev" style={{ '--rd': '300ms' }}>Kindly respond by April 1, 2027.</p>
+          <h1 className="page-title rev" style={{ '--rd': '90ms' }}>Will you join us?</h1>
+          <p className="rsvp-sub rev" style={{ '--rd': '180ms' }}>Kindly respond by April 1, 2027.</p>
         </header>
 
         <div className="rsvp-deck">

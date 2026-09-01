@@ -60,7 +60,7 @@ function Side({ side, baseDelay }) {
       <h2 className="party-side-title rev" style={{ '--rd': `${baseDelay}ms` }}>{side.label}</h2>
       <div className="party-people">
         {side.people.map((p, i) => (
-          <Person key={p.name} person={p} tone={i % 3} delay={baseDelay + 90 + i * 70} />
+          <Person key={p.name} person={p} tone={i % 3} delay={baseDelay + 50 + i * 40} />
         ))}
       </div>
     </section>
@@ -72,13 +72,13 @@ export default function WeddingParty() {
     <section className="scene party">
       <div className="party-inner">
         <header className="page-head party-head">
-          <h1 className="page-title rev" style={{ '--rd': '120ms' }}>By Our Sides</h1>
+          <h1 className="page-title rev" style={{ '--rd': '70ms' }}>By Our Sides</h1>
         </header>
 
         <div className="party-sides">
-          <Side side={HER_SIDE} baseDelay={320} />
+          <Side side={HER_SIDE} baseDelay={190} />
           <div className="party-divider" aria-hidden="true"><span className="party-amp">&amp;</span></div>
-          <Side side={HIS_SIDE} baseDelay={360} />
+          <Side side={HIS_SIDE} baseDelay={220} />
         </div>
       </div>
     </section>

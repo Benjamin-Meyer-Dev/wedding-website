@@ -25,7 +25,11 @@
   animation: page-rise 460ms cubic-bezier(.4, 0, .2, 1);
   flex: none;           /* keep natural height; the scene scrolls, not the inner */
   width: 100%;
-  max-width: 1140px;
+  /* Was 1140px, which capped the two columns at ~516px each and left 716px of a
+     1920px screen unused. 1320px gives each column ~620px so the cards can hold
+     the wider max-width below, and still fits a 1400px viewport (1336px of
+     content box) without the grid having to shrink. */
+  max-width: 1440px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -52,6 +56,11 @@
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  /* Grid items default to `min-width: auto`, so this column's 1fr track sized
+     itself to the card grid's intrinsic width instead of to the container —
+     which let the auto-fit below resolve to one track too many and overflow the
+     scene. min-width:0 lets the track shrink to the width actually available. */
+  min-width: 0;
 }
 /* Her — warm dusty rose on cream; His — cool deep blue. Every accent below
    (role text, badge, lead ring/glow, photo gradients, card tint) reads from
@@ -115,7 +124,11 @@
 /* ---------------- People (one uniform card for everyone) ---------------- */
 .party-people {
   width: 100%;
-  max-width: 500px;
+  /* Card width. The blurb sits in `card - 126px` (18px padding x2 + 74px photo +
+     16px gap). 660px would run ~89 characters at the 13px type — too long — so
+     the wide-screen tier below grows the photo to 96px, pulling the measure
+     back to ~79 characters. Width is filled without stretching the line. */
+  max-width: 660px;
   display: grid;
   /* equal rows: every card in the column stretches to match the tallest one
      (longer blurbs were making some cards taller than their neighbours) */
@@ -268,10 +281,27 @@
 }
 
 /* ---------------- Responsive ---------------- */
+/* Large desktops: the cards are ~660px here, so scale the portrait up with them
+   (mirrors the big-desktop tier in login.css). This is what keeps the blurb's
+   line length in check while the card fills more of the page. */
+@media (min-width: 1400px) {
+  .party-person { grid-template-columns: 96px 1fr; }
+  .party-photo { width: 96px; height: 96px; }
+  .party-photo svg { width: 38px; height: 38px; }
+}
+
 @media (max-width: 1200px) {
   .party-sides { grid-template-columns: 1fr; gap: 24px; }
   .party-side { gap: 16px; }
-  .party-people { max-width: 560px; }
+  /* One stacked column per side, so the cards get the FULL width to share.
+     A single 640px card left ~320px of a 964px column empty; two-up fills it
+     with a better measure (~58 characters) than one very wide card would have.
+     auto-fit + a 320px floor means this collapses back to one card per row on
+     anything narrower than ~700px, so phones are unaffected. */
+  .party-people {
+    max-width: 1100px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
   .party-divider {
     flex-direction: row;
     align-self: auto;

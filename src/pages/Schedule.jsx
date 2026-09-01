@@ -165,7 +165,7 @@ export default function Schedule() {
   return (
     <section className="sched">
       <header className="page-head sched-head">
-        <h1 className="page-title rev" style={{ '--rd': '120ms' }}>Order of the Day</h1>
+        <h1 className="page-title rev" style={{ '--rd': '70ms' }}>Order of the Day</h1>
       </header>
 
       {/* Hovering anywhere in the hero pauses the auto-rotation. */}

@@ -81,19 +81,19 @@ export default function Login() {
 
       <article className="login-card glass">
         <header className="login-card-head">
-          <p className="login-tag rev-fall" style={{ '--rd': '220ms' }}>Save the Date</p>
-          <h1 className="login-mono rev-pop" style={{ '--rd': '320ms' }}>
+          <p className="login-tag rev-fall" style={{ '--rd': '130ms' }}>Save the Date</p>
+          <h1 className="login-mono rev-pop" style={{ '--rd': '190ms' }}>
             <span>E</span>
             <span className="amp">&amp;</span>
             <span>B</span>
           </h1>
-          <p className="login-date rev" style={{ '--rd': '460ms' }}>29 May 2027</p>
+          <p className="login-date rev" style={{ '--rd': '280ms' }}>29 May 2027</p>
         </header>
 
-        <div className="login-rule rev-grow" style={{ '--rd': '560ms' }} />
+        <div className="login-rule rev-grow" style={{ '--rd': '340ms' }} />
 
         <form className="login-form" onSubmit={handleSubmit} noValidate>
-          <label className="field rev" style={{ '--rd': '620ms' }}>
+          <label className="field rev" style={{ '--rd': '370ms' }}>
             <span className="field-lbl">Username</span>
             <input
               type="text"
@@ -107,7 +107,7 @@ export default function Login() {
             />
           </label>
 
-          <label className="field rev" style={{ '--rd': '700ms' }}>
+          <label className="field rev" style={{ '--rd': '420ms' }}>
             <span className="field-lbl">Password</span>
             <div className="field-input-wrap">
               <input
@@ -132,7 +132,7 @@ export default function Login() {
             </div>
           </label>
 
-          <button type="submit" className="login-btn rev" style={{ '--rd': '800ms' }} disabled={loading}>
+          <button type="submit" className="login-btn rev" style={{ '--rd': '480ms' }} disabled={loading}>
             {loading ? 'Signing In…' : 'Enter'}
           </button>
         </form>

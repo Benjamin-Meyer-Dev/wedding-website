@@ -10,7 +10,7 @@
   /* Fade the whole orb field in on load (behind the loading screen), so the
      decoration animates in rather than popping. */
   opacity: 0;
-  animation: orbs-in 1500ms cubic-bezier(.16, 1, .3, 1) both;
+  animation: orbs-in 900ms cubic-bezier(.25, .9, .35, 1) both;
 }
 @keyframes orbs-in { to { opacity: 1; } }
 

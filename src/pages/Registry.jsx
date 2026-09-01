@@ -110,7 +110,7 @@ export default function Registry() {
     <section className="scene registry">
       <div className="registry-inner">
         <header className="page-head registry-head">
-          <h1 className="page-title rev" style={{ '--rd': '120ms' }}>Gifts &amp; Good Wishes</h1>
+          <h1 className="page-title rev" style={{ '--rd': '70ms' }}>Gifts &amp; Good Wishes</h1>
         </header>
 
         <div className="reg-showcase">
