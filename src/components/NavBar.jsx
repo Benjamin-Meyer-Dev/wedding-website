@@ -36,6 +36,7 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
   // lock below). The open transition is 400ms, the close 360ms.
   const [locked, setLocked] = useState(false)
   const headerRef = useRef(null)
+  const drawerRef = useRef(null)
 
   // Publish the navbar's live height so pages can offset their content to sit a
   // fixed 15px below it (consumed as --content-top in global.css). Re-measures
@@ -92,7 +93,15 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
       'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
       'PageUp', 'PageDown', 'Home', 'End', ' ', 'Spacebar',
     ])
-    const block = (e) => { if (e.cancelable) e.preventDefault() }
+    // The drawer itself is exempt: on a short screen (a phone in landscape) the
+    // menu is taller than the space below the bar and scrolls internally, and a
+    // blanket preventDefault on touchmove would freeze that too. A touch's
+    // target is fixed at touchstart, so this tests where the drag BEGAN.
+    const inDrawer = (e) => {
+      const el = drawerRef.current
+      return !!el && e.target instanceof Node && el.contains(e.target)
+    }
+    const block = (e) => { if (!inDrawer(e) && e.cancelable) e.preventDefault() }
     const blockKeys = (e) => {
       if (!SCROLL_KEYS.has(e.key)) return
       // Leave typing and button/link activation (space, enter) alone.
@@ -214,7 +223,7 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
         </div>
       </div>
 
-      <div className="topbar-drawer" role="menu">
+      <div className="topbar-drawer" role="menu" ref={drawerRef}>
         <div className="topbar-drawer-track">
           <div className="topbar-drawer-inner">
             <button

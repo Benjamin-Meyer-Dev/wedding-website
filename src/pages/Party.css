@@ -13,6 +13,10 @@
   overflow-y: auto;
   scrollbar-gutter: stable both-edges; /* keep header centred whether or not it scrolls */
   padding: 0 32px;
+  /* Held here, not inline on .party-side-title, because .party-divider derives
+     its top offset from it — the two used to carry the same number separately,
+     which is a pair that silently drifts apart the next time one is changed. */
+  --party-title-size: 32px;
 }
 .scene.party::before,
 .scene.party::after { content: ''; flex: 1 1 0; }
@@ -88,7 +92,9 @@
   margin: 0;
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: 23px;
+  /* Was 23px, small enough beside the 20px names that "Her Side" read as a
+     label rather than the heading for the column under it. */
+  font-size: var(--party-title-size);
   line-height: 1;
   letter-spacing: 0.06em;
   color: var(--accent);
@@ -102,8 +108,9 @@
   align-items: center;
   gap: 16px;
   /* start level with the cards, not the side titles: skip the title's height
-     (23px font, line-height 1) plus the .party-side gap (20px) above the cards */
-  margin-top: calc(23px + 20px);
+     (line-height is 1, so its box is exactly the font size) plus the
+     .party-side gap (20px) above the cards */
+  margin-top: calc(var(--party-title-size) + 20px);
 }
 .party-divider::before,
 .party-divider::after {
@@ -125,7 +132,7 @@
 .party-people {
   width: 100%;
   /* Card width. The blurb sits in `card - 126px` (18px padding x2 + 74px photo +
-     16px gap). 660px would run ~89 characters at the 13px type — too long — so
+     16px gap). 660px would run ~77 characters at the 15px type — too long — so
      the wide-screen tier below grows the photo to 96px, pulling the measure
      back to ~79 characters. Width is filled without stretching the line. */
   max-width: 660px;
@@ -251,7 +258,7 @@
 .party-role {
   font-family: var(--font-ui);
   font-weight: 600;
-  font-size: 9.5px;
+  font-size: 10.5px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--accent);
@@ -271,13 +278,16 @@
   margin: 2px 0 0;
   font-family: var(--font-ui);
   font-weight: 400;
-  font-size: 13px;
-  line-height: 1.5;
+  /* Was 13px, which read small against the 20px names. */
+  font-size: 15px;
+  line-height: 1.55;
   color: var(--text-soft);
-  /* reserve two lines: the her/his columns are separate grids, so their
-     1fr rows can't equalize across the aisle — a 1-line blurb card must
-     match a 2-line one. Keep blurbs ≤ 2 lines or the mismatch returns. */
-  min-height: 3em;
+  /* No two-line reservation any more. `grid-auto-rows: 1fr` already equalizes
+     every card within a column and the card centres its contents, so a 1-line
+     blurb now sits centred beside its photo instead of being lifted by a
+     phantom second line. The old min-height only held the two sides exactly
+     level while every blurb fit in two lines, which the wider type no longer
+     guarantees on the his side anyway. */
 }
 
 /* ---------------- Responsive ---------------- */
@@ -321,6 +331,8 @@
 
 @media (max-width: 520px) {
   .scene.party { padding-left: 20px; padding-right: 20px; }
+  /* the narrow card leaves a short measure, so ease the type back a touch */
+  .party-blurb { font-size: 14.5px; }
   .party-person { padding: 14px 14px; gap: 13px; grid-template-columns: 64px 1fr; }
   .party-photo { width: 64px; height: 64px; }
 }

@@ -1,0 +1,20 @@
+{
+  // Every source file in this repo is indented with two spaces. VS Code's
+  // default tab size is 4, and indent-rainbow paints any indentation that
+  // isn't a multiple of the tab size with its error colour — which was every
+  // odd level of every file, hence the red blocks down the gutter.
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  // detectIndentation re-guesses per file and can flip tabSize back to 4 on a
+  // file whose first indented lines happen to sit 4 apart, so pin it off.
+  "editor.detectIndentation": false,
+
+  // The comment style here aligns continuation lines under the first word of
+  // the comment, e.g.
+  //     /* Card width. The blurb sits in `card - 126px` (18px padding x2 +
+  //        74px photo + 16px gap). */
+  // That puts 475 lines at an odd column BY DESIGN, and no tab size makes them
+  // "correct". A transparent error colour keeps indent-rainbow's guides while
+  // dropping the false positives.
+  "indentRainbow.errorColor": "rgba(0, 0, 0, 0)"
+}

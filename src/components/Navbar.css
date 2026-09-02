@@ -239,7 +239,22 @@
   /* No box-shadow: the track's overflow:hidden clipped it into grey corner
      notches, and it added no real depth. The blue border defines the panel;
      the pill above still carries the elevation shadow. */
+
+  /* Nine links run ~360px tall, which is taller than a landscape phone's whole
+     screen. `.app` is overflow:hidden, so anything past the bottom edge was
+     simply unreachable — the menu's last items (RSVP, Sign Out) could not be
+     tapped. Cap the panel to the space between the bar and the bottom edge and
+     let it scroll itself. The dvh line is second so browsers that support it
+     win: with a mobile URL bar on screen 100vh overstates the visible height,
+     which is exactly the case where the cap has to be tight.
+     NOTE: the drawer is exempted from NavBar's scroll lock, or this scrolls
+     nowhere on touch — see the `block` handler in NavBar.jsx. */
+  max-height: calc(100vh - var(--nav-top) - var(--topbar-h, 58px) - 14px);
+  max-height: calc(100dvh - var(--nav-top) - var(--topbar-h, 58px) - 14px);
+  overflow-y: auto;
+  overscroll-behavior: contain; /* the page behind is frozen; don't chain to it */
 }
+.topbar-drawer-inner::-webkit-scrollbar { width: 5px; }
 .topbar.is-open .topbar-inner {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;

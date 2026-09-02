@@ -1,19 +1,29 @@
 import { useState } from 'react'
-import { Shirt, Martini, Baby, Car, Gift, Clock } from 'lucide-react'
+import { Shirt, Martini, Baby, Car, Clock, BedDouble, UserPlus, Bus } from 'lucide-react'
 import './Faq.css'
 
-// Answers are kept short so they read cleanly on the flip side of each card.
+// Faces are fixed-height with `overflow: hidden`, so a question and its answer
+// both have to fit inside one. The height tiers in Faq.css are sized to the
+// longest of each: the parking question on the front (three lines on a phone,
+// above a 70px icon) and its answer on the back.
 const FAQS = [
-  { icon: 'wear', q: 'What should I wear?', a: 'Cocktail / semi-formal: garden-party elegant, in shoes you can dance in.' },
-  { icon: 'bar', q: 'Will there be an open bar?', a: 'Yes! Cocktails, wine, and a full bar until last call at 11:30 PM.' },
-  { icon: 'kids', q: 'Can I bring the kids?', a: 'It’s an adults-only evening, so please check your invite for named guests.' },
-  { icon: 'parking', q: 'Where do I park?', a: 'Free parking at both venues. It’s a ~20-min drive between them, so carpool!' },
-  { icon: 'gift', q: 'Is there a registry?', a: 'Your presence is the present. A registry link is on its way.' },
   { icon: 'time', q: 'When should I arrive?', a: 'Be seated by 1:30 PM. The ceremony begins at 2:00 sharp.' },
+  { icon: 'wear', q: 'What is the dress code?', a: 'We’d love for you to dress in church-friendly cocktail attire. Our wonderful wedding party will be dressed in blue on our special day!' },
+  { icon: 'parking', q: 'Is there parking, or should we arrange a ride/shuttle?', a: 'There is parking at both the church and Rebel Creek. Feel free to leave your car at Rebel Creek overnight and hop on our shuttle to the Delta Hotel Waterloo. See the Travel page for details.' },
+  // TODO(couple): the shuttle's departure time and pickup spot are deliberately
+  // left out rather than guessed — same rule as the blank hotel fields in
+  // Travel.jsx. Add them here (and to the Travel page, which has no shuttle
+  // section yet even though two answers point guests at it) once they're set.
+  { icon: 'shuttle', q: 'How do we get back to the hotel?', a: 'Our shuttle runs from Rebel Creek to the Delta Hotel Waterloo at the end of the night. Leave your car at the club overnight and pick it up in the morning.' },
+  { icon: 'hotel', q: 'Is there a hotel block?', a: 'Yes! We have a hotel block at the Delta Hotel Waterloo. See the Travel page for the link and booking info.' },
+  { icon: 'kids', q: 'Are kids invited?', a: 'As much as we love your little ones, we’ve decided to keep our wedding an adults-only celebration. Thanks for understanding!' },
+  { icon: 'plusOne', q: 'Can I bring a plus-one?', a: 'To help us keep things intimate, we’re only able to accommodate the guests named on your invitation. Thanks for understanding!' },
+  { icon: 'bar', q: 'Will there be an open bar?', a: 'Yes! Cocktails, wine, and a full bar until last call at 11:30 PM.' },
 ]
 
 // One Lucide line icon per question topic.
-const ICONS = { wear: Shirt, bar: Martini, kids: Baby, parking: Car, gift: Gift, time: Clock }
+const ICONS = { wear: Shirt, bar: Martini, kids: Baby, parking: Car, time: Clock, hotel: BedDouble, plusOne: UserPlus, shuttle: Bus }
+
 function Icon({ name }) {
   const C = ICONS[name]
   return C ? <C aria-hidden="true" /> : null

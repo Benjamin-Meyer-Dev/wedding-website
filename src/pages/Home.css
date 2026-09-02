@@ -302,3 +302,36 @@
   .hcd-num { font-size: clamp(20px, 5vw, 34px); }
   .hcd-lbl { font-size: 9px; letter-spacing: 0.24em; }
 }
+
+/* ============================================================
+   Short + wide (a phone in landscape, ~320-430px tall)
+   The mobile stack above is `height: 100%` with fixed 60px/84px text bands and
+   a flex-filled arch, which is fine at 700px+ of height and crushes the arch to
+   a ~78px sliver at 320px. Here the stack is allowed to exceed the viewport
+   instead: the arch keeps a real floor, the type steps down, and the scene
+   (see the max-height tier in Scene.css) scrolls if the total still doesn't
+   fit. At 375-430px tall it lands inside the viewport and never scrolls.
+   ============================================================ */
+@media (max-width: 1200px) and (max-height: 560px) {
+  .home-stage {
+    /* auto + min-height, not height: the stage may now grow past the viewport */
+    height: auto;
+    min-height: 100%;
+    gap: 6px;
+    padding-bottom: 10px;
+  }
+  .home-head { height: 48px; }
+  .home-foot { height: 76px; }
+  /* The arch is flex:1 1 0, so without a floor it absorbs every shortfall and
+     collapses. Below this it stops reading as a photo. */
+  .home-figure { min-height: 150px; }
+  /* vw-capped rather than the taller mobile clamps: a landscape phone is wide,
+     so 7.4vw would resolve to the 44px ceiling in a 48px band. */
+  .home-name { font-size: clamp(22px, 4.6vw, 32px); }
+  .home-amp > span { font-size: clamp(16px, 3.4vw, 24px); }
+  .home-rule { width: 72px; margin-top: 6px; }
+  .home-date { font-size: 11px; letter-spacing: 0.2em; }
+  .home-countdown { margin-top: 6px; }
+  .hcd-num { font-size: clamp(18px, 3.4vw, 28px); }
+  .hcd-lbl { font-size: 8px; letter-spacing: 0.2em; }
+}

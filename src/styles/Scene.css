@@ -18,6 +18,31 @@
   justify-content: center;
 }
 
+/* ---- Short viewports (a phone turned sideways) ----
+   A landscape phone is ~320-430px tall, which is shorter than most scenes are
+   designed for. Pages that opt into `overflow-y: auto` already cope; the ones
+   that rely on `.scene`'s `overflow: hidden` (home, and login above 1200px)
+   simply clipped whatever didn't fit, with no way to reach it.
+
+   `align-items: safe center` is the key: the base rule centres the scene's
+   content on the CROSS axis, and plain `center` pushes an overflowing child's
+   top above the scroll origin where it can't be scrolled to (the same "can't
+   scroll up" trap documented on .scene.rsvp). `safe` keeps the centring while
+   it fits and falls back to flex-start the moment it doesn't.
+
+   Scenes that already scroll set their own align-items in a `.scene.x` rule
+   (0,2,0), so they outrank this and are untouched. */
+@media (max-height: 560px) {
+  .scene {
+    overflow-y: auto;
+    /* not the default `visible`: paired with overflow-y it computes to auto,
+       and the decor sprigs sit deliberately off the left/right edges */
+    overflow-x: hidden;
+    align-items: safe center;
+  }
+  .scene::-webkit-scrollbar { width: 6px; }
+}
+
 /* ---- Entrance reveals (replay every time a scene mounts) ---- */
 @keyframes sb-rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
 @keyframes sb-fall { from { opacity: 0; transform: translateY(-24px); } to { opacity: 1; transform: none; } }

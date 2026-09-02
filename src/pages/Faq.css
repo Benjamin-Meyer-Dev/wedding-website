@@ -53,7 +53,9 @@
 
 .faq-card {
   width: 100%;
-  height: 210px;
+  /* Was 210px, which left 6px of slack under the longest question — enough to
+     clip it the moment Playfair falls back to a wider serif. */
+  height: 240px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -156,8 +158,14 @@
 /* ---------------- Responsive ---------------- */
 @media (max-width: 1200px) {
   .faq-grid { grid-template-columns: repeat(2, 1fr); }
-  .faq-card { height: 180px; }
+  /* Two-up cards are ~440px wide, so questions wrap to two lines instead of
+     three — but 180px left exactly 1px spare, so give it real room. */
+  .faq-card { height: 200px; }
 }
 @media (max-width: 440px) {
   .faq-grid { grid-template-columns: 1fr; }
+  /* Taller than the two-up tier above, not shorter: one column on a 360px
+     phone is the NARROWEST card in the deck (~250px of text), so this is where
+     the long questions wrap to three lines over the icon. */
+  .faq-card { height: 220px; }
 }

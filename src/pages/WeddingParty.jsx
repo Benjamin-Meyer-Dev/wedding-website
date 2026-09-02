@@ -15,7 +15,7 @@ const HER_SIDE = {
     { role: 'Bridesmaid', name: 'Cassidy Shortt', blurb: 'The reason my bookshelf is full and my coffee budget is empty.', photo: '' },
     { role: 'Bridesmaid', name: 'Sara Williams', blurb: 'Childhood bestie and trusted recipient of every insignificant life update.', photo: '' },
     { role: 'Bridesmaid', name: 'Evelyn Ysselstein', blurb: 'Sunset swims, paddle board partner, and a lifelong battle over who finishes the book first.', photo: '' },
-    { role: 'Flower Girl', name: 'Kathleen Box', blurb: 'Ready to scatter petals with great ceremony.', photo: '', BadgeIcon: Flower },
+    { role: 'Ring Bearer', name: 'Kathleen Box', blurb: 'Entrusted with the most important delivery of the day.', photo: '', BadgeIcon: Gem },
   ],
 }
 
@@ -28,7 +28,7 @@ const HIS_SIDE = {
     { role: 'Groomsman', name: 'Todd Box', blurb: 'Part inherited brother, part handyman, part outdoorsman, and somehow responsible for two kids.', photo: '' },
     { role: 'Groomsman', name: 'Connor Caddigan', blurb: 'High school friend, former Big Red pilot, and victim of a golf swing that has never met a fairway it couldn’t avoid.', photo: '' },
     { role: 'Groomsman', name: 'Holden Ryder', blurb: 'Ben’s personal breaking-news service, fantasy football consultant, and occasional financial advisor specializing in unnecessary gambling.', photo: '' },
-    { role: 'Ring Bearer', name: 'Timothy Box', blurb: 'Entrusted with the most important delivery of the day.', photo: '', BadgeIcon: Gem },
+    { role: 'Flower Boy', name: 'Timothy Box', blurb: 'Ready to scatter petals with great ceremony.', photo: '', BadgeIcon: Flower },
   ],
 }
 
