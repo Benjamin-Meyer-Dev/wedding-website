@@ -27,7 +27,7 @@
   animation: page-rise 460ms cubic-bezier(.4, 0, .2, 1);
   flex: none;           /* keep natural height; the scene scrolls, not the inner */
   width: 100%;
-  max-width: 940px;
+  max-width: 1520px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -47,45 +47,31 @@
   flex-direction: column;
   gap: 36px;
 }
-.story-timeline::before {
+/* The line is drawn as one segment per milestone rather than a single bar on the
+   container, so it starts exactly at the first card's dot and ends at the last
+   one's — no separate end caps. Each segment runs the full height of its item
+   plus the 36px flex gap, bridging to the next; the first starts at its dot and
+   the last stops at its dot. The gradient the whole line used to carry is split
+   across the segments: item `i` fades from i/n to (i+1)/n of the way between
+   --accent-soft and --ink-blue, so the stops meet and read as one continuous
+   run. `--i` / `--n` come from the inline style in Story.jsx. */
+.story-item::before {
   content: '';
   position: absolute;
   left: 50%;
-  top: 8px;
-  bottom: 8px;
+  top: 0;
+  bottom: -36px;
   width: 2px;
   transform: translateX(-50%);
-  background: linear-gradient(180deg, var(--accent-soft) 0%, var(--accent) 50%, var(--ink-blue) 100%);
   border-radius: 2px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ink-blue) calc(var(--i) / var(--n) * 100%), var(--accent-soft)),
+    color-mix(in srgb, var(--ink-blue) calc((var(--i) + 1) / var(--n) * 100%), var(--accent-soft))
+  );
 }
-
-/* Decorative gem finials cap each end of the timeline line so it begins and ends
-   with a flourish instead of a hard stop. Rotated squares (diamonds) with a halo
-   ring and an inner highlight; absolutely positioned so they don't disturb the
-   flex flow of the milestones. Top picks up the line's light end, bottom its deep end. */
-.story-timeline-cap {
-  position: absolute;
-  left: 50%;
-  width: 13px;
-  height: 13px;
-  border-radius: 3px;
-  background: linear-gradient(135deg, var(--accent-soft), var(--accent));
-  box-shadow: 0 0 0 4px rgba(58, 111, 149, 0.12), 0 8px 18px -6px rgba(58, 111, 149, 0.55);
-  z-index: 1;
-}
-.story-timeline-cap::before {
-  content: '';
-  position: absolute;
-  inset: 3.5px;
-  border-radius: 1.5px;
-  background: rgba(255, 255, 255, 0.55);
-}
-.story-timeline-cap--top { top: 8px; transform: translate(-50%, -50%) rotate(45deg); }
-.story-timeline-cap--bottom {
-  bottom: 8px;
-  transform: translate(-50%, 50%) rotate(45deg);
-  background: linear-gradient(135deg, var(--accent-deep), var(--ink-blue));
-}
+.story-item:first-child::before { top: 50%; }
+.story-item:last-child::before { bottom: 50%; }
 
 .story-item {
   position: relative;
@@ -112,26 +98,60 @@
   z-index: 1;
 }
 
+/* The figure is a fixed-height stage and the photo sits inside it at its own
+   aspect ratio - the set mixes 3:4 / 9:16 portraits with 3:2 landscapes, so a
+   `cover` crop cut the tall ones off. With width and height both `auto` and both
+   maxes set, the browser scales the photo down proportionally to fit, so nothing
+   is cropped and the shadow hugs the photo itself rather than a padded box.
+   The figure takes its height from the photo rather than being a fixed box, so a
+   landscape shot doesn't sit in a tall stage with dead space above and below it.
+   --story-photo-h is the height cap, and it MUST be a length rather than
+   `max-height: 100%`, which resolves against the auto-sized grid/flex row and is
+   treated as no constraint at all - the photos then rendered at full column width
+   and overflowed onto the text below. */
 .story-photo {
+  /* Capped against the viewport too, so a 680px-tall photo doesn't swallow a
+     short laptop screen whole. */
+  --story-photo-h: min(680px, 70vh);
   position: relative;
   margin: 0;
-  height: 192px;
-  border-radius: 18px;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  /* Hug the edge nearest the timeline, so a portrait's spare width opens up on
+     the outside rather than leaving a gap against the line. */
+  justify-content: flex-end;
   color: rgba(255, 255, 255, 0.9);
-  background-color: var(--accent);
-  background-size: cover;
-  background-position: center;
+}
+.story-item--right .story-photo { justify-content: flex-start; }
+.story-photo img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: var(--story-photo-h);
+  border-radius: 18px;
   box-shadow: 0 26px 50px -26px rgba(21, 50, 74, 0.5);
 }
-.story-photo.tone-0 { background-image: linear-gradient(150deg, var(--accent-soft), var(--accent)); }
-.story-photo.tone-1 { background-image: linear-gradient(150deg, var(--accent), var(--accent-deep)); }
-.story-photo.tone-2 { background-image: linear-gradient(150deg, var(--accent-deep), var(--ink-blue)); }
-.story-photo svg { width: 40px; height: 40px; opacity: 0.85; }
+
+/* Years with no photo yet keep the themed tile, filling the whole stage. */
+.story-photo--empty {
+  height: var(--story-photo-h);
+  border-radius: 18px;
+  overflow: hidden;
+  background-color: var(--accent);
+  box-shadow: 0 26px 50px -26px rgba(21, 50, 74, 0.5);
+}
+.story-photo--empty.tone-0 { background-image: linear-gradient(150deg, var(--accent-soft), var(--accent)); }
+.story-photo--empty.tone-1 { background-image: linear-gradient(150deg, var(--accent), var(--accent-deep)); }
+.story-photo--empty.tone-2 { background-image: linear-gradient(150deg, var(--accent-deep), var(--ink-blue)); }
+/* `margin: auto` centres the placeholder icon whichever way the side rules above
+   set justify-content. */
+.story-photo svg { width: 40px; height: 40px; opacity: 0.85; margin: auto; }
 
 .story-content { display: flex; flex-direction: column; gap: 8px; }
+/* Items with their text on the left of the line right-align it, so every
+   milestone's text runs up against the timeline rather than the page edge. */
+.story-item--right .story-content { align-items: flex-end; text-align: right; }
 .story-date {
   font-family: var(--font-ui);
   font-weight: 600;
@@ -160,44 +180,98 @@
 }
 
 /* ---------------- Favourites gallery ---------------- */
-.story-gallery-label {
-  margin: 16px 0 0;
-  font-family: var(--font-ui);
-  font-weight: 600;
-  font-size: 11px;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  color: var(--accent);
+.story-gallery-title {
+  margin: 40px 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1.15;
+  letter-spacing: -0.012em;
+  color: var(--ink-blue);
+  text-align: center;
 }
+
+/* Free-flowing collage. CSS columns rather than a grid, so any number of photos
+   in any mix of shapes packs itself without cropping and without needing a
+   per-photo span hint - dropping 40 more in the folder needs no layout work.
+   `columns: 300px 5` gives a column WIDTH and a cap on the count, so the number
+   of columns follows the available width on its own (five on a wide monitor down
+   to one on a phone) and the section needs no breakpoints of its own. */
 .story-gallery {
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  columns: 300px 5;
+  column-gap: 18px;
 }
+/* Photo-print framing: a white mount, a slight tilt, and a lift on hover. The
+   tilt is transform-only, so it never disturbs how the columns pack. */
 .story-gallery-cell {
+  position: relative;
+  -webkit-column-break-inside: avoid;
+  break-inside: avoid;
+  margin: 0 0 18px;
+  padding: 7px;
+  background: var(--glass-bg);
+  border-radius: 8px;
+  box-shadow: 0 14px 30px -16px rgba(21, 50, 74, 0.45);
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 260ms cubic-bezier(.25, .9, .35, 1), box-shadow 260ms ease;
+}
+/* A seven-step cycle, so the tilt doesn't read as a repeating pattern down a
+   column the way a 2- or 3-step one would. */
+.story-gallery-cell:nth-child(7n + 1) { --tilt: -1.4deg; }
+.story-gallery-cell:nth-child(7n + 2) { --tilt: 0.9deg; }
+.story-gallery-cell:nth-child(7n + 3) { --tilt: -0.5deg; }
+.story-gallery-cell:nth-child(7n + 4) { --tilt: 1.6deg; }
+.story-gallery-cell:nth-child(7n + 5) { --tilt: -1deg; }
+.story-gallery-cell:nth-child(7n + 6) { --tilt: 0.4deg; }
+.story-gallery-cell:nth-child(7n + 7) { --tilt: -1.8deg; }
+/* Straighten and lift the one under the cursor, above its neighbours. */
+.story-gallery-cell:hover {
+  z-index: 2;
+  transform: rotate(0deg) translateY(-6px) scale(1.02);
+  box-shadow: 0 28px 48px -18px rgba(21, 50, 74, 0.55);
+}
+.story-gallery-cell img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+/* The stand-in tiles have no photo to take their height from. */
+.story-gallery-cell--empty {
+  display: flex;
   aspect-ratio: 4 / 3;
-  border-radius: 14px;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
   color: rgba(255, 255, 255, 0.82);
   background-color: var(--accent);
-  background-size: cover;
-  background-position: center;
 }
-.story-gallery-cell.tone-0 { background-image: linear-gradient(150deg, var(--accent-soft), var(--accent)); }
-.story-gallery-cell.tone-1 { background-image: linear-gradient(150deg, var(--accent), var(--accent-deep)); }
-.story-gallery-cell.tone-2 { background-image: linear-gradient(150deg, var(--accent-deep), var(--ink-blue)); }
-.story-gallery-cell svg { width: 26px; height: 26px; }
+.story-gallery-cell--empty.tone-0 { background-image: linear-gradient(150deg, var(--accent-soft), var(--accent)); }
+.story-gallery-cell--empty.tone-1 { background-image: linear-gradient(150deg, var(--accent), var(--accent-deep)); }
+.story-gallery-cell--empty.tone-2 { background-image: linear-gradient(150deg, var(--accent-deep), var(--ink-blue)); }
+.story-gallery-cell svg { width: 26px; height: 26px; margin: auto; }
 
 /* ---------------- Responsive ---------------- */
+/* The two-column timeline holds all the way down to 700px. It used to collapse
+   to a single column at 1200px, which left a portrait photo - capped on height,
+   so only ~330px wide - sitting alone in a 900px-wide column with the whole right
+   half of the row empty. Two columns keep the row full: from here down to 700px
+   the column width is what limits the photo, so it fills its half exactly. */
 @media (max-width: 1200px) {
-  .story-timeline::before { left: 18px; }
-  .story-timeline-cap { left: 18px; }
+  .story-item { gap: 48px; }
+}
+
+@media (max-width: 700px) {
+  /* Genuinely narrow: one column, with the line and dots down the left edge. */
   .story-item,
   .story-item--right { grid-template-columns: 1fr; direction: ltr; gap: 12px; padding-left: 44px; }
   .story-dot { left: 18px; top: 26px; transform: translate(-50%, 0); }
-  .story-photo { height: 220px; }
-  .story-gallery { grid-template-columns: repeat(2, 1fr); }
+  /* Dots sit 26px below the item top instead of centred, so the first and last
+     line segments start and stop there too. */
+  .story-item::before { left: 18px; }
+  .story-item:first-child::before { top: 26px; }
+  .story-item:last-child::before { bottom: calc(100% - 26px); }
+  /* The line is on the left, so every photo hugs that side. The cap stays high
+     enough that the column width is what limits the photo. */
+  .story-photo { --story-photo-h: min(620px, 68vh); justify-content: flex-start; }
+  .story-item--right .story-content { align-items: flex-start; text-align: left; }
+  .story-gallery-title { font-size: 32px; }
 }

@@ -11,10 +11,10 @@ const HER_SIDE = {
   label: 'Her Side',
   people: [
     { role: 'Maid of Honor', name: 'Emily Box', blurb: 'Part sister, part best friend, part 24/7 hotline.', photo: '', lead: true, BadgeIcon: Flower2 },
-    { role: 'Bridesmaid', name: 'Melissa Hannus', blurb: 'Loyal friend, adventure partner, and only slightly obsessed with her dog.', photo: '' },
-    { role: 'Bridesmaid', name: 'Cassidy Shortt', blurb: 'The reason my bookshelf is full and my coffee budget is empty.', photo: '' },
     { role: 'Bridesmaid', name: 'Sara Williams', blurb: 'Childhood bestie and trusted recipient of every insignificant life update.', photo: '' },
     { role: 'Bridesmaid', name: 'Evelyn Ysselstein', blurb: 'Sunset swims, paddle board partner, and a lifelong battle over who finishes the book first.', photo: '' },
+    { role: 'Bridesmaid', name: 'Melissa Hannus', blurb: 'Loyal friend, adventure partner, and only slightly obsessed with her dog.', photo: '' },
+    { role: 'Bridesmaid', name: 'Cassidy Shortt', blurb: 'The reason my bookshelf is full and my coffee budget is empty.', photo: '' },
     { role: 'Ring Bearer', name: 'Kathleen Box', blurb: 'Entrusted with the most important delivery of the day.', photo: '', BadgeIcon: Gem },
   ],
 }
