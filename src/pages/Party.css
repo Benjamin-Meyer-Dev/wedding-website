@@ -225,6 +225,17 @@
 .party-photo.tone-0 { background-image: linear-gradient(150deg, var(--accent-soft), var(--accent)); }
 .party-photo.tone-1 { background-image: linear-gradient(150deg, var(--accent), var(--accent-deep)); }
 .party-photo.tone-2 { background-image: linear-gradient(150deg, var(--accent-deep), var(--party-deep)); }
+
+/* A real portrait replaces the tone gradient. This carries the same specificity
+   as the .tone-N rules above, so it has to stay below them to win. Two files per
+   person, 144px and 288px, both already cropped square on the face - `cover` has
+   nothing left to crop, so no per-person background-position is needed. Only the
+   file matching the screen wins: a background-image behind a media query that
+   doesn't match is never fetched. */
+.party-photo.party-photo--img { background-image: var(--photo); }
+@media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 1.5dppx) {
+  .party-photo.party-photo--img { background-image: var(--photo-2x); }
+}
 /* lead photo gets an accent ring — another small accent, no size change */
 .party-person--lead .party-photo {
   box-shadow: 0 0 0 2px var(--accent), 0 12px 24px -14px rgba(var(--party-glow-rgb), 0.5);

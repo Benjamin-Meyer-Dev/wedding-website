@@ -8,6 +8,7 @@ import BackgroundOrbs from './components/BackgroundOrbs.jsx'
 import SceneDecor from './components/SceneDecor.jsx'
 import { supabase } from './lib/Supabase'
 import { HouseholdProvider } from './lib/HouseholdContext.jsx'
+import { isLiteMotion } from './lib/Motion.js'
 import './styles/App.css'
 
 // Everything past the first screen loads as its own chunk. The login and the
@@ -173,8 +174,12 @@ export default function App() {
   // navigation never actually waits on a network round trip. Idle-scheduled and
   // one at a time: the fetches must not compete with the page that is on screen.
   useEffect(() => {
-    if (gate !== 'app' || !introExiting) return
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 300))
+    if (gate !== 'app' || !introDone) return
+    // Safari has no requestIdleCallback. Its old 300ms timer fired while page
+    // entrances were still animating and parsed every lazy chunk in that busy
+    // window. Give the first scene a quiet beat, especially on the lite tier.
+    const fallbackDelay = isLiteMotion() ? 1400 : 600
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, fallbackDelay))
     const cancelIdle = window.cancelIdleCallback || clearTimeout
     const loaders = Object.values(LOADERS)
     let handle = null
@@ -188,7 +193,7 @@ export default function App() {
     }
     handle = idle(next)
     return () => { cancelled = true; if (handle != null) cancelIdle(handle) }
-  }, [gate, introExiting])
+  }, [gate, introDone])
 
   // Show the app/login as soon as the loader begins exiting, so it sits beneath
   // the fading loader and is revealed by the crossfade.

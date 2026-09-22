@@ -1,0 +1,152 @@
+/* ============================================================
+   Adaptive motion budget
+
+   Motion.js adds data-motion="lite" for compact touch screens, slow-update
+   displays, data-saver mode, reduced-motion preferences and modest hardware.
+   Full desktop keeps the complete treatment; the lite tier keeps the same
+   composition while removing work that has to run or repaint every frame.
+   ============================================================ */
+
+html[data-motion='lite'] {
+  --glass-shadow: 0 18px 38px -24px rgba(21, 50, 74, 0.28);
+}
+
+/* Three static gradients retain the background depth without six permanent
+   compositor layers. The field still fades in once with the page. */
+html[data-motion='lite'] .bg-orbs { transform: none; }
+html[data-motion='lite'] .bg-orb {
+  animation: none;
+  will-change: auto;
+}
+html[data-motion='lite'] .bg-orb:nth-child(n + 4) { display: none; }
+
+/* Ambient loops are attractive on a desktop, but they spend battery and can
+   steal frames from scrolling and interaction on a phone. Keep a static final
+   pose so the pages do not look stripped down. */
+html[data-motion='lite'] .decor-spark {
+  animation: none;
+  opacity: .48;
+  transform: scale(.82);
+}
+html[data-motion='lite'] .loading-mark::before {
+  filter: none;
+  will-change: opacity;
+  animation: lm-aura 650ms cubic-bezier(.25, .9, .35, 1) 80ms forwards;
+}
+html[data-motion='lite'] .sched-aura {
+  animation: none;
+  opacity: .58;
+  transform: translateX(-50%);
+  will-change: auto;
+}
+html[data-motion='lite'] .timeline-head::before {
+  animation: none;
+  opacity: .82;
+}
+html[data-motion='lite'] .tv-map-ph svg,
+html[data-motion='lite'] .story-fav-cue svg {
+  animation: none;
+}
+html[data-motion='lite'] .tv-map-sheen { display: none; }
+html[data-motion='lite'] .rsvp-toggle--none::after {
+  animation: none;
+  opacity: .55;
+}
+
+/* Entrance choreography becomes a short opacity pass. In particular this
+   avoids clip-path animation and dozens of simultaneous moving layers while a
+   newly loaded page is also laying out and decoding images. */
+html[data-motion='lite'] .rev,
+html[data-motion='lite'] .rev-fall,
+html[data-motion='lite'] .rev-pop,
+html[data-motion='lite'] .rev-mask,
+html[data-motion='lite'] .rev-grow,
+html[data-motion='lite'] .rev-fade {
+  animation-name: sb-fade;
+  animation-duration: 260ms;
+}
+html[data-motion='lite'] .faq-inner,
+html[data-motion='lite'] .party-inner,
+html[data-motion='lite'] .story-inner,
+html[data-motion='lite'] .travel-inner,
+html[data-motion='lite'] .sched-hero,
+html[data-motion='lite'] .login-figure,
+html[data-motion='lite'] .reg-stage-photo,
+html[data-motion='lite'] .reg-flag,
+html[data-motion='lite'] .reg-feature-title,
+html[data-motion='lite'] .rsvp-card,
+html[data-motion='lite'] .tl-node,
+html[data-motion='lite'] .sched-stage {
+  animation-name: page-fade;
+  animation-duration: 300ms;
+}
+
+/* Scaling a 164vmax gradient disc is fast on a discrete GPU but expensive on
+   tiled mobile GPUs. A full-screen crossfade provides the same covered swap
+   with one viewport-sized layer and keeps App.jsx's transition timing intact. */
+html[data-motion='lite'] .curtain {
+  contain: strict;
+  background: radial-gradient(circle at 50% 50%, var(--accent), var(--accent-deep) 56%, var(--ink-blue));
+  will-change: opacity;
+}
+html[data-motion='lite'] .curtain-iris { display: none; }
+html[data-motion='lite'] .curtain--cover {
+  animation: lite-curtain-cover 380ms cubic-bezier(.4, 0, .2, 1) both;
+}
+html[data-motion='lite'] .curtain--reveal {
+  animation: lite-curtain-reveal 420ms cubic-bezier(.4, 0, .2, 1) both;
+}
+@keyframes lite-curtain-cover { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lite-curtain-reveal { from { opacity: 1; } to { opacity: 0; } }
+
+/* Avoid animating layout and paint-heavy properties on the interaction paths
+   used most often on touch devices. Transform/opacity motion remains. */
+html[data-motion='lite'] .topbar-drawer {
+  grid-template-rows: 1fr;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 180ms ease, transform 180ms ease, visibility 0s linear 180ms;
+}
+html[data-motion='lite'] .topbar.is-open .topbar-drawer {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition: opacity 180ms ease, transform 180ms ease, visibility 0s;
+}
+html[data-motion='lite'] .rsvp-extras,
+html[data-motion='lite'] .rsvp-extras.is-open {
+  transition-duration: 260ms, 220ms, 180ms, 0s;
+}
+html[data-motion='lite'] .rsvp-viewport { transition: none; }
+html[data-motion='lite'] .rsvp-track { transition-duration: 380ms; }
+html[data-motion='lite'] .rsvp-dot { transition: background 180ms ease, border-color 180ms ease; }
+html[data-motion='lite'] .rsvp-meal-tile {
+  transition: opacity 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+html[data-motion='lite'] .rsvp-meal-image { transition: transform 180ms ease; }
+html[data-motion='lite'] .rsvp-meal-grid:has(.rsvp-meal-tile.is-on) .rsvp-meal-tile:not(.is-on) {
+  transition: opacity 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+/* Static gradients already provide the softness here. Removing these backdrop
+   and foreground filters prevents large mobile surfaces being re-rasterised. */
+html[data-motion='lite'] .home-figure-glow { filter: none; }
+html[data-motion='lite'] .story-lightbox,
+html[data-motion='lite'] .elp-overlay {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html[data-motion='lite'] .elp-card { transition: none; }
+html[data-motion='lite'] .story-fav-print {
+  box-shadow: 0 10px 22px -16px rgba(21, 50, 74, .36);
+}
+
+/* Once an opacity transition has settled, keeping will-change around reserves
+   memory for layers that a lite device no longer needs. */
+html[data-motion='lite'] .stage-shell,
+html[data-motion='lite'] .timeline-head,
+html[data-motion='lite'] .timeline-progress {
+  will-change: auto;
+}

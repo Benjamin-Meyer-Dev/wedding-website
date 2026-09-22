@@ -274,19 +274,45 @@
 /* ---------------- Route matrix: every pair, both directions ---------------- */
 .travel-routes {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
   width: 100%;
+
+  /* What a route needs to print both names in full: measured in Inter, the
+     longest pair ("Rebel Creek -> Delta Hotel") comes to 321px. The value
+     carries ~7% over that, because the measurement is only true for the font
+     that was measured - a guest whose browser blocks Google Fonts, or renders
+     Inter a touch wider, needs the headroom. `.tv-route` wrapping below is the
+     backstop for when even this is short. */
+  --route-min: 344px;
+  /* Three across, until a third of the row stops being that wide - then two,
+     then one. The `max()` is what holds it at three rather than letting a wide
+     screen deal out four: while a third of the row is the larger number it IS
+     the track size, and a fourth of those can never fit beside three. Once the
+     row is too narrow for that, the track falls back to --route-min and only as
+     many as genuinely fit are dealt, so a column is dropped exactly when the
+     alternative would have been truncating a name. The `min(100%)` is for the
+     narrowest phones, where even one full-width column is under --route-min:
+     without it the track would keep its 312px and push the page sideways. */
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, max(var(--route-min), (100% - 2 * 12px) / 3)), 1fr)
+  );
 }
 /* Styled after the connector badge this replaced: filled accent, the drive time
    in bold, and a small uppercase "DIRECTIONS" cue under it so it reads as a
    button rather than a label. Six of these, so no attention-seeking pulse —
    that made sense for one lone call-to-action, not a grid. */
+/* `wrap` is the backstop behind --route-min: the pair below refuses to shrink
+   below its text, so if a column ever does turn out too narrow for the names,
+   the time and cue drop to a second line instead of the names ellipsing. A
+   stacked card still tells a guest where they're driving; "St. A..." doesn't. */
 .tv-route {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  row-gap: 9px;
   padding: 13px 18px;
   border-radius: 18px;
   background: var(--accent);
@@ -301,7 +327,9 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-width: 0;
+  /* max-content, not 0: shrinking is what produced "St. A... -> Delta ...".
+     Refusing to shrink is what makes the card wrap instead. */
+  min-width: max-content;
   font-family: var(--font-ui);
   font-weight: 600;
   font-size: 13.5px;
@@ -316,6 +344,7 @@
   align-items: flex-end;
   gap: 3px;
   flex: none;
+  margin-left: auto; /* stays right-aligned on a line of its own, once wrapped */
 }
 .tv-route-time {
   display: inline-flex;
@@ -346,6 +375,20 @@
 }
 .tv-route-cta svg { width: 12px; height: 12px; }
 .tv-route:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* The smallest phones, where even one full-width card is under --route-min and
+   there is no column left to drop. The time and the cue move under the names
+   instead, which hands the pair the whole width of the card - about 90px more
+   than it had sitting beside them - and that carries the longest pair down to a
+   320px screen. */
+@media (max-width: 380px) {
+  .tv-route-meta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
 
 /* ---------------- Hotel block card ---------------- */
 
@@ -440,12 +483,7 @@
   }
   .travel-section-title { font-size: 44px; padding-bottom: 14px; } /* tracks .page-title's narrow size */
   .travel-section + .travel-section { margin-top: 14px; padding-top: 32px; }
-  .travel-routes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tv-map { height: 260px; }
   .tv-name { font-size: 28px; }
   /* 80% of the card width, badge centred, dashes filling each side */
-}
-
-@media (max-width: 640px) {
-  .travel-routes { grid-template-columns: 1fr; }
 }

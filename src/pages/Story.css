@@ -179,9 +179,122 @@
   color: var(--text-soft);
 }
 
-/* ---------------- Favourites gallery ---------------- */
+/* ---------------- Favourites: the spill ----------------
+   The prints start as one stack and spill across the table as the section is
+   scrolled through. The stage is a tall block; the pin sticks to the top of the
+   scene while it passes, which is what holds the table still long enough for
+   the stack to open. Story.jsx owns the positions - it measures the scene, sets
+   --fav-pin-h and the stage height, and writes each slot's compositor transform
+   on scroll frames - so the only geometry here is what it can't do in a style
+   attribute. */
+.story-fav { width: 100%; }
+
+/* The stage's height is set inline by Story.jsx, from the measured scene rather
+   than a vh unit - this page scrolls inside `.scene.story`, and on a phone the
+   two disagree by the height of the browser chrome. The `auto` here only covers
+   the first frame, before that measurement has run. */
+.story-fav-stage { position: relative; width: 100%; height: auto; }
+
+.story-fav-pin {
+  position: sticky;
+  /* Clear the floating navbar - the same offset every scrolling page uses, and
+     Story.jsx reads this back to know where the pin comes to rest. */
+  top: var(--content-top);
+  height: var(--fav-pin-h, 560px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.story-fav-table {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Two nested elements on purpose: the slot carries the spill (Story.jsx
+   overwrites its transform every frame) and the print carries the hover, so the
+   two never fight over the same property. */
+.story-fav-slot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--fav-print-w, 13%);
+  z-index: var(--z, 10);
+  will-change: transform;
+}
+.story-fav-slot:hover, .story-fav-slot:focus-within { z-index: 90; }
+
+.story-fav-print {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 7px;
+  border: 0;
+  background: var(--glass-bg);
+  border-radius: 8px;
+  box-shadow: 0 14px 30px -16px rgba(21, 50, 74, 0.45);
+  cursor: zoom-in;
+  line-height: 0;
+  transition: transform 260ms cubic-bezier(.25, .9, .35, 1), box-shadow 260ms ease;
+}
+.story-fav-print:hover, .story-fav-print:focus-visible {
+  transform: translateY(-8px) scale(1.04);
+  box-shadow: 0 30px 50px -18px rgba(21, 50, 74, 0.55);
+}
+.story-fav-print:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.story-fav-print img { display: block; width: 100%; height: auto; border-radius: 4px; }
+
+/* The stand-in tiles have no photo to take their height from, so --fav-ratio
+   (from Story.jsx, which deals them the mix of shapes real photos come in)
+   stands in for one. Sized and rounded exactly like an <img> would be, so the
+   placeholder wall is a true preview of the real one. */
+.story-fav-blank {
+  display: flex;
+  width: 100%;
+  aspect-ratio: var(--fav-ratio, 4 / 3);
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.82);
+  background-color: var(--accent);
+}
+.story-fav-blank.tone-0 { background-image: linear-gradient(150deg, var(--accent-soft), var(--accent)); }
+.story-fav-blank.tone-1 { background-image: linear-gradient(150deg, var(--accent), var(--accent-deep)); }
+.story-fav-blank.tone-2 { background-image: linear-gradient(150deg, var(--accent-deep), var(--ink-blue)); }
+.story-fav-blank svg { width: 26px; height: 26px; margin: auto; }
+
+/* The nudge to keep going, sat at the foot of the pinned area where a scroll
+   hint is looked for. Story.jsx fades it out over the first fifth of the spill.
+   `position: absolute` resolves against the pin, which is already positioned. */
+.story-fav-cue {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  pointer-events: none; /* never in the way of a print underneath it */
+  white-space: nowrap;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+/* A slow bob rather than a bounce - it drifts down and back with no snap at
+   either end, which is the one thing this site's motion never does. */
+.story-fav-cue svg { width: 18px; height: 18px; animation: fav-nudge 1.9s ease-in-out infinite; }
+@keyframes fav-nudge {
+  0%, 100% { transform: translateY(0); opacity: 0.7; }
+  50%      { transform: translateY(5px); opacity: 1; }
+}
+
+/* The title rides inside the pin rather than scrolling away above it, so the
+   section stays labelled the whole time the stack is opening. */
 .story-gallery-title {
-  margin: 40px 0 0;
+  margin: 0;
   font-family: var(--font-display);
   font-weight: 400;
   font-size: 40px;
@@ -191,63 +304,66 @@
   text-align: center;
 }
 
-/* Free-flowing collage. CSS columns rather than a grid, so any number of photos
-   in any mix of shapes packs itself without cropping and without needing a
-   per-photo span hint - dropping 40 more in the folder needs no layout work.
-   `columns: 300px 5` gives a column WIDTH and a cap on the count, so the number
-   of columns follows the available width on its own (five on a wide monitor down
-   to one on a phone) and the section needs no breakpoints of its own. */
-.story-gallery {
-  width: 100%;
-  columns: 300px 5;
-  column-gap: 18px;
+/* ---------------- Lightbox ----------------
+   Portalled to <body>, so it clears the scene's overflow and the app's. */
+.story-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 50; /* over the navbar (30), under the page-transition curtain (70) */
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: rgba(21, 50, 74, 0.86);
+  backdrop-filter: blur(6px);
+  animation: page-fade 200ms ease both;
 }
-/* Photo-print framing: a white mount, a slight tilt, and a lift on hover. The
-   tilt is transform-only, so it never disturbs how the columns pack. */
-.story-gallery-cell {
-  position: relative;
-  -webkit-column-break-inside: avoid;
-  break-inside: avoid;
-  margin: 0 0 18px;
-  padding: 7px;
-  background: var(--glass-bg);
-  border-radius: 8px;
-  box-shadow: 0 14px 30px -16px rgba(21, 50, 74, 0.45);
-  transform: rotate(var(--tilt, 0deg));
-  transition: transform 260ms cubic-bezier(.25, .9, .35, 1), box-shadow 260ms ease;
-}
-/* A seven-step cycle, so the tilt doesn't read as a repeating pattern down a
-   column the way a 2- or 3-step one would. */
-.story-gallery-cell:nth-child(7n + 1) { --tilt: -1.4deg; }
-.story-gallery-cell:nth-child(7n + 2) { --tilt: 0.9deg; }
-.story-gallery-cell:nth-child(7n + 3) { --tilt: -0.5deg; }
-.story-gallery-cell:nth-child(7n + 4) { --tilt: 1.6deg; }
-.story-gallery-cell:nth-child(7n + 5) { --tilt: -1deg; }
-.story-gallery-cell:nth-child(7n + 6) { --tilt: 0.4deg; }
-.story-gallery-cell:nth-child(7n + 7) { --tilt: -1.8deg; }
-/* Straighten and lift the one under the cursor, above its neighbours. */
-.story-gallery-cell:hover {
-  z-index: 2;
-  transform: rotate(0deg) translateY(-6px) scale(1.02);
-  box-shadow: 0 28px 48px -18px rgba(21, 50, 74, 0.55);
-}
-.story-gallery-cell img {
-  display: block;
-  width: 100%;
+.story-lightbox img {
+  max-width: min(92vw, 1080px);
+  max-height: 84vh;
+  width: auto;
   height: auto;
-  border-radius: 4px;
+  padding: 10px;
+  background: var(--glass-bg);
+  border-radius: 6px;
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.7);
 }
-/* The stand-in tiles have no photo to take their height from. */
-.story-gallery-cell--empty {
-  display: flex;
-  aspect-ratio: 4 / 3;
-  color: rgba(255, 255, 255, 0.82);
-  background-color: var(--accent);
+.story-lb-btn {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  transition: background 200ms ease, border-color 200ms ease;
 }
-.story-gallery-cell--empty.tone-0 { background-image: linear-gradient(150deg, var(--accent-soft), var(--accent)); }
-.story-gallery-cell--empty.tone-1 { background-image: linear-gradient(150deg, var(--accent), var(--accent-deep)); }
-.story-gallery-cell--empty.tone-2 { background-image: linear-gradient(150deg, var(--accent-deep), var(--ink-blue)); }
-.story-gallery-cell svg { width: 26px; height: 26px; margin: auto; }
+.story-lb-btn:hover { background: rgba(255, 255, 255, 0.28); border-color: rgba(255, 255, 255, 0.6); }
+.story-lb-btn:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 3px; }
+.story-lb-btn svg { width: 22px; height: 22px; }
+.story-lb-prev { left: 18px; top: 50%; transform: translateY(-50%); }
+.story-lb-next { right: 18px; top: 50%; transform: translateY(-50%); }
+.story-lb-close { top: 18px; right: 18px; }
+.story-lb-count {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.8);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* Deliberately NOT gated on `prefers-reduced-motion`. An earlier version showed
+   those guests the spread already spilled and sitting still; it was turned off
+   because the spill is the section, and the site owner would rather everyone
+   see it. The spill is scroll-linked inline transforms, not a CSS animation, so
+   Global.css's blanket `animation-duration: 1ms` doesn't reach it - this is the
+   only place the decision is made. */
 
 /* ---------------- Responsive ---------------- */
 /* The two-column timeline holds all the way down to 700px. It used to collapse
