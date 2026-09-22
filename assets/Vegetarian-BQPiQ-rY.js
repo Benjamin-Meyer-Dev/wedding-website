@@ -1,1 +1,0 @@
-const e="/wedding-website/assets/Beef-BeoaLEg8.jpg",s="/wedding-website/assets/Chicken-edxCFCGv.jpg",g="/wedding-website/assets/Fish-Dx7Jnd4D.jpg",a="/wedding-website/assets/Vegan-C7YC5e29.jpg",t="/wedding-website/assets/Vegetarian-PR8A0TEv.jpg";export{a,e as b,s as c,g as f,t as v};
