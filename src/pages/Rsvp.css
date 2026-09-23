@@ -678,6 +678,10 @@
      instead of snapping. */
   transition: height 640ms cubic-bezier(.33, 1, .68, 1);
 }
+/* While the active card opens or closes its meal section, its grid transition
+   already supplies the easing. Following the observed height directly avoids
+   a second transition continually restarting and visibly lagging behind it. */
+.rsvp-viewport.is-content-resizing { transition: none; }
 .rsvp-track {
   display: flex;
   align-items: flex-start; /* natural heights; the viewport clips the taller inactive cards */
@@ -939,11 +943,8 @@
   color: var(--text-muted);
   white-space: nowrap;
 }
-/* Idle (nothing to report): collapse the note and cancel the .rsvp-inner gap
-   above it, so the page ends the standard --scene-bottom below the last
-   visible element instead of below a blank reserved line. The node stays in
-   the a11y tree (no display:none) so the aria-live region still announces. */
-.rsvp-savenote:empty { height: 0; margin-top: -11px; overflow: hidden; }
+/* Keep this row reserved even while idle. Saving and "All saved" can then
+   update the live region without changing the centred RSVP layout's height. */
 
 /* very short viewports: let the card scroll internally rather than clip */
 @media (max-height: 700px) {

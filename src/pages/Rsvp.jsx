@@ -84,6 +84,7 @@ export default function Rsvp() {
   const [saveError, setSaveError] = useState(null)
   const [savedAt, setSavedAt] = useState(null)
   const [active, setActive] = useState(0)        // which guest the carousel is showing
+  const [extrasAnimating, setExtrasAnimating] = useState(false)
   const swipeRef = useRef(null) // touch start {x, y} for swipe-to-change-card
   const viewportRef = useRef(null) // carousel viewport — height follows the active slide
 
@@ -169,6 +170,20 @@ export default function Rsvp() {
     })
   }
 
+  const setAttendance = (userId, current, value) => {
+    // The extras panel already animates the card's height. Let the viewport
+    // follow those ResizeObserver updates directly so a second height easing
+    // does not trail behind every frame of the open/close transition.
+    if ((current === 'yes') !== (value === 'yes')) setExtrasAnimating(true)
+    setField(userId, 'attending', value)
+  }
+
+  const finishExtrasAnimation = (event) => {
+    if (event.target === event.currentTarget && event.propertyName === 'grid-template-rows') {
+      setExtrasAnimating(false)
+    }
+  }
+
   // Auto-save: debounce changes by 600ms, then persist silently.
   useEffect(() => {
     if (!isDirty || !householdId) return
@@ -232,7 +247,10 @@ export default function Rsvp() {
 
   const total = orderedMembers.length
   const safeActive = Math.min(active, total - 1)
-  const go = (delta) => setActive((a) => Math.max(0, Math.min(total - 1, Math.min(a, total - 1) + delta)))
+  const go = (delta) => {
+    setExtrasAnimating(false)
+    setActive((a) => Math.max(0, Math.min(total - 1, Math.min(a, total - 1) + delta)))
+  }
 
   // Touch swipe (mobile): a clear horizontal drag flips to the prev/next guest,
   // mirroring the arrows. We never preventDefault, so a vertical drag still
@@ -276,7 +294,7 @@ export default function Rsvp() {
             </div>
           )}
 
-          <div className="rsvp-viewport" ref={viewportRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+          <div className={`rsvp-viewport${extrasAnimating ? ' is-content-resizing' : ''}`} ref={viewportRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
             <div className="rsvp-track" style={{ transform: `translateX(-${safeActive * 100}%)` }}>
               {orderedMembers.map((mm, i) => {
                 const d = drafts[mm.user_id] ?? emptyDraft()
@@ -306,7 +324,7 @@ export default function Rsvp() {
                             role="radio"
                             aria-checked={att === 'yes'}
                             className="rsvp-toggle-opt rsvp-toggle-opt--yes"
-                            onClick={() => setField(mm.user_id, 'attending', att === 'yes' ? null : 'yes')}
+                            onClick={() => setAttendance(mm.user_id, att, att === 'yes' ? null : 'yes')}
                           >
                             <IconCheck /> Joyfully Accepts
                           </button>
@@ -315,7 +333,7 @@ export default function Rsvp() {
                             role="radio"
                             aria-checked={att === 'no'}
                             className="rsvp-toggle-opt rsvp-toggle-opt--no"
-                            onClick={() => setField(mm.user_id, 'attending', att === 'no' ? null : 'no')}
+                            onClick={() => setAttendance(mm.user_id, att, att === 'no' ? null : 'no')}
                           >
                             <IconX /> Regretfully Declines
                           </button>
@@ -327,7 +345,11 @@ export default function Rsvp() {
                         )}
                       </div>
 
-                      <div className={`rsvp-extras${att === 'yes' ? ' is-open' : ''}`} inert={att !== 'yes' ? '' : undefined}>
+                      <div
+                        className={`rsvp-extras${att === 'yes' ? ' is-open' : ''}`}
+                        inert={att !== 'yes' ? '' : undefined}
+                        onTransitionEnd={finishExtrasAnimation}
+                      >
                         <div className="rsvp-extras-inner">
                           <fieldset className="rsvp-meals">
                             <legend className="rsvp-field-lbl rsvp-menu-label">Choose a meal</legend>

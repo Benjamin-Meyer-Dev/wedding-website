@@ -9,6 +9,11 @@
   // file whose first indented lines happen to sit 4 apart, so pin it off.
   "editor.detectIndentation": false,
 
+  // New files get LF to match .gitattributes (eol=lf); VS Code otherwise
+  // defaults to CRLF on Windows.
+  "files.eol": "
+",
+
   // The comment style here aligns continuation lines under the first word of
   // the comment, e.g.
   //     /* Card width. The blurb sits in `card - 126px` (18px padding x2 +

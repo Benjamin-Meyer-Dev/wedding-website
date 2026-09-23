@@ -1,0 +1,5 @@
+# Every text file is LF, in the repo AND in the working copy, on every OS.
+# This overrides a machine-level `core.autocrlf=true` (Git for Windows' default),
+# which otherwise checks files out as CRLF and warns "LF will be replaced by
+# CRLF" whenever a tool writes a file with LF endings.
+* text=auto eol=lf
