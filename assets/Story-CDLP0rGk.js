@@ -1,4 +1,4 @@
-import{w as we,t as Pe,s as Ee,p as Me,m as Ae,d as Re,c as Le,b as Ne}from"./Welcome-Bp86RqtF.js";import{C as Ce,a as ke,v as He,b as Se,f as $e,c as Fe,d as De}from"./Vegetarian-BtieH9Er.js";import{c as ge,r as g,j as s,a as Te,X as Oe,h as Ie}from"./index-0-6b245L.js";import{h as We}from"./Honeymoon-FOiZQRmq.js";/**
+import{w as we,t as Pe,s as Ee,p as Me,m as Ae,d as Re,c as Le,b as Ne}from"./Welcome-Bp86RqtF.js";import{C as Ce,a as ke,v as He,b as Se,f as $e,c as Fe,d as De}from"./Vegetarian-DHKIwj8H.js";import{c as ge,r as g,j as s,a as Te,X as Oe,h as Ie}from"./index-CQGZC0jo.js";import{h as We}from"./Honeymoon-FOiZQRmq.js";/**
  * @license lucide-react v1.17.0 - ISC
  *
  * This source code is licensed under the ISC license.
