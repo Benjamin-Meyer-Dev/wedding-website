@@ -398,7 +398,7 @@ export default function Rsvp() {
         )}
 
         <p className="rsvp-savenote" aria-live="polite">
-          {saveError ? "Couldn't save. We'll try again." : saving ? 'Saving…' : savedAt ? 'All saved ✓' : ' '}
+          {saveError ? "Couldn't save. We'll try again." : saving ? 'Saving…' : savedAt ? 'All saved ✓' : ''}
         </p>
       </div>
     </section>

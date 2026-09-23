@@ -161,7 +161,7 @@ input, textarea, [contenteditable] {
 
 /* ---------- Reduced motion ----------
    Guests who ask their OS for less motion keep the site's look but lose the
-   ambient loops (drifting orbs, twinkling sparkles, breathing auras, pulsing
+   ambient loops (drifting orbs, breathing auras, pulsing
    comet heads) and get instant entrances. Every animation still RUNS, for 1ms
    and once, so anything that fades or masks itself in still lands on its
    finished frame — it just doesn't move. This is also the cheapest the site can
@@ -174,10 +174,6 @@ input, textarea, [contenteditable] {
     transition-duration: 1ms !important;
     scroll-behavior: auto !important;
   }
-  /* The one exception: the sparkle twinkle has no fill mode, so after its 1ms
-     run the sparkles would settle back to their invisible base state. Give them
-     a resting brightness instead. */
-  .decor-spark { opacity: .55; }
 }
 
 /* Lighter entrance for glass cards — opacity only, no transform. Moving

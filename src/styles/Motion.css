@@ -23,11 +23,6 @@ html[data-motion='lite'] .bg-orb:nth-child(n + 4) { display: none; }
 /* Ambient loops are attractive on a desktop, but they spend battery and can
    steal frames from scrolling and interaction on a phone. Keep a static final
    pose so the pages do not look stripped down. */
-html[data-motion='lite'] .decor-spark {
-  animation: none;
-  opacity: .48;
-  transform: scale(.82);
-}
 html[data-motion='lite'] .loading-mark::before {
   filter: none;
   will-change: opacity;
