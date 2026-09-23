@@ -1,0 +1,105 @@
+/* Hidden everywhere by default — including on a desktop window dragged short,
+   which is landscape and low but not a phone. */
+.orientation-gate { display: none; }
+
+/* A phone (or small touch device) turned sideways.
+   - orientation: landscape  — wider than it is tall
+   - max-height: 560px       — rules out tablets (iPad landscape is 768px+) and
+                               anything with room to lay a scene out properly
+   - pointer: coarse         — a touch device, so a short desktop window or a
+                               laptop with the dev tools docked is left alone */
+@media (orientation: landscape) and (max-height: 560px) and (pointer: coarse) {
+  .orientation-gate {
+    display: grid;
+    place-items: center;
+    position: fixed;
+    inset: 0;
+    /* Over everything: navbar 30, page curtain 70, loading screen 100. */
+    z-index: 200;
+    padding: 18px 28px;
+    text-align: center;
+    /* Opaque, and the same canvas as .app, so the sideways scene underneath is
+       covered rather than showing through. */
+    background:
+      radial-gradient(circle at 20% 8%, var(--powder-mist) 0%, transparent 55%),
+      radial-gradient(circle at 88% 92%, var(--powder-deep) 0%, transparent 60%),
+      var(--powder);
+    animation: og-in 320ms ease-out both;
+  }
+}
+
+@keyframes og-in { from { opacity: 0; } to { opacity: 1; } }
+
+.og-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 44ch;
+}
+
+/* The icon turns upright as it arrives — the instruction, shown rather than
+   only written. Ease-out to a stop, no overshoot. */
+.og-icon {
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  margin-bottom: 2px;
+  border-radius: 50%;
+  color: var(--accent);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 14px 30px -14px rgba(21, 50, 74, 0.35);
+  animation: og-upright 900ms cubic-bezier(.22, .9, .3, 1) 120ms both;
+}
+@keyframes og-upright {
+  from { opacity: 0; transform: rotate(-86deg); }
+  to   { opacity: 1; transform: rotate(0deg); }
+}
+
+.og-tag {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.og-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1.1;
+  color: var(--ink-blue);
+  letter-spacing: -0.012em;
+}
+
+.og-note {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-soft);
+}
+
+.og-rule {
+  display: block;
+  width: 92px;
+  height: 2px;
+  margin-top: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.85;
+}
+
+/* Very short landscape (a phone with the browser chrome showing) — trim the
+   block so it never needs to scroll. */
+@media (orientation: landscape) and (max-height: 400px) and (pointer: coarse) {
+  .og-mark { gap: 8px; }
+  .og-icon { width: 52px; height: 52px; }
+  .og-title { font-size: 26px; }
+  .og-note { font-size: 12px; }
+}

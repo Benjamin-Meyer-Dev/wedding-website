@@ -256,10 +256,12 @@ function Favourites({ photos }) {
     const measure = () => {
       // The pinned height comes from the scene's own measurement rather than a
       // vh unit: this page scrolls inside `.scene.story`, and on a phone that
-      // and the viewport differ by the height of the browser chrome. 48px is
-      // the gap `.scene.story::after` keeps at the foot of the page.
+      // and the viewport differ by the height of the browser chrome. The foot
+      // gap is read from --scene-bottom rather than repeated as a number here,
+      // so it tracks the one every scene ends on.
       stickyTop = parseFloat(getComputedStyle(pin).top) || 0
-      const pinH = Math.min(1100, Math.max(320, scene.clientHeight - stickyTop - 48))
+      const footGap = parseFloat(getComputedStyle(scene).getPropertyValue('--scene-bottom')) || 0
+      const pinH = Math.min(1100, Math.max(320, scene.clientHeight - stickyTop - footGap))
       stage.style.setProperty('--fav-pin-h', `${pinH}px`)
       stage.style.height = `${Math.round(pinH * (1 + SPILL_TRAVEL))}px`
 
@@ -370,12 +372,34 @@ function Favourites({ photos }) {
 
     measure()
     scene.addEventListener('scroll', onScroll, { passive: true })
-    // The scene and the column it sits in, but deliberately not the prints:
-    // their size is this effect's own output, so observing it had every measure
-    // schedule the next one.
+    // The scene, the section the stage sits in, and the column that holds the
+    // whole page - but deliberately not the prints: their size is this effect's
+    // own output, so observing it had every measure schedule the next one.
+    //
+    // The column is the one that matters, and it was the one missing. Half of
+    // what `measure` works out is where the collage SITS in the page, and the
+    // timeline above it grows by thousands of pixels as its lazy photos arrive
+    // (4.6k to 9.5k on a cold load here). Neither of the other two can see
+    // that: the scene's own box is a fixed 100% of the viewport, and
+    // `stage.parentElement` is `.story-fav`, which is exactly as tall as the
+    // stage this effect sizes itself - so it only ever reports this effect's
+    // own output back to it. With nothing re-measuring, the range kept its
+    // first-frame values, `track` fell through to its `rangeEnd > rangeStart`
+    // fallback and painted p=1, and the prints sat permanently spread with
+    // nothing left to scroll. It looked fine on a warm cache, where the photos
+    // are already decoded before the first measure runs, and broke on exactly
+    // the load that matters: a phone opening the page for the first time.
     const ro = new ResizeObserver(schedule)
     ro.observe(scene)
     ro.observe(stage.parentElement)
+    const column = stage.closest('.story-inner')
+    if (column && column !== stage.parentElement) ro.observe(column)
+    // The other way the collage moves without any observed box changing: NavBar
+    // re-measures itself when the display font lands, which shifts
+    // --content-top, and with it both the pin's resting offset and the spacer
+    // above the page.
+    let alive = true
+    if (document.fonts) document.fonts.ready.then(() => { if (alive) schedule() })
     // What the prints are observed for instead. They're lazy, so most of them
     // report their proportions long after the first measure has run.
     const loading = []
@@ -387,6 +411,7 @@ function Favourites({ photos }) {
       loading.push(img)
     }
     return () => {
+      alive = false
       if (frame) cancelAnimationFrame(frame)
       if (pending) cancelAnimationFrame(pending)
       scene.removeEventListener('scroll', onScroll)

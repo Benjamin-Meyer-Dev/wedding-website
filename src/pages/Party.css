@@ -2,7 +2,8 @@
 .scene.party {
   /* Flex column with grow spacers: centred vertically (no header gap) while the
      two sides fit; once they overflow, the spacers collapse to the navbar
-     clearance (--content-top) and a 48px bottom gap, and the page scrolls. */
+     clearance (--content-top) and the shared --scene-bottom gap, and the page
+     scrolls. */
   display: flex;
   flex-direction: column;
   /* The ::before/::after spacers do the vertical centering. Must override the
@@ -21,7 +22,7 @@
 .scene.party::before,
 .scene.party::after { content: ''; flex: 1 1 0; }
 .scene.party::before { min-height: var(--content-top); }
-.scene.party::after { min-height: 48px; }
+.scene.party::after { min-height: var(--scene-bottom); }
 .party::-webkit-scrollbar { width: 6px; }
 
 .party-inner {

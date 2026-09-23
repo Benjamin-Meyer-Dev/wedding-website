@@ -50,6 +50,12 @@
      begin their content 16px below the navbar's bottom edge. */
   --nav-top: 18px;
   --content-top: calc(var(--nav-top) + var(--topbar-h, 58px) + 16px);
+  /* The breathing room every scene leaves between its last element and the
+     bottom of the viewport. One value for the whole site: pages used to end on
+     anything from 20px to 48px, so no two scenes finished the same way. Scroll
+     scenes spend it as their ::after spacer's min-height, the rest as
+     padding-bottom — see each page's scene rule. */
+  --scene-bottom: 16px;
 }
 
 /* Mobile navbar sits higher (see .topbar @media); keep --nav-top in sync. */

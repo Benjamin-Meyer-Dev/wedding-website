@@ -8,7 +8,8 @@
    the spacers split the slack and the cards sit vertically centred with no
    header gap; once the stacked cards overflow (phones / short landscape) the
    spacers collapse to their min-heights — navbar clearance (--content-top) up
-   top, 48px below — and the page scrolls without clipping the header. The
+   top, the shared --scene-bottom gap below — and the page scrolls without
+   clipping the header. The
    bottom gap lives on the ::after spacer (a real flex element) rather than the
    scroll container's padding, which mobile browsers drop at the scroll end.
    Compound `.scene.travel` (0,2,0) beats base `.scene` (scene.css loads last). */
@@ -23,7 +24,7 @@
 .scene.travel::before,
 .scene.travel::after { content: ''; flex: 1 1 0; }
 .scene.travel::before { min-height: var(--content-top); }
-.scene.travel::after { min-height: 48px; }
+.scene.travel::after { min-height: var(--scene-bottom); }
 .travel::-webkit-scrollbar { width: 6px; }
 
 .travel-inner {

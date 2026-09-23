@@ -9,8 +9,16 @@
   align-items: center;
   overflow-y: auto;
   scrollbar-gutter: stable both-edges; /* keep header centred whether or not it scrolls */
-  padding: var(--content-top) 32px 32px;
+  padding: var(--content-top) 32px 0;
 }
+/* The bottom gap is a real flex item rather than the scene's padding-bottom,
+   matching how every other scene ends (see the note on .scene.travel): a scroll
+   container's padding-bottom is not reliably painted at the scroll end on
+   mobile Safari, and this page does scroll on short screens. `flex: 0 0` (no
+   grow) makes it a fixed gap rather than one of the centring spacers, and it
+   replaces an equal padding-bottom, so the layout above is unchanged —
+   removing the padding grows the content box by exactly the spacer's height. */
+.scene.registry::after { content: ''; flex: 0 0 var(--scene-bottom); }
 .registry::-webkit-scrollbar { width: 6px; }
 
 .registry-inner {

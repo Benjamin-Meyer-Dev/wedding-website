@@ -10,7 +10,7 @@
      differ by ~the navbar height (var(--nav-top) 18 + --topbar-h 58 ≈ 76), so
      flex-centring lands the couple in the visible band rather than biased high
      toward the navbar. Fixed px (not --topbar-h) so there's no first-load shift. */
-  padding: 96px 32px 20px;
+  padding: 96px 32px var(--scene-bottom);
 }
 
 .home-stage {
@@ -207,7 +207,7 @@
     /* Hug the navbar a little tighter than the standard clearance (the title
        band has its own breathing room) so the arch gets the extra height.
        Narrow gutters so the arch + panels run nearly edge to edge. */
-    padding: calc(var(--content-top) - 12px) 16px 12px;
+    padding: calc(var(--content-top) - 12px) 16px var(--scene-bottom);
   }
   /* The photo: an arched window between the two panels (a mobile echo of the
      login dome). flex:1 soaks up every pixel the slim panels leave, so the

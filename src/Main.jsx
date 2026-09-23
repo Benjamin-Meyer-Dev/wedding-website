@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
+import OrientationGate from './components/OrientationGate.jsx'
 import { installMotionProfile } from './lib/Motion.js'
 import './styles/Global.css'
 import './styles/Scene.css'
@@ -16,5 +17,8 @@ installMotionProfile()
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />
+    {/* Sibling of <App />, not inside it: the gate has to cover the loading
+        screen and the login as well as the signed-in scenes. */}
+    <OrientationGate />
   </React.StrictMode>,
 )

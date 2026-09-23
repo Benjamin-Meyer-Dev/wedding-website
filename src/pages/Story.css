@@ -4,7 +4,8 @@
 .scene.story {
   /* Flex column with grow spacers: centred vertically (no header gap) while the
      timeline fits; once it overflows, the spacers collapse to the navbar
-     clearance (--content-top) and a 48px bottom gap, and the page scrolls. */
+     clearance (--content-top) and the shared --scene-bottom gap, and the page
+     scrolls. */
   display: flex;
   flex-direction: column;
   /* The ::before/::after spacers do the vertical centering. Must override the
@@ -19,7 +20,7 @@
 .scene.story::before,
 .scene.story::after { content: ''; flex: 1 1 0; }
 .scene.story::before { min-height: var(--content-top); }
-.scene.story::after { min-height: 48px; }
+.scene.story::after { min-height: var(--scene-bottom); }
 .story::-webkit-scrollbar { width: 6px; }
 
 .story-inner {
