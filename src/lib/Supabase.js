@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { AUTH_STORAGE_KEY, dropSessionIfAway } from './IdleLogout.js'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -10,4 +11,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
   )
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Before the client reads its stored session: a guest who has been away past
+// the limit starts signed out (see IdleLogout.js).
+dropSessionIfAway()
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: { storageKey: AUTH_STORAGE_KEY },
+})

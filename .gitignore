@@ -6,3 +6,6 @@ dist
 .env
 .env.*
 !.env.example
+
+# hand-run SQL with guest usernames/passwords, never commit (public repo)
+supabase/local/
