@@ -683,7 +683,14 @@
    a second transition continually restarting and visibly lagging behind it. */
 .rsvp-viewport.is-content-resizing { transition: none; }
 .rsvp-track {
+  /* Space between neighbouring cards while they slide. Once the viewport is
+     narrower than the card's 960px cap, each card fills its whole slide, so
+     without this the outgoing and incoming cards glided past edge to edge.
+     Rsvp.jsx adds the gap to each step of the track's translate, so at rest
+     the active card sits exactly where it did before. */
+  --slide-gap: 32px;
   display: flex;
+  gap: var(--slide-gap);
   align-items: flex-start; /* natural heights; the viewport clips the taller inactive cards */
   transition: transform 640ms cubic-bezier(.33, 1, .68, 1);
 }

@@ -10,8 +10,10 @@
   /* Photo frame height: grows with the viewport (to 940px) so big screens
      aren't dwarfed, shrinks on short viewports so it never clips, and is
      width-capped so the photo always fits in the row beside the card
-     (photo width = height * 1068/1600, hence the 1.5 factor). */
-  --hero-h: min(940px, calc(100vh - 96px), calc((100vw - 620px) * 1.5));
+     (photo width = height * 1068/1600, hence the 1.5 factor). It stops
+     shrinking at 430px (the same floor as the homepage portrait), and below
+     that the scene scrolls: see the short-viewport tier in Scene.css. */
+  --hero-h: min(940px, max(430px, calc(100vh - 96px)), calc((100vw - 620px) * 1.5));
   /* symmetric padding: the row centres truly vertically (no navbar here) */
   padding: 24px 32px;
 }

@@ -295,7 +295,8 @@ export default function Rsvp() {
           )}
 
           <div className={`rsvp-viewport${extrasAnimating ? ' is-content-resizing' : ''}`} ref={viewportRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-            <div className="rsvp-track" style={{ transform: `translateX(-${safeActive * 100}%)` }}>
+            {/* one step = a slide (100% of the track) plus the gap after it */}
+            <div className="rsvp-track" style={{ transform: `translateX(calc(-${safeActive} * (100% + var(--slide-gap))))` }}>
               {orderedMembers.map((mm, i) => {
                 const d = drafts[mm.user_id] ?? emptyDraft()
                 const att = d.attending

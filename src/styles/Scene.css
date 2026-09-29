@@ -21,8 +21,10 @@
 /* ---- Short viewports (a phone turned sideways) ----
    A landscape phone is ~320-430px tall, which is shorter than most scenes are
    designed for. Pages that opt into `overflow-y: auto` already cope; the ones
-   that rely on `.scene`'s `overflow: hidden` (home, and login above 1200px)
-   simply clipped whatever didn't fit, with no way to reach it.
+   that rely on `.scene`'s `overflow: hidden` (home and login above 1200px)
+   simply clipped whatever didn't fit, with no way to reach it. Their portraits
+   stop shrinking at 430px, which needs about 540px of viewport, so this tier
+   is already scrolling by the time they hit that floor.
 
    `align-items: safe center` is the key: the base rule centres the scene's
    content on the CROSS axis, and plain `center` pushes an overflowing child's

@@ -3,7 +3,8 @@
    Desktop: a framed storybook portrait beside the copy column.
    Mobile (≤1200px): the photo becomes a full-bleed backdrop and the copy
    floats over it — names at the TOP (under the navbar) and date + countdown
-   at the BOTTOM. One scroll-free scene at every width.
+   at the BOTTOM. One screen at every width until the viewport is shorter than
+   the photo's floor; then the scene scrolls rather than shrink the photo.
    ============================================================ */
 .home {
   /* Centre the stage in the area BELOW the fixed navbar: the top/bottom padding
@@ -29,8 +30,12 @@
   /* Match the login PC frame: grows with the viewport (to 940px), shrinks on
      short viewports so it never clips under the navbar, and is width-capped
      so the photo always fits beside the 540px copy column + 48px gap + 64px
-     scene padding (photo width = height * 1068/1600, hence the 1.5). */
-  height: min(940px, calc(100vh - 130px), calc((100vw - 652px) * 1.5));
+     scene padding (photo width = height * 1068/1600, hence the 1.5).
+     It stops shrinking at 430px, about the height of the copy column beside
+     it. Below that the scene scrolls instead. 430 + the 112px of padding stays
+     under the 560px short-viewport tier in Scene.css, so scrolling is already
+     on by the time the floor is reached. */
+  height: min(940px, max(430px, calc(100vh - 130px)), calc((100vw - 652px) * 1.5));
   /* <figure> carries a default UA margin (1em 40px); zero it so the mobile
      full-bleed photo (position:absolute; inset:0) isn't shrunk by ~80px and
      centred, which left gaps down both sides instead of filling the screen. */
@@ -194,15 +199,30 @@
 /* ============================================================
    Mobile (≤1200px): a vertical stack — title panel at the TOP (under the
    navbar), the photo as an arched window filling the middle, and the date +
-   countdown panel at the BOTTOM. Still one scroll-free scene.
+   countdown panel at the BOTTOM. The arch has a floor, and once the viewport
+   is too short for it the scene scrolls instead of flattening the photo.
    ============================================================ */
 @media (max-width: 1200px) {
   .home { padding: 0; }
+  /* Compound selector to outrank base `.scene` (Scene.css loads last).
+     `safe center` for the same reason as the short-viewport tier there: plain
+     `center` would push the top of an overflowing stage out of reach. The
+     gutter is reserved on both edges, as on every other scrolling scene, so
+     the stack stays centred whether or not the scrollbar is showing. */
+  .scene.home {
+    overflow-y: auto;
+    overflow-x: hidden;
+    align-items: safe center;
+    scrollbar-gutter: stable both-edges;
+  }
   .home-stage {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
-    height: 100%;
+    /* auto + min-height, not height: the stage fills the viewport when the
+       arch's floor fits, and grows past it (so the scene scrolls) when not */
+    height: auto;
+    min-height: 100%;
     max-width: none;
     /* Hug the navbar a little tighter than the standard clearance (the title
        band has its own breathing room) so the arch gets the extra height.
@@ -217,7 +237,12 @@
     /* basis 0 (not auto): the photo's intrinsic height must not factor into
        layout — the arch gets exactly the space the panels leave, no more */
     flex: 1 1 0;
-    min-height: 0;
+    /* Floor: as tall as the arch is wide (the 640px max-width case, or the
+       full-width arch below that). The crop is biased low (object-position
+       75%), so an arch wider than it is tall cuts off the couple's heads first.
+       Square keeps both faces in frame. Mirrors .login-figure's floor, only
+       squarer. Short windows scroll to reach the rest. */
+    min-height: min(640px, calc(100vw - 32px));
     width: 100%;
     max-width: 640px;
     margin: 0 auto;
@@ -303,28 +328,28 @@
   .hcd-lbl { font-size: 9px; letter-spacing: 0.24em; }
 }
 
+/* Phones: a full-width square floor (~360px) plus the text bands would make a
+   short phone scroll just to show the countdown. Drop to Login's phone floor
+   (.login-figure at ≤520px) so a phone held upright fits on one screen, as it
+   always has. */
+@media (max-width: 520px) {
+  .home-figure { min-height: 320px; }
+}
+
 /* ============================================================
-   Short + wide (a phone in landscape, ~320-430px tall)
-   The mobile stack above is `height: 100%` with fixed 60px/84px text bands and
-   a flex-filled arch, which is fine at 700px+ of height and crushes the arch to
-   a ~78px sliver at 320px. Here the stack is allowed to exceed the viewport
-   instead: the arch keeps a real floor, the type steps down, and the scene
-   (see the max-height tier in Scene.css) scrolls if the total still doesn't
-   fit. At 375-430px tall it lands inside the viewport and never scrolls.
+   Short (under 560px tall: a short phone like the iPhone SE, or a
+   squat desktop window)
+   The text bands and type step down so more of the height goes to the arch.
+   The arch keeps the floor set above, so if the total still doesn't fit, the
+   scene scrolls.
    ============================================================ */
 @media (max-width: 1200px) and (max-height: 560px) {
   .home-stage {
-    /* auto + min-height, not height: the stage may now grow past the viewport */
-    height: auto;
-    min-height: 100%;
     gap: 6px;
     padding-bottom: 10px;
   }
   .home-head { height: 48px; }
   .home-foot { height: 76px; }
-  /* The arch is flex:1 1 0, so without a floor it absorbs every shortfall and
-     collapses. Below this it stops reading as a photo. */
-  .home-figure { min-height: 150px; }
   /* vw-capped rather than the taller mobile clamps: a landscape phone is wide,
      so 7.4vw would resolve to the 44px ceiling in a 48px band. */
   .home-name { font-size: clamp(22px, 4.6vw, 32px); }

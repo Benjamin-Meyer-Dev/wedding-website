@@ -51,6 +51,16 @@
   width: 100%;
   align-items: stretch;
 }
+/* Desktop floor: the showcase shrinks to fit the viewport only down to 420px,
+   then the scene scrolls instead of cropping the photo to a strip. The inner
+   column has to give up its min-height: 0 so the floor reaches the scene
+   (otherwise the showcase overflows the column and covers the bottom spacer).
+   Desktop only: the stacked layout below wants the opposite, a well that
+   shrinks so phones don't scroll. */
+@media (min-width: 1201px) {
+  .registry-inner { min-height: auto; }
+  .reg-showcase { min-height: 420px; }
+}
 
 .reg-feature {
   flex: 1 1 56%;
@@ -73,6 +83,15 @@
   background-position: center;
   box-shadow: 0 34px 70px -30px rgba(21, 50, 74, 0.55);
   animation: reg-in 520ms cubic-bezier(.33, 1, .68, 1);
+  /* Keep the card on its own compositor layer for good, not just while reg-in
+     runs. Chrome draws text on an animating layer with grayscale smoothing,
+     then swaps to ClearType-style subpixel smoothing when the layer is dropped
+     on the last frame. That swap nudged the title, Buy button and price pill
+     sideways, so every selection change ended in a visible snap (it happens
+     with an opacity-only fade too, so the scale isn't the cause). A permanent
+     layer renders the text the same way throughout, so the last frame matches
+     the resting state. */
+  will-change: transform;
 }
 .reg-stage-photo.tone-0 { background-image: linear-gradient(150deg, var(--accent-soft), var(--accent)); }
 .reg-stage-photo.tone-1 { background-image: linear-gradient(150deg, var(--accent), var(--accent-deep)); }

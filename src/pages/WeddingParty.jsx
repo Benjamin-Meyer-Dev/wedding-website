@@ -27,7 +27,7 @@ const HER_SIDE = {
     { role: 'Bridesmaid', name: 'Evelyn Ysselstein', blurb: 'Sunset swims, paddle board partner, and a lifelong battle over who finishes the book first.', photo: 'Evelyn' },
     { role: 'Bridesmaid', name: 'Melissa Hannus', blurb: 'Loyal friend, adventure partner, and only slightly obsessed with her dog.', photo: 'Melissa' },
     { role: 'Bridesmaid', name: 'Cassidy Shortt', blurb: 'The reason my bookshelf is full and my coffee budget is empty.', photo: 'Cassidy' },
-    { role: 'Ring Bearer', name: 'Kathleen Box', blurb: 'Entrusted with the most important delivery of the day.', photo: '', BadgeIcon: Gem },
+    { role: 'Ring Bearer', name: 'Kathleen Box', blurb: 'Entrusted with the most important delivery of the day.', photo: 'Kathleen', BadgeIcon: Gem },
   ],
 }
 
@@ -36,11 +36,11 @@ const HIS_SIDE = {
   label: 'His Side',
   people: [
     { role: 'Best Man', name: 'Colin Bakker', blurb: 'High school friend, climbing accomplice, and firm believer that studying for math tests was optional.', photo: 'Colin', lead: true, BadgeIcon: Crown },
-    { role: 'Groomsman', name: 'Joshua Meyer', blurb: 'The brother who went to the Yukon to study moss and came back knowing how to cook Spam.', photo: '' },
+    { role: 'Groomsman', name: 'Joshua Meyer', blurb: 'The brother who went to the Yukon to study moss and came back knowing how to cook Spam.', photo: 'Josh' },
     { role: 'Groomsman', name: 'Todd Box', blurb: 'Part inherited brother, part handyman, part outdoorsman, and somehow responsible for three kids.', photo: 'Todd' },
-    { role: 'Groomsman', name: 'Connor Caddigan', blurb: 'High school friend, former Big Red pilot, and victim of a golf swing that has never met a fairway it couldn’t avoid.', photo: '' },
+    { role: 'Groomsman', name: 'Connor Caddigan', blurb: 'High school friend, former Big Red pilot, and victim of a golf swing that has never met a fairway it couldn’t avoid.', photo: 'Connor' },
     { role: 'Groomsman', name: 'Holden Ryder', blurb: 'Ben’s personal breaking-news service, fantasy football consultant, and occasional financial advisor specializing in unnecessary gambling.', photo: 'Holden' },
-    { role: 'Flower Boy', name: 'Timothy Box', blurb: 'Ready to scatter petals with great ceremony.', photo: '', BadgeIcon: Flower },
+    { role: 'Flower Boy', name: 'Timothy Box', blurb: 'Ready to scatter petals with great ceremony.', photo: 'Timothy', BadgeIcon: Flower },
   ],
 }
 
