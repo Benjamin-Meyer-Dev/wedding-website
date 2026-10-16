@@ -149,6 +149,7 @@
   font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
+  white-space: nowrap;
   cursor: pointer;
   border-radius: 999px;
   transition: color 180ms ease, background 180ms ease;
@@ -161,6 +162,11 @@
   width: 16px;
   height: 16px;
   transition: transform 200ms cubic-bezier(.33, 1, .68, 1);
+}
+/* icon-only sibling of Sign Out */
+.topbar-settings { padding: 8px; flex-shrink: 0; }
+@media (hover: hover) {
+  .topbar-settings:hover svg { transform: rotate(45deg); }
 }
 /* pointer-only: the door icon nudges toward the exit */
 @media (hover: hover) {
@@ -350,6 +356,11 @@
 }
 .topbar-drawer-link.is-active .topbar-drawer-link-icon { color: var(--accent); }
 
+.topbar-drawer-link.is-settings {
+  border-top: 1px solid var(--rule-soft);
+  margin-top: 4px;
+}
+.topbar-drawer-link.is-settings + .is-signout { border-top: 0; margin-top: 0; }
 .topbar-drawer-link.is-signout {
   border-top: 1px solid var(--rule-soft);
   margin-top: 4px;

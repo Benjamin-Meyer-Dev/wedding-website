@@ -67,16 +67,7 @@ function emptyDraft() {
 }
 
 export default function Rsvp() {
-  const { householdId, members, member, loading: householdLoading, error: householdError } = useHousehold()
-
-  // Show the signed-in user first, then everyone else (the roster from
-  // HouseholdContext is already alphabetical, so filtering preserves that).
-  const orderedMembers = useMemo(() => {
-    if (!member) return members
-    const me = members.find((m) => m.user_id === member.user_id)
-    if (!me) return members
-    return [me, ...members.filter((m) => m.user_id !== member.user_id)]
-  }, [members, member])
+  const { householdId, guests, loading: householdLoading, error: householdError } = useHousehold()
   const [drafts, setDrafts] = useState({})
   const [initial, setInitial] = useState({})
   const [rsvpsLoading, setRsvpsLoading] = useState(false)
@@ -92,7 +83,7 @@ export default function Rsvp() {
   // can't animate, so an explicit pixel height + the CSS transition on
   // .rsvp-viewport is what lets the deck glide between a tall accepting card
   // and a short declined one instead of snapping.
-  const safeActiveIdx = Math.min(active, Math.max(0, members.length - 1))
+  const safeActiveIdx = Math.min(active, Math.max(0, guests.length - 1))
   useEffect(() => {
     const vp = viewportRef.current
     if (!vp) return
@@ -103,7 +94,7 @@ export default function Rsvp() {
     const ro = new ResizeObserver(setH)
     ro.observe(slide)
     return () => ro.disconnect()
-  }, [safeActiveIdx, members.length, rsvpsLoading, householdLoading])
+  }, [safeActiveIdx, guests.length, rsvpsLoading, householdLoading])
 
   // On a guest change, glide the scene back to the top: on mobile the user may
   // be scrolled deep into a tall accepting card when they page, and the next
@@ -113,14 +104,14 @@ export default function Rsvp() {
   }, [safeActiveIdx])
 
   useEffect(() => {
-    if (householdLoading || !householdId || members.length === 0) return
+    if (householdLoading || !householdId || guests.length === 0) return
     let cancelled = false
     setRsvpsLoading(true)
     setSaveError(null)
 
     supabase
       .from('rsvps')
-      .select('user_id, attending, meal_choice, dietary_notes')
+      .select('guest_id, attending, meal_choice, dietary_notes')
       .eq('household_id', householdId)
       .then(({ data, error }) => {
         if (cancelled) return
@@ -130,9 +121,9 @@ export default function Rsvp() {
           return
         }
         const next = {}
-        for (const m of members) next[m.user_id] = emptyDraft()
+        for (const g of guests) next[g.id] = emptyDraft()
         for (const row of data ?? []) {
-          next[row.user_id] = {
+          next[row.guest_id] = {
             attending: row.attending ?? null,
             meal_choice: row.meal_choice ?? null,
             dietary_notes: row.dietary_notes ?? '',
@@ -144,7 +135,7 @@ export default function Rsvp() {
       })
 
     return () => { cancelled = true }
-  }, [householdLoading, householdId, members])
+  }, [householdLoading, householdId, guests])
 
   const isDirty = useMemo(() => {
     for (const id of Object.keys(drafts)) {
@@ -157,15 +148,15 @@ export default function Rsvp() {
     return false
   }, [drafts, initial])
 
-  const setField = (userId, field, value) => {
+  const setField = (guestId, field, value) => {
     setSavedAt(null)
     setDrafts((d) => {
-      const next = { ...(d[userId] ?? emptyDraft()), [field]: value }
+      const next = { ...(d[guestId] ?? emptyDraft()), [field]: value }
       if (field === 'attending' && value !== 'yes') {
         next.meal_choice = null
         next.dietary_notes = ''
       }
-      return { ...d, [userId]: next }
+      return { ...d, [guestId]: next }
     })
   }
 
@@ -176,13 +167,13 @@ export default function Rsvp() {
       setSaving(true)
       setSaveError(null)
 
-      const rows = members.map((m) => {
-        const d = drafts[m.user_id] ?? emptyDraft()
+      const rows = guests.map((g) => {
+        const d = drafts[g.id] ?? emptyDraft()
         // whitelist every value before it leaves the browser
         const attending = d.attending === 'yes' || d.attending === 'no' ? d.attending : null
         const meal = MEAL_VALUES.has(d.meal_choice) ? d.meal_choice : null
         return {
-          user_id: m.user_id,
+          guest_id: g.id,
           household_id: householdId,
           attending,
           meal_choice: attending === 'yes' ? meal : null,
@@ -192,7 +183,7 @@ export default function Rsvp() {
 
       const { error } = await supabase
         .from('rsvps')
-        .upsert(rows, { onConflict: 'user_id' })
+        .upsert(rows, { onConflict: 'guest_id' })
 
       setSaving(false)
       if (error) {
@@ -204,7 +195,7 @@ export default function Rsvp() {
     }, 600)
 
     return () => clearTimeout(timer)
-  }, [drafts, isDirty, householdId, members])
+  }, [drafts, isDirty, householdId, guests])
 
   if (householdError) {
     return (
@@ -220,17 +211,17 @@ export default function Rsvp() {
     return <section className="scene rsvp" aria-busy="true" />
   }
 
-  if (members.length === 0) {
+  if (guests.length === 0) {
     return (
       <section className="scene rsvp">
         <div className="rsvp-inner">
-          <p className="rsvp-error">No household members found for your account.</p>
+          <p className="rsvp-error">No guests found for your invitation.</p>
         </div>
       </section>
     )
   }
 
-  const total = orderedMembers.length
+  const total = guests.length
   const safeActive = Math.min(active, total - 1)
   const go = (delta) => setActive((a) => Math.max(0, Math.min(total - 1, Math.min(a, total - 1) + delta)))
 
@@ -278,12 +269,12 @@ export default function Rsvp() {
 
           <div className="rsvp-viewport" ref={viewportRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
             <div className="rsvp-track" style={{ transform: `translateX(-${safeActive * 100}%)` }}>
-              {orderedMembers.map((mm, i) => {
-                const d = drafts[mm.user_id] ?? emptyDraft()
+              {guests.map((mm, i) => {
+                const d = drafts[mm.id] ?? emptyDraft()
                 const att = d.attending
                 const isActive = i === safeActive
                 return (
-                  <div className="rsvp-slide" key={mm.user_id} inert={!isActive ? '' : undefined} aria-hidden={!isActive}>
+                  <div className="rsvp-slide" key={mm.id} inert={!isActive ? '' : undefined} aria-hidden={!isActive}>
                     <div className={`rsvp-card${att ? ' is-answered' : ''}`}>
                       <div className="rsvp-card-head">
                         {/* mobile-only paging: the arrows live inside the card,
@@ -306,7 +297,7 @@ export default function Rsvp() {
                             role="radio"
                             aria-checked={att === 'yes'}
                             className="rsvp-toggle-opt rsvp-toggle-opt--yes"
-                            onClick={() => setField(mm.user_id, 'attending', att === 'yes' ? null : 'yes')}
+                            onClick={() => setField(mm.id, 'attending', att === 'yes' ? null : 'yes')}
                           >
                             <IconCheck /> Joyfully Accepts
                           </button>
@@ -315,7 +306,7 @@ export default function Rsvp() {
                             role="radio"
                             aria-checked={att === 'no'}
                             className="rsvp-toggle-opt rsvp-toggle-opt--no"
-                            onClick={() => setField(mm.user_id, 'attending', att === 'no' ? null : 'no')}
+                            onClick={() => setField(mm.id, 'attending', att === 'no' ? null : 'no')}
                           >
                             <IconX /> Regretfully Declines
                           </button>
@@ -341,7 +332,7 @@ export default function Rsvp() {
                                     role="radio"
                                     aria-checked={selected}
                                     className={`rsvp-meal-tile${selected ? ' is-on' : ''}${image ? ' has-image' : ''}`}
-                                    onClick={() => setField(mm.user_id, 'meal_choice', selected ? null : value)}
+                                    onClick={() => setField(mm.id, 'meal_choice', selected ? null : value)}
                                   >
                                     <span
                                       className="rsvp-meal-image"
@@ -362,7 +353,7 @@ export default function Rsvp() {
                             <span className="rsvp-field-lbl">Dietary restrictions (optional)</span>
                             <textarea
                               value={d.dietary_notes}
-                              onChange={(e) => setField(mm.user_id, 'dietary_notes', e.target.value)}
+                              onChange={(e) => setField(mm.id, 'dietary_notes', e.target.value)}
                               rows={2}
                               maxLength={500}
                               placeholder="Allergies, intolerances, anything we should know."
@@ -380,11 +371,11 @@ export default function Rsvp() {
 
         {total > 1 && (
           <div className="rsvp-dots" role="tablist" aria-label="Guests">
-            {orderedMembers.map((mm, i) => {
-              const a = (drafts[mm.user_id] ?? emptyDraft()).attending
+            {guests.map((mm, i) => {
+              const a = (drafts[mm.id] ?? emptyDraft()).attending
               return (
                 <button
-                  key={mm.user_id}
+                  key={mm.id}
                   type="button"
                   role="tab"
                   aria-selected={i === safeActive}

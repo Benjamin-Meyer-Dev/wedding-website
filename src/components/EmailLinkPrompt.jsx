@@ -1,18 +1,19 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Mail, X } from 'lucide-react'
 import { supabase } from '../lib/Supabase'
-import { useHousehold } from '../lib/HouseholdContext.jsx'
+import { joinNames, useHousehold } from '../lib/HouseholdContext.jsx'
 import './EmailPrompt.css'
 
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]+\.[^\s@]{2,}$/
 
 // One-time post-login popup: offers to email the guest a link to this site.
-// "Asked" is tracked per member via household_members.email_prompted_at
-// (migration 0006) — written when they send OR decline, so the popup never
+// "Asked" is tracked per household via households.email_prompted_at
+// (migration 0007) — written when they send OR decline, so the popup never
 // returns. There is deliberately no dismiss-without-answering: the two
-// buttons are the only exits, so every guest is asked exactly once.
+// buttons are the only exits, so every household is asked exactly once.
 export default function EmailLinkPrompt() {
-  const { member } = useHousehold()
+  const { householdId, guests } = useHousehold()
+  const names = joinNames(guests)
   const [open, setOpen] = useState(false)
   const [closing, setClosing] = useState(false)
   const [email, setEmail] = useState('')
@@ -48,12 +49,12 @@ export default function EmailLinkPrompt() {
   useEffect(() => () => timersRef.current.forEach(clearTimeout), [])
 
   useEffect(() => {
-    if (!member) return
+    if (!householdId) return
     let cancelled = false
     supabase
-      .from('household_members')
+      .from('households')
       .select('email_prompted_at')
-      .eq('user_id', member.user_id)
+      .eq('id', householdId)
       .maybeSingle()
       .then(({ data, error: qError }) => {
         if (cancelled || qError || !data || data.email_prompted_at) return
@@ -63,13 +64,13 @@ export default function EmailLinkPrompt() {
         setOpen(true)
       })
     return () => { cancelled = true }
-  }, [member])
+  }, [householdId])
 
   const stampPrompted = (fields) =>
     supabase
-      .from('household_members')
+      .from('households')
       .update({ ...fields, email_prompted_at: new Date().toISOString() })
-      .eq('user_id', member.user_id)
+      .eq('id', householdId)
 
   const decline = async () => {
     inputRef.current?.blur()
@@ -86,7 +87,7 @@ export default function EmailLinkPrompt() {
     setBusy(true)
     setError(null)
     const { error: fnError } = await supabase.functions.invoke('send-site-link', {
-      body: { email: clean, name: member.first_name },
+      body: { email: clean, name: names },
     })
     if (fnError) {
       setBusy(false)
@@ -104,7 +105,7 @@ export default function EmailLinkPrompt() {
     timersRef.current.push(setTimeout(close, 2000))
   }
 
-  if (!open || !member) return null
+  if (!open || !householdId) return null
 
   return (
     <div className={`elp-overlay${closing ? ' elp-overlay--out' : ''}`} role="dialog" aria-modal="true" aria-label="Email me the website link">
@@ -119,7 +120,7 @@ export default function EmailLinkPrompt() {
             <>
               <h2 className="elp-title">Keep our website handy!</h2>
               <p className="elp-text">
-                Hi {member.first_name}! Enter your email and we'll send you a link
+                Hi{names ? ` ${names}` : ' there'}! Enter your email and we'll send you a link
                 to our website, so it's easy to find whenever you need it. No spam,
                 just the one email.
               </p>

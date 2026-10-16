@@ -6,6 +6,12 @@ import './Login.css'
 
 const USERNAME_DOMAIN = 'wedding.local'
 
+// Usernames are the household's surnames squashed together ("smithjones",
+// scripts/create-household-logins.mjs), so forgive however a guest types
+// them: "Smith Jones", "smith-jones" and "Smíth" all sign in. Keep in sync
+// with slug() in that script.
+const normalizeUsername = (s) => s.normalize('NFD').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 64)
+
 export default function Login() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -36,7 +42,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setAlert(null)
-    const cleanUsername = username.trim().toLowerCase().slice(0, 64)
+    const cleanUsername = normalizeUsername(username)
     if (!cleanUsername || !password) {
       showAlert('Please enter your username and password.')
       return

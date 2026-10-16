@@ -21,7 +21,7 @@ const GIFTS = [
 ]
 
 export default function Registry() {
-  const { householdId, member } = useHousehold()
+  const { householdId } = useHousehold()
   const [active, setActive] = useState(0)
   // every household's marks: [{ item_key, household_id }] — guests self-report,
   // so this only reflects what people chose to tell us
@@ -77,10 +77,9 @@ export default function Registry() {
     if (!householdId || claimBusy) return
     setClaimBusy(true)
     setClaimError(false)
-    const { data: { user } } = await supabase.auth.getUser()
     const { error } = await supabase
       .from('registry_purchases')
-      .insert({ item_key: gift.key, household_id: householdId, user_id: user?.id })
+      .insert({ item_key: gift.key, household_id: householdId })
     // refresh either way — a unique-key conflict just means our own mark already
     // exists (double tap), and the fresh read shows the true state
     await refreshPurchases()
@@ -171,7 +170,7 @@ export default function Registry() {
                     </span>
                     <span className="reg-ribbon-face reg-ribbon-face--mine" aria-hidden="true">
                       <Heart />
-                      Thank you{member?.first_name ? `, ${member.first_name}` : ''}! Tap anytime to undo.
+                      Thank you! Tap anytime to undo.
                     </span>
                     <span className="reg-ribbon-face reg-ribbon-face--other" aria-hidden="true">
                       <Check />

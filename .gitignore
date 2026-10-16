@@ -6,3 +6,5 @@ dist
 .env
 .env.*
 !.env.example
+# generated household logins: live passwords
+household-logins*.csv

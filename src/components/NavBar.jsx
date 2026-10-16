@@ -9,6 +9,7 @@ import {
   Gift as IconRegistry,
   Mail as IconRsvp,
   LogOut as IconSignOut,
+  Settings as IconSettings,
 } from 'lucide-react'
 import './Navbar.css'
 
@@ -28,7 +29,7 @@ const PAGE_LABELS = {
 // `page` is the page actually on screen — it drives both the link highlight
 // and the mobile centre label, so both update at the curtain's covered
 // midpoint rather than before the page visibly changes.
-export default function NavBar({ page, onNavigate, onSignOut }) {
+export default function NavBar({ page, onNavigate, onSignOut, onSettings }) {
   const [open, setOpen] = useState(false)
   const [resizing, setResizing] = useState(false)
   // True while the drawer is open AND for the length of its close animation, so
@@ -200,6 +201,17 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
         </nav>
 
         <div className="topbar-right">
+          {onSettings && (
+            <button
+              type="button"
+              className="topbar-signout topbar-settings"
+              onClick={onSettings}
+              aria-label="Settings"
+              title="Settings"
+            >
+              <IconSettings />
+            </button>
+          )}
           {onSignOut && (
             <button
               type="button"
@@ -290,6 +302,16 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
               <span className="topbar-drawer-link-icon"><IconRsvp /></span>
               <span className="topbar-drawer-link-lbl">RSVP</span>
             </button>
+            {onSettings && (
+              <button
+                type="button"
+                className="topbar-drawer-link is-settings"
+                onClick={() => { setOpen(false); onSettings() }}
+              >
+                <span className="topbar-drawer-link-icon"><IconSettings /></span>
+                <span className="topbar-drawer-link-lbl">Settings</span>
+              </button>
+            )}
             {onSignOut && (
               <button
                 type="button"

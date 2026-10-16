@@ -11,3 +11,14 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// Checks a password without touching the signed-in session: a throwaway,
+// storage-less client signs in on the side, so the main client fires no auth
+// events (which would reload the household and flash the page).
+export async function verifyPassword(email, password) {
+  const probe = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: { persistSession: false, autoRefreshToken: false, storageKey: 'eb-verify' },
+  })
+  const { error } = await probe.auth.signInWithPassword({ email, password })
+  return !error
+}

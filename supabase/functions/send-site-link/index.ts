@@ -51,13 +51,15 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json()
     email = String(body?.email ?? '').trim().toLowerCase().slice(0, 255)
-    // whitelist the greeting name hard: it lands inside our HTML
-    name = String(body?.name ?? '').replace(/[^\p{L}\p{M}' -]/gu, '').trim().slice(0, 50)
+    // whitelist the greeting name hard: it lands inside our HTML. Commas and
+    // '&' allowed for household names ("Anna, Tom & Sam"); '&' is escaped below
+    name = String(body?.name ?? '').replace(/[^\p{L}\p{M}' ,&-]/gu, '').trim().slice(0, 100)
   } catch {
     return json(400, { error: 'bad request' })
   }
   if (!EMAIL_RE.test(email)) return json(400, { error: 'invalid email' })
   const greeting = name ? `Hi ${name}!` : 'Hi there!'
+  const greetingHtml = greeting.replaceAll('&', '&amp;')
 
   const client = new SMTPClient({
     connection: {
@@ -76,7 +78,7 @@ Deno.serve(async (req) => {
       content: `${greeting}\n\nWe're so glad you'll be celebrating with us! Here's the link to our wedding website, where you can RSVP, browse the schedule, and find everything for the big day. Log in with the username and password from your invitation!\n\n${SITE_URL}\n\nWith love,\n${FROM_NAME}`,
       html: `
         <div style="margin:0 auto;max-width:520px;padding:32px 24px;font-family:Georgia,'Times New Roman',serif;color:#15324a;">
-          <h1 style="text-align:center;font-weight:400;font-size:28px;margin:0 0 18px;">${greeting}</h1>
+          <h1 style="text-align:center;font-weight:400;font-size:28px;margin:0 0 18px;">${greetingHtml}</h1>
           <p style="font-size:15px;line-height:1.6;margin:0 0 22px;text-align:center;">
             We're so glad you'll be celebrating with us! Here's the link to our
             wedding website, where you can RSVP, browse the schedule, and find

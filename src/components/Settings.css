@@ -1,0 +1,90 @@
+/* Settings popup — builds on the .elp-* popup styles in EmailPrompt.css. */
+.stg-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color .2s ease, background .2s ease;
+}
+.stg-close svg { width: 18px; height: 18px; }
+.stg-close:hover:not(:disabled) { color: var(--accent); background: rgba(58, 111, 149, 0.08); }
+
+.stg-username {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--powder-mist);
+  border: 1px solid var(--rule-soft);
+}
+.stg-username span {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.stg-username p {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  color: var(--ink-blue);
+  word-break: break-all; /* long surname usernames on narrow phones */
+  text-align: center;
+}
+
+.stg-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 6px;
+  border-top: 1px solid var(--rule-soft);
+}
+.stg-form-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+}
+.stg-form-head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 19px;
+  color: var(--ink-blue);
+}
+.stg-show {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  padding: 6px 8px;
+  border-radius: 999px;
+  color: var(--text-soft);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color .2s ease, background .2s ease;
+}
+.stg-show svg { width: 15px; height: 15px; }
+.stg-show:hover { color: var(--accent); background: rgba(58, 111, 149, 0.08); }
+
+/* the shared popup centres its field labels; left-align them in this form */
+.stg-form .elp-field span { text-align: left; }

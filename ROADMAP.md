@@ -40,7 +40,7 @@ RLS. Paste it into the Supabase SQL editor and run. Safe + idempotent.
 ### 3. Run the RLS audit
 The audit queries are embedded as comments at the bottom of `0003_lockdown.sql`.
 Run them in the SQL editor and confirm:
-- RLS = true on `households`, `household_members`, `rsvps`.
+- RLS = true on `households`, `guests`, `rsvps`, `registry_purchases`.
 - Every policy scopes by `auth.uid()` (directly or via `current_user_household_id`).
   No policy targets the `anon` role or uses a bare `true`.
 - `anon` has zero table privileges (after migration 0003).
@@ -74,4 +74,7 @@ any hardcoded content needs to move behind auth. For most weddings: leave as-is.
 - The repo's `0001_households.sql` is **stale** — the live schema differs (uses a
   `current_user_household_id()` helper and `user_id`-keyed rsvps). Trust the live
   DB / audit output over `0001`, not the other way around.
+- Since `0007_household_logins.sql`: one login per household (`households.user_id`),
+  guests are name-only rows in `guests`, rsvps are keyed by `guest_id`, and
+  `household_members` no longer exists.
 - The only billing surface is Supabase; no Storage / Edge Functions / Realtime in use.
