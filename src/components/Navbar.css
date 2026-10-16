@@ -66,6 +66,11 @@
   font-weight: 500;
   font-size: 20px;
   letter-spacing: 0.04em;
+  /* Playfair's capitals sit low in their line box, so the grid's centring left
+     E & B ~1.5px below the page links' caps. Nudge up by a font-relative amount
+     so it stays optically centred at the mobile size too. */
+  position: relative;
+  top: -0.075em;
   cursor: pointer;
   /* no blue tap flash / text selection when tapped on mobile */
   -webkit-tap-highlight-color: transparent;
@@ -89,11 +94,28 @@
 .topbar-current { display: none; }
 
 .topbar-nav {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 4px;
   justify-self: center;
 }
+/* Short hairlines framing the page links: monogram | pages | account. Hung off
+   the nav's own edges (half the grid gap out), so they hold their spacing to
+   the links whatever width the outer columns stretch to. */
+.topbar-nav::before,
+.topbar-nav::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 1px;
+  height: 18px;
+  background: var(--rule);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.topbar-nav::before { left: -9px; }
+.topbar-nav::after { right: -9px; }
 .topbar-link {
   position: relative;
   background: transparent;
@@ -146,8 +168,10 @@
   color: var(--text-soft);
   font-family: var(--font-ui);
   font-weight: 500;
-  font-size: 11px;
-  letter-spacing: 0.22em;
+  /* same type as .topbar-link: at 11px its capitals stood a pixel shorter than
+     the page links' on the same baseline, so the links read as sitting higher */
+  font-size: 12px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   white-space: nowrap;
   cursor: pointer;
@@ -359,6 +383,7 @@
 .topbar-drawer-link.is-settings {
   border-top: 1px solid var(--rule-soft);
   margin-top: 4px;
+  border-radius: 0; /* square top corners, or the divider curves up at its ends */
 }
 .topbar-drawer-link.is-settings + .is-signout { border-top: 0; margin-top: 0; }
 .topbar-drawer-link.is-signout {

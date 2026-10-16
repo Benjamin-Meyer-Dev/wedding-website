@@ -11,6 +11,7 @@ import {
   LogOut as IconSignOut,
   Settings as IconSettings,
 } from 'lucide-react'
+import SettingsDialog from './SettingsDialog.jsx'
 import './Navbar.css'
 
 // Shown centered in the bar on mobile (where the full nav collapses to a burger)
@@ -29,8 +30,12 @@ const PAGE_LABELS = {
 // `page` is the page actually on screen — it drives both the link highlight
 // and the mobile centre label, so both update at the curtain's covered
 // midpoint rather than before the page visibly changes.
-export default function NavBar({ page, onNavigate, onSignOut, onSettings }) {
+export default function NavBar({ page, onNavigate, onSignOut }) {
   const [open, setOpen] = useState(false)
+  // owned here rather than in App so opening it re-renders only the bar, not
+  // the page underneath
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const openSettings = () => setSettingsOpen(true)
   const [resizing, setResizing] = useState(false)
   // True while the drawer is open AND for the length of its close animation, so
   // the page stays frozen until the panel has fully settled (see the scroll
@@ -201,11 +206,11 @@ export default function NavBar({ page, onNavigate, onSignOut, onSettings }) {
         </nav>
 
         <div className="topbar-right">
-          {onSettings && (
+          {onSignOut && (
             <button
               type="button"
               className="topbar-signout topbar-settings"
-              onClick={onSettings}
+              onClick={openSettings}
               aria-label="Settings"
               title="Settings"
             >
@@ -302,11 +307,11 @@ export default function NavBar({ page, onNavigate, onSignOut, onSettings }) {
               <span className="topbar-drawer-link-icon"><IconRsvp /></span>
               <span className="topbar-drawer-link-lbl">RSVP</span>
             </button>
-            {onSettings && (
+            {onSignOut && (
               <button
                 type="button"
                 className="topbar-drawer-link is-settings"
-                onClick={() => { setOpen(false); onSettings() }}
+                onClick={() => { setOpen(false); openSettings() }}
               >
                 <span className="topbar-drawer-link-icon"><IconSettings /></span>
                 <span className="topbar-drawer-link-lbl">Settings</span>
@@ -325,6 +330,7 @@ export default function NavBar({ page, onNavigate, onSignOut, onSettings }) {
           </div>
         </div>
       </div>
+      {settingsOpen && <SettingsDialog onClose={() => setSettingsOpen(false)} />}
     </header>
   )
 }

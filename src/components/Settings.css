@@ -38,6 +38,8 @@
 }
 .stg-username p {
   margin: 0;
+  min-height: 1.4em; /* holds the row while the username loads */
+  line-height: 1.4;
   font-family: var(--font-ui);
   font-size: 16px;
   color: var(--ink-blue);
@@ -85,6 +87,9 @@
 }
 .stg-show svg { width: 15px; height: 15px; }
 .stg-show:hover { color: var(--accent); background: rgba(58, 111, 149, 0.08); }
+
+/* one button (closing is the X), so centre it rather than space-between */
+.stg-actions { justify-content: center; }
 
 /* the shared popup centres its field labels; left-align them in this form */
 .stg-form .elp-field span { text-align: left; }

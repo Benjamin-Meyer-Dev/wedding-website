@@ -88,7 +88,10 @@ Deno.serve(async (req) => {
           <p style="text-align:center;margin:0 0 26px;">
             <a href="${SITE_URL}"
                style="display:inline-block;padding:13px 30px;border-radius:999px;background:#3a6f95;color:#ffffff;text-decoration:none;font-size:14px;letter-spacing:0.08em;outline:0;border:0;-webkit-tap-highlight-color:transparent;">
-              Open the website&nbsp;&nbsp;&rarr;
+              Open the website&nbsp;&nbsp;<span style="font-size:15px;line-height:1;">&#10140;&#xFE0E;</span>
+              <!-- U+279C, a heavier arrow than &rarr; that sits centred on the
+                   text; FE0E keeps phones drawing it as text, not an emoji -->
+
             </a>
           </p>
           <p style="font-size:12px;line-height:1.6;color:#6e7f8d;text-align:center;margin:0 0 26px;">

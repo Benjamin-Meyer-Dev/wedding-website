@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { AUTH_STORAGE_KEY, dropSessionIfAway } from './IdleLogout.js'
+import { forgetPassword } from './RememberedPassword.js'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -18,6 +19,9 @@ dropSessionIfAway()
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: { storageKey: AUTH_STORAGE_KEY },
 })
+
+// however the session ends (Sign Out, idle logout), drop the remembered password
+supabase.auth.onAuthStateChange((event) => { if (event === 'SIGNED_OUT') forgetPassword() })
 
 // Checks a password without touching the signed-in session: a throwaway,
 // storage-less client signs in on the side, so the main client fires no auth

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Eye, EyeOff, CircleAlert } from 'lucide-react'
 import heroPhoto from '../assets/HomePage.jpg'
 import { supabase } from '../lib/Supabase'
+import { forgetPassword, rememberPassword } from '../lib/RememberedPassword.js'
 import './Login.css'
 
 const USERNAME_DOMAIN = 'wedding.local'
@@ -48,12 +49,15 @@ export default function Login() {
       return
     }
     setLoading(true)
+    // remembered first: SIGNED_IN fires before signInWithPassword resolves
+    rememberPassword(password)
     const { error: authError } = await supabase.auth.signInWithPassword({
       email: `${cleanUsername}@${USERNAME_DOMAIN}`,
       password,
     })
     setLoading(false)
     if (authError) {
+      forgetPassword()
       showAlert('Invalid username or password.')
     }
   }

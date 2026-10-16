@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Check, Eye, EyeOff, X } from 'lucide-react'
 import { supabase, verifyPassword } from '../lib/Supabase'
+import { recallPassword, rememberPassword } from '../lib/RememberedPassword.js'
 import './EmailPrompt.css'
 import './Settings.css'
 
@@ -12,7 +14,8 @@ const MIN_PASSWORD = 6 // Supabase's floor; a stricter project setting surfaces 
 export default function SettingsDialog({ onClose }) {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
-  const [current, setCurrent] = useState('')
+  // filled from sign-in when this tab has it (RememberedPassword.js)
+  const [current, setCurrent] = useState(recallPassword)
   const [next, setNext] = useState('')
   const [confirm, setConfirm] = useState('')
   const [show, setShow] = useState(false)
@@ -52,12 +55,6 @@ export default function SettingsDialog({ onClose }) {
 
   useEffect(() => () => timersRef.current.forEach(clearTimeout), [])
 
-  useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape' && !busy) close() }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  })
-
   const submit = async (e) => {
     e.preventDefault()
     if (!current || !next || !confirm) return setError('Please fill in all three fields.')
@@ -76,6 +73,7 @@ export default function SettingsDialog({ onClose }) {
     const { error: updateError } = await supabase.auth.updateUser({ password: next })
     setBusy(false)
     if (updateError) return setError(updateError.message || 'Couldn’t update your password. Please try again.')
+    rememberPassword(next)
 
     document.activeElement?.blur?.()
     setDone(true)
@@ -95,14 +93,17 @@ export default function SettingsDialog({ onClose }) {
     </label>
   )
 
-  return (
+  // portalled to <body>: the navbar that owns this is transformed, which would
+  // otherwise trap the fixed overlay inside the bar
+  return createPortal(
     <div
       className={`elp-overlay${closing ? ' elp-overlay--out' : ''}`}
       role="dialog"
       aria-modal="true"
       aria-label="Settings"
-      onMouseDown={(e) => { if (e.target === e.currentTarget && !busy) close() }}
     >
+      {/* closes from the X only: no outside-click or Escape, so a stray tap
+          can't throw away a half-typed password */}
       <div className={`elp-card${done ? ' elp-card--sent' : ''}`} ref={cardRef}>
         <div className="elp-body" ref={bodyRef}>
           {done ? (
@@ -119,7 +120,9 @@ export default function SettingsDialog({ onClose }) {
 
               <div className="stg-username">
                 <span>Username</span>
-                <p>{username || ' '}</p>
+                {/* the row keeps its height while the session loads (CSS),
+                    so the card doesn't grow mid-entrance */}
+                <p>{username}</p>
               </div>
 
               <form className="stg-form" onSubmit={submit} noValidate>
@@ -135,10 +138,7 @@ export default function SettingsDialog({ onClose }) {
                 {pwInput(next, setNext, 'New password', 'new-password')}
                 {pwInput(confirm, setConfirm, 'Confirm new password', 'new-password')}
                 {error && <p className="elp-error" role="alert">{error}</p>}
-                <div className="elp-actions">
-                  <button type="button" className="elp-btn elp-btn--ghost" onClick={close} disabled={busy}>
-                    Cancel
-                  </button>
+                <div className="elp-actions stg-actions">
                   <button type="submit" className="elp-btn" disabled={busy}>
                     {busy ? 'Saving…' : 'Update password'}
                   </button>
@@ -148,6 +148,7 @@ export default function SettingsDialog({ onClose }) {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

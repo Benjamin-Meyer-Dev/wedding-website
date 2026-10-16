@@ -243,6 +243,9 @@ function Favourites({ photos }) {
     let stickyTop = 0
     let rangeStart = 0
     let rangeEnd = 0
+    // What measure() last pushed the pin down by (--fav-pin-offset), so the
+    // navbar clearance underneath it can be read back out of the pin's `top`.
+    let pinOffset = 0
 
     // Scroll frames must contain no layout reads: reading client rects and then
     // writing forty positions forced a synchronous layout on every frame. The
@@ -259,10 +262,17 @@ function Favourites({ photos }) {
       // and the viewport differ by the height of the browser chrome. The foot
       // gap is read from --scene-bottom rather than repeated as a number here,
       // so it tracks the one every scene ends on.
-      stickyTop = parseFloat(getComputedStyle(pin).top) || 0
+      const baseTop = (parseFloat(getComputedStyle(pin).top) || 0) - pinOffset
       const footGap = parseFloat(getComputedStyle(scene).getPropertyValue('--scene-bottom')) || 0
-      const pinH = Math.min(1100, Math.max(320, scene.clientHeight - stickyTop - footGap))
+      const avail = scene.clientHeight - baseTop - footGap
+      const pinH = Math.min(1100, Math.max(320, avail))
+      // Past the 1100 cap - a tall portrait screen - the pinned collage would
+      // rest against the navbar with the whole leftover height empty under
+      // it. Split that leftover above and below so it rests centred.
+      pinOffset = Math.max(0, Math.round((avail - pinH) / 2))
+      stickyTop = baseTop + pinOffset
       stage.style.setProperty('--fav-pin-h', `${pinH}px`)
+      stage.style.setProperty('--fav-pin-offset', `${pinOffset}px`)
       stage.style.height = `${Math.round(pinH * (1 + SPILL_TRAVEL))}px`
 
       // The collage runs the full width of the scene rather than sitting inside

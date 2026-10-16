@@ -199,8 +199,9 @@
 .story-fav-pin {
   position: sticky;
   /* Clear the floating navbar - the same offset every scrolling page uses, and
-     Story.jsx reads this back to know where the pin comes to rest. */
-  top: var(--content-top);
+     Story.jsx reads this back to know where the pin comes to rest. On screens
+     taller than the pin's cap it adds --fav-pin-offset to centre the collage. */
+  top: calc(var(--content-top) + var(--fav-pin-offset, 0px));
   height: var(--fav-pin-h, 560px);
   display: flex;
   flex-direction: column;

@@ -222,7 +222,9 @@
   background-position: center;
   box-shadow: 0 12px 24px -14px rgba(21, 50, 74, 0.5);
 }
-.party-photo svg { width: 30px; height: 30px; opacity: 0.85; }
+/* direct child only: the role badge's icon sits inside .party-photo too, and
+   the 1400px size-up below used to blow it up to 38px */
+.party-photo > svg { width: 30px; height: 30px; opacity: 0.85; }
 .party-photo.tone-0 { background-image: linear-gradient(150deg, var(--accent-soft), var(--accent)); }
 .party-photo.tone-1 { background-image: linear-gradient(150deg, var(--accent), var(--accent-deep)); }
 .party-photo.tone-2 { background-image: linear-gradient(150deg, var(--accent-deep), var(--party-deep)); }
@@ -309,7 +311,7 @@
 @media (min-width: 1400px) {
   .party-person { grid-template-columns: 96px 1fr; }
   .party-photo { width: 96px; height: 96px; }
-  .party-photo svg { width: 38px; height: 38px; }
+  .party-photo > svg { width: 38px; height: 38px; }
 }
 
 @media (max-width: 1200px) {

@@ -4,7 +4,6 @@ import Home from './pages/Home.jsx'
 import Login from './pages/Login.jsx'
 import LoadingScreen from './components/LoadingScreen.jsx'
 import EmailLinkPrompt from './components/EmailLinkPrompt.jsx'
-import SettingsDialog from './components/SettingsDialog.jsx'
 import BackgroundOrbs from './components/BackgroundOrbs.jsx'
 import SceneDecor from './components/SceneDecor.jsx'
 import { supabase } from './lib/Supabase'
@@ -81,7 +80,6 @@ export default function App() {
   // Curtain transition: 'idle' -> 'cover' (sweep in, swap page) -> 'reveal'.
   const [phase, setPhase] = useState('idle')
   const [pending, setPending] = useState(null)
-  const [settingsOpen, setSettingsOpen] = useState(false)
 
   // The auth listener is registered once; read the live gate through a ref.
   const gateRef = useRef(gate)
@@ -115,7 +113,6 @@ export default function App() {
         setPage('home')
         setPhase('idle')
         setPending(null)
-        setSettingsOpen(false)
         gateRef.current = 'login'
         setGate('login')
       }
@@ -264,7 +261,6 @@ export default function App() {
                 page={page}
                 onNavigate={navigate}
                 onSignOut={() => supabase.auth.signOut()}
-                onSettings={() => setSettingsOpen(true)}
               />
               <main className="main">
                 {/* No fallback UI: a chunk that isn't ready yet simply leaves the
@@ -276,7 +272,6 @@ export default function App() {
               </main>
               {/* one-time "email me the site link" offer; renders nothing once answered */}
               <EmailLinkPrompt />
-              {settingsOpen && <SettingsDialog onClose={() => setSettingsOpen(false)} />}
             </>
           )}
           {curtain}

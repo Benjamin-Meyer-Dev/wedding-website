@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { forgetPassword } from './RememberedPassword.js'
 
 // ---- Sign guests out once they've been away ----
 // Supabase keeps the session in localStorage and refreshes it forever, so a
@@ -32,6 +33,7 @@ const isAway = () => Date.now() - readLastActive() > AWAY_LIMIT_MS
 // Remove the stored session outright. Also sweeps supabase-js's default
 // `sb-<ref>-auth-token` key, which held sessions before AUTH_STORAGE_KEY.
 export function clearStoredAuth() {
+  forgetPassword()
   try {
     for (const key of Object.keys(localStorage)) {
       if (key === AUTH_STORAGE_KEY || key.startsWith(`${AUTH_STORAGE_KEY}-`) || /^sb-.+-auth-token/.test(key)) {

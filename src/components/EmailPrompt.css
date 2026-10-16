@@ -6,9 +6,9 @@
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(21, 50, 74, 0.38);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  /* a flat tint, no backdrop-filter: blurring the full screen (with the
+     animated orbs behind it) re-rasterised every frame of the fade in/out */
+  background: rgba(21, 50, 74, 0.44);
   animation: elp-fade 280ms ease-out;
 }
 @keyframes elp-fade {
@@ -16,7 +16,7 @@
   to   { opacity: 1; }
 }
 
-/* exit: the overlay fades while the card settles downward; `both` holds the
+/* exit: the overlay fades while the card eases back a touch; `both` holds the
    final frame until the component unmounts (320ms timer in the JSX) */
 .elp-overlay--out {
   animation: elp-fade-out 300ms ease-out both;
@@ -31,7 +31,7 @@
 }
 @keyframes elp-sink {
   from { opacity: 1; transform: none; }
-  to   { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 0; transform: scale(0.97); }
 }
 
 .elp-card {
@@ -47,7 +47,7 @@
   overflow: hidden;
   transition: height 480ms cubic-bezier(.33, 1, .68, 1),
               width 480ms cubic-bezier(.33, 1, .68, 1);
-  animation: elp-rise 420ms cubic-bezier(.33, 1, .68, 1);
+  animation: elp-rise 280ms cubic-bezier(.2, .8, .3, 1);
 }
 /* the short "Sent!" note needs far less room — the card narrows to match */
 .elp-card--sent { width: min(280px, 100%); }
@@ -58,8 +58,10 @@
   flex-direction: column;
   gap: 14px;
 }
+/* a short fade with a slight zoom, in place: the old 14px slide-up read as
+   the card flying in, and on a phone it ran alongside the menu folding away */
 @keyframes elp-rise {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: scale(0.96); }
   to   { opacity: 1; transform: none; }
 }
 
