@@ -10,6 +10,7 @@ import partyPhoto from '../assets/Party.jpg'
 import barPhoto from '../assets/Bar.jpg'
 import sparklersPhoto from '../assets/Sparklers.jpg'
 import './Schedule.css'
+import { isLiteMotion } from '../lib/Motion.js'
 
 // One continuous timeline of the day, flowing from the afternoon ceremony
 // into the evening reception. Each event's end is the next event's start
@@ -48,6 +49,7 @@ function Icon({ name }) {
 const Pin = () => <MapPin />
 
 export default function Schedule() {
+  const [liteMotion] = useState(isLiteMotion)
   const [hovered, setHovered] = useState(null)
   const [pinned, setPinned] = useState(null)
   const [heroHover, setHeroHover] = useState(false)
@@ -55,10 +57,10 @@ export default function Schedule() {
   const [displayIdx, setDisplayIdx] = useState(0) // what the stage currently shows
   const timelineRef = useRef(null)
 
-  // The active highlight auto-advances on every layout — the desktop stage AND
-  // the mobile vertical timeline, where it simply steps the lit circle for a bit
-  // of life (all the cards are already shown). Pauses while the guest is
-  // hovering/pinning a node or hovering the hero.
+  // The active highlight auto-advances in the full motion tier — the desktop
+  // stage and capable tablets. Lite devices keep the first event stable and
+  // only move the highlight in direct response to a tap. Pauses while the guest
+  // is hovering/pinning a node or hovering the hero.
   const paused = hovered != null || pinned != null || heroHover
 
   // Preload every card photo once so a rotated-to image is already decoded and
@@ -67,9 +69,10 @@ export default function Schedule() {
   // put ~600KB of decode work up against the page's entrance animation, and the
   // stage only needs the next photo 8s later anyway.
   useEffect(() => {
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200))
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, liteMotion ? 900 : 300))
     const cancelIdle = window.cancelIdleCallback || clearTimeout
     let handle = null
+    let startTimer = null
     let cancelled = false
     let i = 0
     const next = () => {
@@ -80,9 +83,16 @@ export default function Schedule() {
       img.onload = img.onerror = () => { handle = idle(next) }
       img.src = ev.photo
     }
-    handle = idle(next)
-    return () => { cancelled = true; if (handle != null) cancelIdle(handle) }
-  }, [])
+    // Image decoding is one of the easiest ways to drop entrance frames. The
+    // lite tier waits until the schedule has fully settled before preloading.
+    if (liteMotion) startTimer = setTimeout(() => { handle = idle(next) }, 1000)
+    else handle = idle(next)
+    return () => {
+      cancelled = true
+      if (startTimer != null) clearTimeout(startTimer)
+      if (handle != null) cancelIdle(handle)
+    }
+  }, [liteMotion])
 
   const [hidden, setHidden] = useState(() => document.hidden)
   useEffect(() => {
@@ -94,10 +104,10 @@ export default function Schedule() {
   useEffect(() => {
     // A backgrounded tab shouldn't keep swapping stage photos and restarting
     // the comet — nobody is watching, and the work still costs battery.
-    if (paused || hidden) return
+    if (paused || hidden || liteMotion) return
     const id = setInterval(() => setAuto((a) => (a + 1) % EVENTS.length), ROTATE_MS)
     return () => clearInterval(id)
-  }, [paused, hidden])
+  }, [paused, hidden, liteMotion])
 
   // Hover wins, then a pinned (clicked) node, then the auto-rotation.
   const activeIdx = hovered != null ? hovered : pinned != null ? pinned : auto
@@ -161,6 +171,50 @@ export default function Schedule() {
 
   const toggle = (i) => setPinned((p) => (p === i ? null : i))
   const enter = (i) => { setHovered(i); setAuto(i) } // resume rotation from here on leave
+
+  // A still mouse over a scrolling page. The node under the cursor changes, but
+  // the pointer never moved, so no mouseenter/mouseleave is dispatched for it —
+  // the highlight stayed on whichever node the guest had scrolled away from,
+  // and because `hovered` never cleared, the rotation stayed paused with it.
+  // The cursor's last position is kept and the hit test re-run on every scroll,
+  // which is the same answer the browser would have given had the mouse been
+  // the thing that moved. Scroll is listened for in the capture phase: it
+  // doesn't bubble, and the scrolling element is `.sched` on a short viewport
+  // but an ancestor on a tall one.
+  const pointer = useRef(null)
+  useEffect(() => {
+    let frame = 0
+    const resolve = () => {
+      const p = pointer.current
+      if (!p) return
+      const under = document.elementFromPoint(p.x, p.y)
+      const node = under?.closest('.tl-node')
+      const idx = node ? Number(node.dataset.idx) : null
+      setHovered((h) => (h === idx ? h : idx))
+      if (idx != null) setAuto(idx) // matches enter(): rotation resumes from here
+      setHeroHover(!!under?.closest('.sched-hero'))
+    }
+    const onMove = (e) => {
+      // Touch and pen leave no cursor behind to re-test against.
+      if (e.pointerType === 'mouse') pointer.current = { x: e.clientX, y: e.clientY }
+    }
+    // Out of the window entirely: the last position inside it is no longer
+    // where the cursor is, and hit-testing it would hover a node blind.
+    const onOut = () => { pointer.current = null }
+    const onScroll = () => {
+      if (frame) return
+      frame = requestAnimationFrame(() => { frame = 0; resolve() })
+    }
+    window.addEventListener('pointermove', onMove, { passive: true })
+    document.addEventListener('mouseleave', onOut)
+    window.addEventListener('scroll', onScroll, { capture: true, passive: true })
+    return () => {
+      if (frame) cancelAnimationFrame(frame)
+      window.removeEventListener('pointermove', onMove)
+      document.removeEventListener('mouseleave', onOut)
+      window.removeEventListener('scroll', onScroll, { capture: true })
+    }
+  }, [])
 
   return (
     <section className="sched">
@@ -242,6 +296,7 @@ export default function Schedule() {
               className={`tl-node tl-node--${ev.phase}${activeIdx === idx ? ' is-active' : ''}${pinned === idx ? ' is-pinned' : ''}`}
               style={{ '--i': idx }}
               key={idx}
+              data-idx={idx} /* read back by the scroll hit test above */
               role="listitem"
               tabIndex={0}
               aria-label={`${endOf(idx) ? `${ev.time} to ${endOf(idx)}` : ev.time}, ${ev.title}, ${ev.venue}. ${ev.desc}`}

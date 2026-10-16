@@ -8,7 +8,7 @@ const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]+\.[^\s@]{2,}$/
 
 // One-time post-login popup: offers to email the guest a link to this site.
 // "Asked" is tracked per household via households.email_prompted_at
-// (migration 0007) — written when they send OR decline, so the popup never
+// (migration 0008) — written when they send OR decline, so the popup never
 // returns. There is deliberately no dismiss-without-answering: the two
 // buttons are the only exits, so every household is asked exactly once.
 export default function EmailLinkPrompt() {

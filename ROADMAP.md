@@ -74,7 +74,7 @@ any hardcoded content needs to move behind auth. For most weddings: leave as-is.
 - The repo's `0001_households.sql` is **stale** — the live schema differs (uses a
   `current_user_household_id()` helper and `user_id`-keyed rsvps). Trust the live
   DB / audit output over `0001`, not the other way around.
-- Since `0007_household_logins.sql`: one login per household (`households.user_id`),
+- Since `0008_household_logins.sql`: one login per household (`households.user_id`),
   guests are name-only rows in `guests`, rsvps are keyed by `guest_id`, and
   `household_members` no longer exists.
 - The only billing surface is Supabase; no Storage / Edge Functions / Realtime in use.

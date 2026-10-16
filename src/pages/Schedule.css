@@ -20,14 +20,15 @@
   /* Flex column with grow spacers (::before/::after): the header + timeline sit
      vertically centred (no header gap) while they fit; once the vertical
      timeline overflows a short viewport the spacers collapse to the navbar
-     clearance (--content-top) and a 20px bottom gap, and the page scrolls. */
+     clearance (--content-top) and the shared --scene-bottom gap, and the page
+     scrolls. */
   padding: 0 32px;
   animation: page-rise 460ms cubic-bezier(.4, 0, .2, 1);
 }
 .sched::before,
 .sched::after { content: ''; flex: 1 1 0; }
 .sched::before { min-height: var(--content-top); }
-.sched::after { min-height: 20px; }
+.sched::after { min-height: var(--scene-bottom); }
 /* Phones show the vertical timeline, which can exceed a short viewport — let it
    scroll instead of clipping. NOTE: this section is `<section class="sched">`
    (no `scene` class), so the rule must target `.sched` directly — a compound

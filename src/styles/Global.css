@@ -50,6 +50,12 @@
      begin their content 16px below the navbar's bottom edge. */
   --nav-top: 18px;
   --content-top: calc(var(--nav-top) + var(--topbar-h, 58px) + 16px);
+  /* The breathing room every scene leaves between its last element and the
+     bottom of the viewport. One value for the whole site: pages used to end on
+     anything from 20px to 48px, so no two scenes finished the same way. Scroll
+     scenes spend it as their ::after spacer's min-height, the rest as
+     padding-bottom — see each page's scene rule. */
+  --scene-bottom: 16px;
 }
 
 /* Mobile navbar sits higher (see .topbar @media); keep --nav-top in sync. */
@@ -155,7 +161,7 @@ input, textarea, [contenteditable] {
 
 /* ---------- Reduced motion ----------
    Guests who ask their OS for less motion keep the site's look but lose the
-   ambient loops (drifting orbs, twinkling sparkles, breathing auras, pulsing
+   ambient loops (drifting orbs, breathing auras, pulsing
    comet heads) and get instant entrances. Every animation still RUNS, for 1ms
    and once, so anything that fades or masks itself in still lands on its
    finished frame — it just doesn't move. This is also the cheapest the site can
@@ -168,10 +174,6 @@ input, textarea, [contenteditable] {
     transition-duration: 1ms !important;
     scroll-behavior: auto !important;
   }
-  /* The one exception: the sparkle twinkle has no fill mode, so after its 1ms
-     run the sparkles would settle back to their invisible base state. Give them
-     a resting brightness instead. */
-  .decor-spark { opacity: .55; }
 }
 
 /* Lighter entrance for glass cards — opacity only, no transform. Moving

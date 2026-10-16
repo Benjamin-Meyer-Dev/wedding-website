@@ -1,0 +1,13 @@
+{
+  "name": "Elizabeth & Benjamin · May 29, 2027",
+  "short_name": "E & B",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#d8e4ec",
+  "theme_color": "#d8e4ec",
+  "icons": [
+    { "src": "Favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

@@ -1,5 +1,5 @@
-// Shared storybook decoration: drifting magnolia sprigs in the corners and a
-// field of faint sparkles. Purely decorative.
+// Shared storybook decoration: drifting magnolia sprigs in the corners.
+// Purely decorative.
 
 // A magnolia branch in the same minimal line-art style as before: a gently
 // curved branch, one open bloom (broad petals around the magnolia's signature
@@ -28,26 +28,9 @@ const Sprig = ({ className }) => (
   </span>
 )
 
-const sparkles = [
-  { top: '14%', left: '12%', d: 6, s: 7, delay: '0s' },
-  { top: '22%', left: '82%', d: 10, s: 9, delay: '1.1s' },
-  { top: '9%', left: '54%', d: 4, s: 6, delay: '2.3s' },
-  { top: '34%', left: '30%', d: 14, s: 8, delay: '0.7s' },
-  { top: '18%', left: '68%', d: 8, s: 5, delay: '1.8s' },
-  { top: '44%', left: '88%', d: 16, s: 7, delay: '3.0s' },
-  { top: '40%', left: '6%', d: 12, s: 6, delay: '2.6s' },
-]
-
 export default function SceneDecor() {
   return (
     <div className="decor" aria-hidden="true">
-      {sparkles.map((p, i) => (
-        <i
-          key={i}
-          className="decor-spark"
-          style={{ top: p.top, left: p.left, '--s': `${p.s}px`, animationDelay: p.delay }}
-        />
-      ))}
       <Sprig className="decor-sprig--tl" />
       <Sprig className="decor-sprig--br" />
     </div>

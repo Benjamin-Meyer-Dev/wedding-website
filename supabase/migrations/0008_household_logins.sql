@@ -20,7 +20,7 @@
 -- defensively: every policy on the touched tables is dropped by catalog lookup
 -- rather than by name, and FKs on rsvps are found the same way.
 --
--- Run manually in the Supabase SQL editor (like 0002-0006). Runs in one
+-- Run manually in the Supabase SQL editor (like 0002-0007). Runs in one
 -- transaction — if anything fails, nothing changes.
 
 begin;
@@ -61,14 +61,28 @@ create table if not exists public.guests (
 );
 create index if not exists guests_household_id_idx on public.guests(household_id);
 
--- carry existing members across, keeping their id so rsvps still line up
+-- surnames build the household usernames (constraint added in 0009)
+alter table public.guests add column if not exists last_name text;
+
+-- carry existing members across, keeping their id so rsvps still line up,
+-- along with any last names entered under 0007
 do $$
 begin
   if to_regclass('public.household_members') is not null then
-    insert into public.guests (id, household_id, first_name)
-    select user_id, household_id, coalesce(nullif(trim(first_name), ''), 'Guest')
-    from public.household_members
-    on conflict (id) do nothing;
+    if exists (select 1 from information_schema.columns
+               where table_schema='public' and table_name='household_members' and column_name='last_name') then
+      execute $q$
+        insert into public.guests (id, household_id, first_name, last_name)
+        select user_id, household_id, coalesce(nullif(trim(first_name), ''), 'Guest'), nullif(trim(last_name), '')
+        from public.household_members
+        on conflict (id) do nothing
+      $q$;
+    else
+      insert into public.guests (id, household_id, first_name)
+      select user_id, household_id, coalesce(nullif(trim(first_name), ''), 'Guest')
+      from public.household_members
+      on conflict (id) do nothing;
+    end if;
   end if;
 end $$;
 

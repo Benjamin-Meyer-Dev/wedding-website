@@ -3,7 +3,7 @@
 -- in guest order, max two — "smith", "smithjones".
 --
 -- Nullable so existing guests keep working; fill them in before generating
--- logins. Guests can't edit this (no update grant on guests, 0007).
+-- logins. Guests can't edit this (no update grant on guests, 0008).
 --
 -- Run manually in the Supabase SQL editor. Idempotent.
 

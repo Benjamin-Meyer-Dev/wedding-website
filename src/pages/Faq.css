@@ -3,7 +3,8 @@
   /* Flex column with two grow spacers (::before/::after): when the cards fit
      the viewport the spacers split the slack and the deck sits vertically
      centred with no header gap; once the cards overflow, the spacers collapse
-     to their min-heights — navbar clearance (--content-top) on top, 32px below
+     to their min-heights — navbar clearance (--content-top) on top, the shared
+     --scene-bottom gap below
      — and the page scrolls. So the standard gap only appears when scrolling. */
   display: flex;
   flex-direction: column;
@@ -19,7 +20,7 @@
 .scene.faq::before,
 .scene.faq::after { content: ''; flex: 1 1 0; }
 .scene.faq::before { min-height: var(--content-top); }
-.scene.faq::after { min-height: 32px; }
+.scene.faq::after { min-height: var(--scene-bottom); }
 .faq::-webkit-scrollbar { width: 6px; }
 
 .faq-inner {

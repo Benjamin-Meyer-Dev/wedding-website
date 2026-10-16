@@ -4,6 +4,7 @@ import {
   Hotel as IconHotel, ExternalLink as IconExt, ArrowRight as IconArrow,
 } from 'lucide-react'
 import './Travel.css'
+import { isLiteMotion } from '../lib/Motion.js'
 
 // The two venues for the day. The `address` drives the embedded Google map.
 const VENUES = [
@@ -91,7 +92,9 @@ function MapPanel({ venue: v, delay }) {
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    const t = setTimeout(() => setShow(true), delay)
+    // Embedded maps do significant script/layout work. Let the page entrance
+    // finish before mounting them on the devices most likely to drop frames.
+    const t = setTimeout(() => setShow(true), delay + (isLiteMotion() ? 1200 : 0))
     return () => clearTimeout(t)
   }, [delay])
 

@@ -21,8 +21,10 @@
 /* ---- Short viewports (a phone turned sideways) ----
    A landscape phone is ~320-430px tall, which is shorter than most scenes are
    designed for. Pages that opt into `overflow-y: auto` already cope; the ones
-   that rely on `.scene`'s `overflow: hidden` (home, and login above 1200px)
-   simply clipped whatever didn't fit, with no way to reach it.
+   that rely on `.scene`'s `overflow: hidden` (home and login above 1200px)
+   simply clipped whatever didn't fit, with no way to reach it. Their portraits
+   stop shrinking at 430px, which needs about 540px of viewport, so this tier
+   is already scrolling by the time they hit that floor.
 
    `align-items: safe center` is the key: the base rule centres the scene's
    content on the CROSS axis, and plain `center` pushes an overflowing child's
@@ -58,7 +60,7 @@
 .rev-grow { opacity: 0; transform-origin: left center; animation: sb-grow 540ms cubic-bezier(.76, 0, .24, 1) both; animation-delay: var(--rd, 0ms); }
 .rev-fade { opacity: 0; animation: sb-fade 460ms ease both; animation-delay: var(--rd, 0ms); } /* opacity-only — safe with hover transforms */
 
-/* ---- Decoration: sprigs + sparkles ---- */
+/* ---- Decoration: sprigs ---- */
 .decor { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 .decor-sprig {
   position: absolute;
@@ -78,20 +80,6 @@
   .decor-sprig { width: 160px; }
   .decor-sprig--tl { top: -2%; left: -22%; }
   .decor-sprig--br { bottom: -2%; right: -22%; }
-}
-
-.decor-spark {
-  position: absolute;
-  width: var(--s, 6px);
-  height: var(--s, 6px);
-  background: radial-gradient(circle, #fff 0%, var(--accent-bright) 45%, transparent 70%);
-  border-radius: 50%;
-  opacity: 0;
-  animation: spark-tw 4.5s ease-in-out infinite;
-}
-@keyframes spark-tw {
-  0%, 100% { opacity: 0; transform: scale(.6); }
-  50%      { opacity: .9; transform: scale(1); }
 }
 
 /* ============================================================

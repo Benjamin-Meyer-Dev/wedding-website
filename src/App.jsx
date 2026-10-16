@@ -9,6 +9,8 @@ import BackgroundOrbs from './components/BackgroundOrbs.jsx'
 import SceneDecor from './components/SceneDecor.jsx'
 import { supabase } from './lib/Supabase'
 import { HouseholdProvider } from './lib/HouseholdContext.jsx'
+import { isLiteMotion } from './lib/Motion.js'
+import { clearStoredAuth, useIdleLogout } from './lib/IdleLogout.js'
 import './styles/App.css'
 
 // Everything past the first screen loads as its own chunk. The login and the
@@ -131,6 +133,21 @@ export default function App() {
     return () => subscription.unsubscribe()
   }, [])
 
+  // Away too long: end the session. 'local' ends only this device's session;
+  // the default ('global') would also sign out anyone else using the same
+  // login. That call needs the network (to revoke the refresh token, or first
+  // to refresh an expired access token). If it fails, delete the stored session
+  // and try again: with nothing stored, signOut is local-only and still emits
+  // SIGNED_OUT, which the listener above turns into the login screen.
+  const handleAway = useCallback(async () => {
+    const { error } = await supabase.auth.signOut({ scope: 'local' })
+    if (error) {
+      clearStoredAuth()
+      await supabase.auth.signOut({ scope: 'local' })
+    }
+  }, [])
+  useIdleLogout(Boolean(session), handleAway)
+
   // Drive the curtain timeline.
   useEffect(() => {
     if (phase === 'cover') {
@@ -176,8 +193,12 @@ export default function App() {
   // navigation never actually waits on a network round trip. Idle-scheduled and
   // one at a time: the fetches must not compete with the page that is on screen.
   useEffect(() => {
-    if (gate !== 'app' || !introExiting) return
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 300))
+    if (gate !== 'app' || !introDone) return
+    // Safari has no requestIdleCallback. Its old 300ms timer fired while page
+    // entrances were still animating and parsed every lazy chunk in that busy
+    // window. Give the first scene a quiet beat, especially on the lite tier.
+    const fallbackDelay = isLiteMotion() ? 1400 : 600
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, fallbackDelay))
     const cancelIdle = window.cancelIdleCallback || clearTimeout
     const loaders = Object.values(LOADERS)
     let handle = null
@@ -191,7 +212,7 @@ export default function App() {
     }
     handle = idle(next)
     return () => { cancelled = true; if (handle != null) cancelIdle(handle) }
-  }, [gate, introExiting])
+  }, [gate, introDone])
 
   // Show the app/login as soon as the loader begins exiting, so it sits beneath
   // the fading loader and is revealed by the crossfade.
@@ -210,18 +231,16 @@ export default function App() {
     </div>
   ) : null
 
+  let view
   if (!authReady) {
-    return (
+    view = (
       <div className="app">
         <BackgroundOrbs />
         <SceneDecor />
-        {intro}
       </div>
     )
-  }
-
-  if (gate === 'login') {
-    return (
+  } else if (gate === 'login') {
+    view = (
       <div className="app">
         <BackgroundOrbs />
         <SceneDecor />
@@ -230,41 +249,52 @@ export default function App() {
         {/* The sign-in curtain covers the login here; after the gate flips,
             the app tree below picks it up mid-transition for the reveal. */}
         {curtain}
-        {intro}
       </div>
+    )
+  } else {
+    view = (
+      <HouseholdProvider>
+        <div className={`app app--page-${page}`}>
+          <BackgroundOrbs />
+          <SceneDecor />
+          {/* Render once the loader starts fading so it crossfades to the page. */}
+          {showApp && (
+            <>
+              <NavBar
+                page={page}
+                onNavigate={navigate}
+                onSignOut={() => supabase.auth.signOut()}
+                onSettings={() => setSettingsOpen(true)}
+              />
+              <main className="main">
+                {/* No fallback UI: a chunk that isn't ready yet simply leaves the
+                    scene empty for a frame or two behind the curtain, which is
+                    quieter than a spinner flashing in and out. */}
+                <Suspense fallback={null}>
+                  {page === 'home' ? <Home /> : <LazyPage name={page} />}
+                </Suspense>
+              </main>
+              {/* one-time "email me the site link" offer; renders nothing once answered */}
+              <EmailLinkPrompt />
+              {settingsOpen && <SettingsDialog onClose={() => setSettingsOpen(false)} />}
+            </>
+          )}
+          {curtain}
+        </div>
+      </HouseholdProvider>
     )
   }
 
+  // The loader sits OUTSIDE the branches above, at a fixed slot in a root
+  // fragment. Inside them it moved when getSession() resolved (a different
+  // child index in the login tree, a HouseholdProvider root in the app tree),
+  // so React unmounted it and mounted a fresh one, replaying the intro from
+  // the start. It is position: fixed, and .app sets no z-index, so leaving
+  // .app doesn't change how it stacks over the page.
   return (
-    <HouseholdProvider>
-      <div className={`app app--page-${page}`}>
-        <BackgroundOrbs />
-        <SceneDecor />
-        {/* Render once the loader starts fading so it crossfades to the page. */}
-        {showApp && (
-          <>
-            <NavBar
-              page={page}
-              onNavigate={navigate}
-              onSignOut={() => supabase.auth.signOut()}
-              onSettings={() => setSettingsOpen(true)}
-            />
-            <main className="main">
-              {/* No fallback UI: a chunk that isn't ready yet simply leaves the
-                  scene empty for a frame or two behind the curtain, which is
-                  quieter than a spinner flashing in and out. */}
-              <Suspense fallback={null}>
-                {page === 'home' ? <Home /> : <LazyPage name={page} />}
-              </Suspense>
-            </main>
-            {/* one-time "email me the site link" offer; renders nothing once answered */}
-            <EmailLinkPrompt />
-            {settingsOpen && <SettingsDialog onClose={() => setSettingsOpen(false)} />}
-          </>
-        )}
-        {curtain}
-        {intro}
-      </div>
-    </HouseholdProvider>
+    <>
+      {view}
+      {intro}
+    </>
   )
 }

@@ -11,8 +11,16 @@
   justify-content: safe center;
   overflow-y: auto;            /* graceful scroll only if a guest's card is very tall */
   scrollbar-gutter: stable both-edges; /* keep header centred whether or not it scrolls */
-  padding: var(--content-top) 32px 20px;
+  padding: var(--content-top) 32px 0;
 }
+/* The bottom gap is a real flex item rather than the scene's padding-bottom,
+   matching how every other scene ends (see the note on .scene.travel): a scroll
+   container's padding-bottom is not reliably painted at the scroll end on
+   mobile Safari, and this page does scroll on short screens. `flex: 0 0` (no
+   grow) makes it a fixed gap rather than one of the centring spacers, and it
+   replaces an equal padding-bottom, so the layout above is unchanged —
+   removing the padding grows the content box by exactly the spacer's height. */
+.scene.rsvp::after { content: ''; flex: 0 0 var(--scene-bottom); }
 .rsvp::-webkit-scrollbar { width: 6px; }
 
 .rsvp-inner {
@@ -55,8 +63,7 @@
   align-items: center;
   text-align: center;
   gap: clamp(20px, 2.4%, 28px);
-  box-shadow: 0 18px 44px -26px rgba(21, 50, 74, 0.32);
-  transition: border-color 220ms ease, background 220ms ease, box-shadow 220ms ease;
+  transition: border-color 220ms ease, background 220ms ease;
   animation: rsvp-card-in 420ms cubic-bezier(.4, 0, .2, 1) both;
   animation-delay: calc(var(--card-index, 0) * 70ms + 60ms);
 }
@@ -64,7 +71,6 @@
 .rsvp-card.is-answered {
   background: var(--powder-mist);
   border-color: rgba(58, 111, 149, 0.4);
-  box-shadow: 0 18px 44px -22px rgba(58, 111, 149, 0.35);
 }
 
 @keyframes rsvp-card-in {
@@ -512,7 +518,7 @@
 @media (max-width: 1200px) {
   /* Use `.scene.rsvp` (0,2,0) so this beats the base `.scene.rsvp` padding —
      a plain `.rsvp` (0,1,0) loses and the desktop 32px padding sticks. */
-  .scene.rsvp { padding: var(--content-top) 16px 24px; }
+  .scene.rsvp { padding: var(--content-top) 16px 0; }
   /* (the arrows move INSIDE the card head on mobile — see the end-of-file
      block. A `.rsvp-nav { display:none }` here is dead anyway: the later base
      `.rsvp-nav { display:grid }` outranks it at equal specificity.) */
@@ -528,7 +534,7 @@
 @media (max-width: 520px) {
   /* `.scene.rsvp` (0,2,0) to beat the base padding; drop the both-edges
      scrollbar gutter that needlessly narrows the card on phones. */
-  .scene.rsvp { padding: var(--content-top) 12px 20px; scrollbar-gutter: auto; }
+  .scene.rsvp { padding: var(--content-top) 12px 0; scrollbar-gutter: auto; }
   .rsvp-card { padding: 24px 18px; gap: 18px; border-radius: 18px; }
   .rsvp-name { font-size: clamp(28px, 9%, 34px); }
   /* (toggle is stacked in a later @media block — see below — so it lands after
@@ -672,8 +678,19 @@
      instead of snapping. */
   transition: height 640ms cubic-bezier(.33, 1, .68, 1);
 }
+/* While the active card opens or closes its meal section, its grid transition
+   already supplies the easing. Following the observed height directly avoids
+   a second transition continually restarting and visibly lagging behind it. */
+.rsvp-viewport.is-content-resizing { transition: none; }
 .rsvp-track {
+  /* Space between neighbouring cards while they slide. Once the viewport is
+     narrower than the card's 960px cap, each card fills its whole slide, so
+     without this the outgoing and incoming cards glided past edge to edge.
+     Rsvp.jsx adds the gap to each step of the track's translate, so at rest
+     the active card sits exactly where it did before. */
+  --slide-gap: 32px;
   display: flex;
+  gap: var(--slide-gap);
   align-items: flex-start; /* natural heights; the viewport clips the taller inactive cards */
   transition: transform 640ms cubic-bezier(.33, 1, .68, 1);
 }
@@ -683,7 +700,6 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 4px;
 }
 .rsvp-deck .rsvp-card {
   width: 100%;
@@ -934,6 +950,8 @@
   color: var(--text-muted);
   white-space: nowrap;
 }
+/* Keep this row reserved even while idle. Saving and "All saved" can then
+   update the live region without changing the centred RSVP layout's height. */
 
 /* very short viewports: let the card scroll internally rather than clip */
 @media (max-height: 700px) {

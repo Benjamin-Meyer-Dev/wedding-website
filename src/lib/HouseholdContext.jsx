@@ -3,7 +3,7 @@ import { supabase } from './Supabase'
 
 const HouseholdContext = createContext(null)
 
-// One login per household (migration 0007): the signed-in auth user IS the
+// One login per household (migration 0008): the signed-in auth user IS the
 // household, and `guests` are the people invited under it.
 export function HouseholdProvider({ children }) {
   const [household, setHousehold] = useState(null)
