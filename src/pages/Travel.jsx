@@ -92,8 +92,10 @@ function MapPanel({ venue: v, delay }) {
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    // Embedded maps do significant script/layout work. Let the page entrance
-    // finish before mounting them on the devices most likely to drop frames.
+    // Embedded maps do significant script/layout work. The base delays start
+    // the first one at 700ms, once the cards' entrance (done by ~670ms) has
+    // finished - mounting it mid-fade is what made that entrance hitch. Lite
+    // devices wait longer still.
     const t = setTimeout(() => setShow(true), delay + (isLiteMotion() ? 1200 : 0))
     return () => clearTimeout(t)
   }, [delay])
@@ -119,7 +121,7 @@ function MapPanel({ venue: v, delay }) {
 function Venue({ venue: v, i }) {
   return (
     <article className={`tv-venue tv-venue--${v.phase} glass rev-fade`} style={{ '--rd': `${130 + i * 80}ms` }}>
-      <MapPanel venue={v} delay={300 + i * 380} />
+      <MapPanel venue={v} delay={700 + i * 380} />
       <div className="tv-info">
         <span className="tv-phase">{v.label}</span>
         <h2 className="tv-name">{v.name}</h2>
@@ -143,7 +145,7 @@ function Stay() {
   const terms = [HOTEL.rate, HOTEL.cutoff].filter(Boolean).join('  ·  ')
   return (
       <article className="tv-venue tv-venue--stay glass rev-fade" style={{ '--rd': '580ms' }}>
-        <MapPanel venue={HOTEL} delay={1060} />
+        <MapPanel venue={HOTEL} delay={1460} />
         <div className="tv-info">
           <span className="tv-phase"><IconHotel />Hotel Block</span>
           <h2 className="tv-name">{HOTEL.name}</h2>

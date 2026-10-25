@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from './Supabase'
 
 const HouseholdContext = createContext(null)
@@ -10,6 +10,13 @@ export function HouseholdProvider({ children }) {
   const [guests, setGuests] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  // The user id the household was (or is being) loaded for. auth-js re-emits
+  // SIGNED_IN every time the tab becomes visible again, plus TOKEN_REFRESHED
+  // hourly; reloading on each one cost three round trips (getUser, households,
+  // then Rsvp's rsvps refetch off the new `guests` array), blanked the RSVP
+  // deck behind `loading`, and could overwrite edits still inside its autosave
+  // debounce. Only a different user needs a fetch.
+  const loadedFor = useRef(null)
 
   useEffect(() => {
     let cancelled = false
@@ -19,27 +26,32 @@ export function HouseholdProvider({ children }) {
       setGuests([])
     }
 
-    async function load() {
-      setLoading(true)
-      setError(null)
-
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        if (cancelled) return
+    // userId comes from the local session (getSession / the auth event), not
+    // getUser(), which is a network round trip; RLS still scopes the query.
+    async function load(userId) {
+      if (!userId) {
+        loadedFor.current = null
         reset()
         setLoading(false)
         return
       }
+      if (loadedFor.current === userId) return
+      // Claimed before the await, so the getSession() call and the SIGNED_IN
+      // that auth-js fires during startup don't both fetch.
+      loadedFor.current = userId
+      setLoading(true)
+      setError(null)
 
       const { data, error: qError } = await supabase
         .from('households')
         .select('id, display_name, guests ( id, first_name )')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .maybeSingle()
 
       if (cancelled) return
 
       if (qError || !data) {
+        loadedFor.current = null // let the next auth event retry
         setError(qError ?? new Error('Signed in, but no household is linked to this login.'))
         reset()
       } else {
@@ -51,27 +63,35 @@ export function HouseholdProvider({ children }) {
       setLoading(false)
     }
 
-    load()
+    supabase.auth.getSession().then(({ data }) => load(data.session?.user?.id))
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') {
+        loadedFor.current = null
         reset()
         setError(null)
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        load()
+        load(session?.user?.id)
       }
     })
 
     return () => {
       cancelled = true
+      // an in-flight load dies with `cancelled`, so release its claim (StrictMode
+      // remounts straight away and must be free to fetch again)
+      loadedFor.current = null
       subscription.unsubscribe()
     }
   }, [])
 
   const householdId = household?.id ?? null
+  const value = useMemo(
+    () => ({ household, householdId, guests, loading, error }),
+    [household, householdId, guests, loading, error],
+  )
 
   return (
-    <HouseholdContext.Provider value={{ household, householdId, guests, loading, error }}>
+    <HouseholdContext.Provider value={value}>
       {children}
     </HouseholdContext.Provider>
   )

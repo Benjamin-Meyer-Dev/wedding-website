@@ -151,6 +151,9 @@
   gap: 16px;
   align-items: center;
   width: 100%;
+  /* the tallest card's height, shared by every card on both sides (set by
+     useEqualCardHeights in WeddingParty.jsx) */
+  min-height: var(--party-card-h, auto);
   padding: 16px 18px;
   background: var(--party-card, var(--glass-bg));
   border: 1px solid var(--party-card-border, var(--glass-border));
@@ -321,10 +324,12 @@
      A single 640px card left ~320px of a 964px column empty; two-up fills it
      with a better measure (~58 characters) than one very wide card would have.
      auto-fit + a 320px floor means this collapses back to one card per row on
-     anything narrower than ~700px, so phones are unaffected. */
+     anything narrower than ~700px, so phones are unaffected. The min(100%)
+     lets that one column shrink below 320px on the narrowest phones (a 320px
+     screen leaves 280px), where it used to push the cards off the right edge. */
   .party-people {
     max-width: 1100px;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
   }
   .party-divider {
     flex-direction: row;

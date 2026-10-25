@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef } from 'react'
 import { Crown, Flower, Flower2, Gem, User } from 'lucide-react'
 import './Party.css'
 
@@ -81,7 +82,41 @@ function Side({ side, baseDelay }) {
   )
 }
 
+// Every card on the page shares one height, across BOTH sides. Each side is
+// its own grid, so `grid-auto-rows: 1fr` alone only levels a column against
+// itself - zoom in and one side's blurbs wrap sooner, leaving the two columns
+// at different heights. This measures the tallest card's natural height and
+// hands it to all of them as --party-card-h. Re-measured whenever the width
+// changes (resize and browser zoom both do that) and once the web fonts land.
+function useEqualCardHeights() {
+  const ref = useRef(null)
+  useLayoutEffect(() => {
+    const root = ref.current
+    if (!root) return
+    const measure = () => {
+      root.style.removeProperty('--party-card-h')
+      const cards = root.querySelectorAll('.party-person')
+      const tallest = Math.max(0, ...Array.from(cards, (c) => c.offsetHeight))
+      if (tallest) root.style.setProperty('--party-card-h', `${tallest}px`)
+    }
+    measure()
+    // Width only: setting the height grows the container, which would otherwise
+    // re-fire the observer in a loop.
+    let width = root.clientWidth
+    const ro = new ResizeObserver(() => {
+      if (root.clientWidth === width) return
+      width = root.clientWidth
+      measure()
+    })
+    ro.observe(root)
+    document.fonts?.ready.then(measure)
+    return () => ro.disconnect()
+  }, [])
+  return ref
+}
+
 export default function WeddingParty() {
+  const sidesRef = useEqualCardHeights()
   return (
     <section className="scene party">
       <div className="party-inner">
@@ -89,7 +124,7 @@ export default function WeddingParty() {
           <h1 className="page-title rev" style={{ '--rd': '70ms' }}>By Our Sides</h1>
         </header>
 
-        <div className="party-sides">
+        <div className="party-sides" ref={sidesRef}>
           <Side side={HER_SIDE} baseDelay={190} />
           <div className="party-divider" aria-hidden="true"><span className="party-amp">&amp;</span></div>
           <Side side={HIS_SIDE} baseDelay={220} />

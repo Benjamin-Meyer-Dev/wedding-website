@@ -54,26 +54,57 @@
 
 /* one cohesive glass card: map on top, details on the same panel below */
 .tv-venue {
+  position: relative;  /* holds the hover-shadow layer below */
   flex: 1 1 0;
   min-width: 0;
   display: flex;
   flex-direction: column;
   border-radius: 22px;
-  overflow: hidden;
-  transition: transform 380ms cubic-bezier(.33, 1, .68, 1), box-shadow 380ms ease;
+  /* No overflow:hidden here - it would clip the hover-shadow layer. The map
+     rounds its own corners instead (the only child that reaches the edge). */
+  --tv-hover-rgb: 58, 111, 149;
+  transition: transform 380ms cubic-bezier(.33, 1, .68, 1);
 }
-.tv-venue:hover { transform: translateY(-8px); }
-.tv-venue--ceremony:hover  { box-shadow: 0 44px 84px -34px rgba(74, 128, 165, 0.55); }
-.tv-venue--reception:hover { box-shadow: 0 44px 84px -34px rgba(45, 90, 122, 0.55); }
+.tv-venue--ceremony  { --tv-hover-rgb: 74, 128, 165; }
+.tv-venue--reception { --tv-hover-rgb: 45, 90, 122; }
+/* The deep hover shadow is pre-painted on its own layer and only cross-fades,
+   as on the wedding-party cards. Transitioning box-shadow itself re-rasterised
+   an 84px blur around a card holding a live map on every hover frame. */
+.tv-venue::after {
+  content: '';
+  position: absolute;
+  inset: -1px;  /* out to the border box, past the .glass 1px border */
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 44px 84px -34px rgba(var(--tv-hover-rgb), 0.55);
+  opacity: 0;
+  transition: opacity 380ms ease;
+}
+/* pointer-only, so a tap on a phone doesn't leave the card stuck lifted */
+@media (hover: hover) {
+  .tv-venue:hover { transform: translateY(-8px); }
+  .tv-venue:hover::after { opacity: 1; }
+}
 
 /* ---- map (top of card) ---- */
 .tv-map {
   position: relative;
   width: 100%;
-  height: 340px;
+  /* The map is the only flexible part of a venue card, so it takes whatever
+     height is left once everything else in the first screen is accounted for:
+     navbar clearance, the title (~62px), the 24px gap, the details panel
+     (~214px) and the --scene-bottom gap. That keeps the whole first row of
+     cards on screen without scrolling; 340px is the old fixed size, kept as
+     the ceiling, and the 180px floor is where a shorter map stops being
+     useful (the page scrolls past that instead). dvh second so it wins where
+     supported: 100vh overstates the height behind a mobile URL bar. */
+  height: clamp(180px, calc(100vh - var(--content-top) - 324px), 340px);
+  height: clamp(180px, calc(100dvh - var(--content-top) - 324px), 340px);
   overflow: hidden;
   background: var(--powder-deep);
   border-bottom: 1px solid var(--glass-border);
+  /* the card's 22px corner, less its 1px border */
+  border-radius: 21px 21px 0 0;
 }
 /* instant placeholder shown until the deferred iframe loads in */
 .tv-map-ph {
@@ -107,6 +138,8 @@
   transition: opacity 600ms ease;
 }
 .tv-map iframe.is-loaded { opacity: 1; }
+/* the placeholder pin is fully hidden under a loaded map; stop it bobbing */
+.tv-map:has(iframe.is-loaded) .tv-map-ph svg { animation: none; }
 
 /* periodic light sheen across the map — swept via transform (compositor-only)
    rather than background-position, which repainted the whole map every frame.
@@ -223,7 +256,7 @@
 /* The page is three distinct blocks — the venues, the hotel, the route matrix.
    A flat 24px gap made "Getting There" and "Where to Stay" read as one long
    run, so each block after the first opens with a hairline and real breathing
-   room, and carries a titled header with an accent rule under it. */
+   room, and carries its own titled header. */
 .travel-section {
   display: flex;
   flex-direction: column;
@@ -238,12 +271,10 @@
 }
 /* Deliberately identical to .page-title (app.css: display face, 400, 56px,
    -0.014em) — "Getting There", "Where to Stay" and "Drive Times" are peer
-   sections and read as one set. The h1 carries this class as well, so the rule
-   below sits under all three. */
+   sections and read as one set. The h1 carries this class as well. No accent
+   rule underneath: no other page's title has one. */
 .travel-section-title {
-  position: relative;
   margin: 0;
-  padding-bottom: 17px;
   font-family: var(--font-display);
   font-weight: 400;
   font-size: 56px;
@@ -251,17 +282,6 @@
   letter-spacing: -0.014em;
   color: var(--ink-blue);
   text-align: center;
-}
-.travel-section-title::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  width: 76px;
-  height: 2px;
-  transform: translateX(-50%);
-  border-radius: 999px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
 }
 .travel-section-sub {
   margin: -6px 0 0;
@@ -408,13 +428,13 @@
   min-height: 300px;
   border-bottom: 0;
   border-right: 1px solid var(--glass-border);
+  border-radius: 21px 0 0 21px;
 }
 .tv-venue--stay .tv-info {
   flex: 1 1 0;
   min-width: 0;
   justify-content: center;
 }
-.tv-venue--stay:hover { box-shadow: 0 44px 84px -34px rgba(58, 111, 149, 0.5); }
 /* stagger the sheen so all three maps don't sweep in unison */
 .tv-venue--stay .tv-map-sheen { animation-delay: 1.6s; }
 
@@ -466,8 +486,8 @@
   .travel-venues { flex-direction: column; align-items: stretch; gap: 16px; }
   /* Stacked in a column, the cards must size to their content. Keeping the
      desktop `flex: 1 1 0` (basis 0) here would collapse them to 0 height —
-     the column has no free space to grow into and `.tv-venue`'s overflow:hidden
-     drops its automatic min-size to 0 — so the cards (and their maps) vanish. */
+     the column has no free space to grow into — so the cards (and their maps)
+     vanish. */
   .tv-venue { flex: none; }
   /* back to map-on-top once the row collapses to a single column */
   .tv-venue--stay { flex-direction: column; }
@@ -481,10 +501,16 @@
     min-height: 0;
     border-right: 0;
     border-bottom: 1px solid var(--glass-border);
+    border-radius: 21px 21px 0 0;
   }
-  .travel-section-title { font-size: 44px; padding-bottom: 14px; } /* tracks .page-title's narrow size */
+  .travel-section-title { font-size: 44px; } /* tracks .page-title's narrow size */
   .travel-section + .travel-section { margin-top: 14px; padding-top: 32px; }
-  .tv-map { height: 260px; }
+  /* same fit-the-first-screen sizing as desktop, for the first stacked card:
+     the title is ~48px here and the tighter details panel ~202px */
+  .tv-map {
+    height: clamp(160px, calc(100vh - var(--content-top) - 296px), 260px);
+    height: clamp(160px, calc(100dvh - var(--content-top) - 296px), 260px);
+  }
   .tv-name { font-size: 28px; }
   /* 80% of the card width, badge centred, dashes filling each side */
 }

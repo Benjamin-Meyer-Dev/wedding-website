@@ -77,7 +77,8 @@ export default function App() {
   // curtain can sweep over the login BEFORE the app swaps in beneath it.
   const [gate, setGate] = useState('login')
 
-  // Curtain transition: 'idle' -> 'cover' (sweep in, swap page) -> 'reveal'.
+  // Curtain transition: 'idle' -> 'cover' (sweep in) -> 'swapped' (held shut
+  // while the new scene mounts and paints) -> 'reveal'.
   const [phase, setPhase] = useState('idle')
   const [pending, setPending] = useState(null)
 
@@ -146,14 +147,37 @@ export default function App() {
   useIdleLogout(Boolean(session), handleAway)
 
   // Drive the curtain timeline.
+  // The swap and the reveal used to land in the same commit, so the frame that
+  // built the whole new scene (DOM, style, layout, image decode, a dozen
+  // entrance animations starting) was also the reveal's first frame - the
+  // iris visibly hitched as it opened. And when the scene's chunk hadn't
+  // arrived yet, Suspense left the scene empty and it popped in mid-reveal.
+  // Now the cover waits for the chunk, swaps, and stays shut ('swapped') until
+  // that heavy frame has painted; only then does it open on a scene that is
+  // already there.
   useEffect(() => {
     if (phase === 'cover') {
-      const t = setTimeout(() => {
+      let cancelled = false
+      const t = setTimeout(async () => {
         if (pending === ENTER_APP) setGate('app')
-        else setPage(pending)
-        setPhase('reveal')
+        else {
+          // Usually already resolved (prefetched, or requested on click).
+          await LOADERS[pending]?.().catch(() => {})
+          if (cancelled) return
+          setPage(pending)
+        }
+        setPhase('swapped')
       }, COVER_MS)
-      return () => clearTimeout(t)
+      return () => { cancelled = true; clearTimeout(t) }
+    }
+    if (phase === 'swapped') {
+      // This effect runs after the swap's commit; the first frame callback
+      // fires before that commit's paint, the second after it.
+      let f2 = 0
+      const f1 = requestAnimationFrame(() => {
+        f2 = requestAnimationFrame(() => setPhase('reveal'))
+      })
+      return () => { cancelAnimationFrame(f1); cancelAnimationFrame(f2) }
     }
     if (phase === 'reveal') {
       const t = setTimeout(() => { setPhase('idle'); setPending(null) }, REVEAL_MS)

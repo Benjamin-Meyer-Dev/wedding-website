@@ -116,6 +116,10 @@
   will-change: transform;
 }
 .curtain--cover .curtain-iris  { animation: iris-cover 380ms cubic-bezier(.66, 0, .34, 1) forwards; }
+/* held fully shut between cover and reveal while the new scene mounts (see
+   App.jsx); the cover animation's fill ends when its class goes, so restate
+   the covered pose */
+.curtain--swapped .curtain-iris { transform: translate(-50%, -50%) scale(1); }
 .curtain--reveal .curtain-iris { transform: translate(-50%, -50%) scale(1); animation: iris-reveal 420ms cubic-bezier(.66, 0, .34, 1) forwards; }
 @keyframes iris-cover  { from { transform: translate(-50%, -50%) scale(0); } to { transform: translate(-50%, -50%) scale(1); } }
 @keyframes iris-reveal { from { transform: translate(-50%, -50%) scale(1); } to { transform: translate(-50%, -50%) scale(0); } }
@@ -148,6 +152,8 @@
 }
 .curtain--cover .curtain-mono       { animation: mono-in 240ms cubic-bezier(.25, .9, .35, 1) 130ms both; }
 .curtain--cover .curtain-mono::after { animation: mono-line 260ms cubic-bezier(.25, .9, .35, 1) 210ms both; }
+.curtain--swapped .curtain-mono,
+.curtain--swapped .curtain-mono::after { opacity: 1; }
 .curtain--reveal .curtain-mono      { opacity: 1; animation: mono-out 200ms ease both; }
 @keyframes mono-in   { from { opacity: 0; } to { opacity: 1; } }
 @keyframes mono-line { from { opacity: 0; } to { opacity: 1; } }

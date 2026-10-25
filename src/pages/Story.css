@@ -133,6 +133,14 @@
   border-radius: 18px;
   box-shadow: 0 26px 50px -26px rgba(21, 50, 74, 0.5);
 }
+/* Same fit as above, worked out from the known aspect ratio (--ar, set from
+   PHOTO_SIZES in Story.jsx) so the box exists before the file loads: as wide as
+   the column allows, unless that would be taller than the cap, in which case
+   the cap sets the height and the width follows. */
+.story-photo img.is-sized {
+  width: min(100%, var(--story-photo-h) * var(--ar));
+  aspect-ratio: var(--ar);
+}
 
 /* Years with no photo yet keep the themed tile, filling the whole stage. */
 .story-photo--empty {
@@ -315,8 +323,9 @@
   display: grid;
   place-items: center;
   padding: 28px;
+  /* No backdrop-filter: at 86% opacity the blur is invisible, but it still
+     re-blurred the whole screen every frame over the drifting orbs. */
   background: rgba(21, 50, 74, 0.86);
-  backdrop-filter: blur(6px);
   animation: page-fade 200ms ease both;
 }
 .story-lightbox img {

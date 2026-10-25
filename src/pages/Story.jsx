@@ -14,6 +14,42 @@ const PHOTOS = Object.fromEntries(
 )
 const photo = (name) => PHOTOS[name] ?? ''
 
+// Each large milestone photo also has a 960px-wide `Name-sm.jpeg` beside it,
+// and srcset lets the browser take that one whenever it's sharp enough: phones
+// (a ~285px-wide photo on a 3x screen wants ~860px - which is why this isn't
+// 720) and 1x desktops (724px at most). About half the download and a third
+// less decoded bitmap. The full file still serves high-density desktops. A photo with no -sm copy just uses its
+// one file, so adding a photo needs nothing extra (making a -sm copy is an
+// optional saving, not a requirement).
+const SMALL_W = 960
+// Upper bound on the photo's on-screen width at each Story.css breakpoint:
+// one column beside the line on phones; half the row less the gap above that,
+// topping out at the 1520px column's half.
+const PHOTO_DISPLAY_WIDTHS =
+  '(max-width: 700px) calc(100vw - 108px), (max-width: 1200px) calc(50vw - 56px), (max-width: 1584px) calc(50vw - 68px), 724px'
+const photoSrcSet = (name, fullW) => {
+  const sm = PHOTOS[`${name}-sm`]
+  return sm && fullW ? `${sm} ${SMALL_W}w, ${PHOTOS[name]} ${fullW}w` : undefined
+}
+
+// Pixel size of each milestone photo, so its box is reserved before the file
+// arrives. Without it every lazy photo landed at 0px tall and pushed the page
+// down as it loaded (the column grows by thousands of px on a cold load), each
+// time re-running the Favourites measure. A photo missing from this table
+// still works - it just lays out the old way, once it has loaded.
+const PHOTO_SIZES = {
+  'First Met': [750, 578],
+  'Started Dating': [1200, 1600],
+  'Prom': [750, 497],
+  'Helicopter Ride': [1080, 720],
+  'Mexico': [1600, 1066],
+  'Uncle And Aunt': [1200, 1600],
+  'Egypt': [1600, 1200],
+  'Alberta': [1200, 1600],
+  'Disney': [1200, 1600],
+  'Proposal': [1200, 1599],
+}
+
 // One entry per year, 2016 through 2027. `title` is optional - a year with none
 // still renders as a dated slot on the timeline, ready to fill in. Add a `text`
 // field to any entry to show a description under its title.
@@ -566,7 +602,17 @@ export default function Story() {
             >
               <figure className={`story-photo${s.photo ? '' : ` story-photo--empty tone-${i % 3}`}`}>
                 {s.photo
-                  ? <img src={s.photo} alt={s.title || s.date} loading="lazy" draggable={false} />
+                  ? <img
+                      src={s.photo}
+                      srcSet={photoSrcSet(s.title, PHOTO_SIZES[s.title]?.[0])}
+                      sizes={PHOTO_DISPLAY_WIDTHS}
+                      alt={s.title || s.date}
+                      loading="lazy"
+                      decoding="async"
+                      draggable={false}
+                      className={PHOTO_SIZES[s.title] ? 'is-sized' : undefined}
+                      style={PHOTO_SIZES[s.title] ? { '--ar': PHOTO_SIZES[s.title][0] / PHOTO_SIZES[s.title][1] } : undefined}
+                    />
                   : <Camera aria-hidden="true" />}
               </figure>
               <span className="story-dot" aria-hidden="true" />

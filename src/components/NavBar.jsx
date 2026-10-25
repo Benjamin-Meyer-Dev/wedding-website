@@ -107,7 +107,27 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
       const el = drawerRef.current
       return !!el && e.target instanceof Node && el.contains(e.target)
     }
-    const block = (e) => { if (!inDrawer(e) && e.cancelable) e.preventDefault() }
+    // ...but only while the drawer can actually move that way. Once it's at an
+    // end (or when it fits and doesn't scroll at all) the browser hands the
+    // gesture on to whatever is behind it, and `overscroll-behavior` only
+    // stops that for a box that overflows. `dy` > 0 means scrolling down.
+    const drawerCanScroll = (dy) => {
+      const el = drawerRef.current?.querySelector('.topbar-drawer-inner')
+      if (!el || dy === 0) return false
+      return dy < 0 ? el.scrollTop > 0 : el.scrollTop + el.clientHeight < el.scrollHeight - 1
+    }
+    const blockIfStuck = (e, dy) => {
+      if (inDrawer(e) && drawerCanScroll(dy)) return
+      if (e.cancelable) e.preventDefault()
+    }
+    let touchY = 0
+    const onTouchStart = (e) => { touchY = e.touches[0]?.clientY ?? 0 }
+    const blockTouch = (e) => {
+      const y = e.touches[0]?.clientY ?? touchY
+      blockIfStuck(e, touchY - y)
+      touchY = y
+    }
+    const blockWheel = (e) => blockIfStuck(e, e.deltaY)
     const blockKeys = (e) => {
       if (!SCROLL_KEYS.has(e.key)) return
       // Leave typing and button/link activation (space, enter) alone.
@@ -115,12 +135,14 @@ export default function NavBar({ page, onNavigate, onSignOut }) {
       if (t?.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A'].includes(t?.tagName)) return
       e.preventDefault()
     }
-    window.addEventListener('wheel', block, { passive: false })
-    window.addEventListener('touchmove', block, { passive: false })
+    window.addEventListener('wheel', blockWheel, { passive: false })
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchmove', blockTouch, { passive: false })
     window.addEventListener('keydown', blockKeys)
     return () => {
-      window.removeEventListener('wheel', block)
-      window.removeEventListener('touchmove', block)
+      window.removeEventListener('wheel', blockWheel)
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', blockTouch)
       window.removeEventListener('keydown', blockKeys)
     }
   }, [locked])

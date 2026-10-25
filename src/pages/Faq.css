@@ -46,11 +46,22 @@
   margin: 0;
   padding: 0;
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  /* Wrapping flex, not grid, so a short last row (e.g. 2 cards under a row of
+     3) centres instead of hugging the left edge. Each cell is a fixed
+     1/--faq-cols share of the row, so the cards keep the same width as the
+     full rows above them. */
+  --faq-cols: 3;
+  --faq-gap: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--faq-gap);
 }
-.faq-cell { display: block; }
+.faq-cell {
+  display: block;
+  flex: 0 0 calc((100% - (var(--faq-cols) - 1) * var(--faq-gap)) / var(--faq-cols));
+  min-width: 0;
+}
 
 .faq-card {
   width: 100%;
@@ -158,13 +169,13 @@
 
 /* ---------------- Responsive ---------------- */
 @media (max-width: 1200px) {
-  .faq-grid { grid-template-columns: repeat(2, 1fr); }
+  .faq-grid { --faq-cols: 2; }
   /* Two-up cards are ~440px wide, so questions wrap to two lines instead of
      three — but 180px left exactly 1px spare, so give it real room. */
   .faq-card { height: 200px; }
 }
 @media (max-width: 440px) {
-  .faq-grid { grid-template-columns: 1fr; }
+  .faq-grid { --faq-cols: 1; }
   /* Taller than the two-up tier above, not shorter: one column on a 360px
      phone is the NARROWEST card in the deck (~250px of text), so this is where
      the long questions wrap to three lines over the icon. */

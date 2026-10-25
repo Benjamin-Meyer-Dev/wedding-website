@@ -518,7 +518,13 @@
 @media (max-width: 1200px) {
   /* Use `.scene.rsvp` (0,2,0) so this beats the base `.scene.rsvp` padding —
      a plain `.rsvp` (0,1,0) loses and the desktop 32px padding sticks. */
-  .scene.rsvp { padding: var(--content-top) 16px 0; }
+  /* Anchored to the top instead of `safe center`. Centred, the page flipped
+     between centring a short declined card and top-aligning a tall accepting
+     one, so paging between guests (or opening the meal section) moved the
+     title and card with it - a 211px jump in one frame on a phone, where the
+     lite tier snaps the viewport height rather than easing it. Pinned to the
+     top, a card changing height only moves what is below it. */
+  .scene.rsvp { padding: var(--content-top) 16px 0; justify-content: flex-start; }
   /* (the arrows move INSIDE the card head on mobile — see the end-of-file
      block. A `.rsvp-nav { display:none }` here is dead anyway: the later base
      `.rsvp-nav { display:grid }` outranks it at equal specificity.) */
@@ -719,8 +725,12 @@
   gap: 28px;
   width: 100%;
 }
-.rsvp-card-who { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+/* flex: none + nowrap: beside the toggle on tablet widths the column used to
+   give way first and "Guest 1 of 2" broke onto two lines; the toggle has the
+   room to spare, so it is the one that narrows. */
+.rsvp-card-who { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; flex: none; }
 .rsvp-count {
+  white-space: nowrap;
   font-family: var(--font-ui);
   font-weight: 600;
   font-size: 9.5px;
